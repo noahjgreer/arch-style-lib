@@ -1,0 +1,53 @@
+.style-italic {
+  font-style: italic;
+}
+
+.style-normal {
+  font-style: normal;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+blockquote {
+  margin: 0px;
+  text-align: center;
+  font-style: italic;
+  padding: 0.5rem 3.75%;
+  border-left: solid 2px grey;
+  line-height: 2.25rem;
+}
+blockquote.align-left {
+  text-align: left;
+}
+blockquote cite {
+  padding: 0px;
+  margin: 0px;
+  font-style: normal;
+  border: none;
+}
+blockquote cite::before {
+  content: "- ";
+}
+
+body {
+  background-color: #fff;
+  color: #231f20;
+  padding: 1rem 7.5%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.5;
+  overflow-x: hidden;
+}/*# sourceMappingURL=style.css.map */

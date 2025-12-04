@@ -1,0 +1,94 @@
+// Variables
+/// Colors
+$color-main: #231f20;
+$color-secondary: #fff;
+$color-tertiary: #918f8f;
+$color-accent: #DE3F28;
+$colortransform-tertiary: invert(59%) sepia(14%) saturate(25%) hue-rotate(314deg) brightness(93%) contrast(98%);
+/// Spacing
+//// Groups
+$spacing-light: 0.5rem 3.75%;
+$spacing-regular: 1rem 7.5%;
+
+//// Inlines
+$spacing-light-inline: 3.75%;
+$spacing-regular-inline: 7.5%;
+
+//// Blocks
+$spacing-light-block: 0.5rem;
+$spacing-regular-block: 1rem;
+
+/// Miscellaneous
+$shadow-common: 0px 0px 32.5px 0px rgba(0, 0, 0, 0.15);
+$radius: 1rem;
+$radius-button: 1.5rem;
+$icon-size: 3rem;
+
+/// Fonts
+$font-common: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
+$base-font-size: 1rem;
+$h1-size: $base-font-size * 2.5;
+$h2-size: $base-font-size * 2;
+
+// Styles
+/// Queries
+.style-italic {
+    font-style: italic;
+}
+
+.style-normal {
+    font-style: normal;
+}
+
+/// Font sizing
+
+h1 {
+    font-size: $h1-size;
+    font-weight: 700;
+}
+
+h2 {
+    font-size: $h2-size;
+    font-weight: 700;
+}
+
+/// Other
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+blockquote {
+    margin: 0px;
+    text-align: center;
+    font-style: italic;
+    // margin-block: $padding-light-block;
+    padding: $spacing-light;
+    border-left: solid 2px grey;
+    line-height: 2.25rem;
+    &.align-left {
+        text-align: left;
+    }
+    cite {
+        padding: 0px;
+        margin: 0px;
+        font-style: normal;
+        border: none;
+    }
+    cite::before {
+        content: "- ";
+    }
+    // font-style: italic;
+}
+
+body {
+    background-color: $color-secondary;
+    color: $color-main;
+
+    padding: $spacing-regular;
+    font-family: $font-common;
+    line-height: 1.5;
+    overflow-x: hidden;
+}

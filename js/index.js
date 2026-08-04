@@ -7,6 +7,7 @@
 
 export * from "./theme.js";
 export * from "./glass.js";
+export * from "./icons.js";
 export * from "./popover.js";
 export * from "./switcher.js";
 export * from "./drag-reorder.js";

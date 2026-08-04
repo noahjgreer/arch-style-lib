@@ -1,0 +1,26 @@
+/*
+ * arch-style-lib :: icons
+ * Custom symbol font + the .arch-icon base class. Icons are referenced by
+ * name in markup (data-icon="archivebox") and resolved to the right glyph
+ * by js/icons.js — see docs/icons.md.
+ */
+
+@font-face {
+    font-family: "ArchSymbols";
+    src: url("../fonts/SF-AlfredoSymbols.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+}
+
+.arch-icon {
+    display: inline-block;
+    font-family: "ArchSymbols";
+    font-size: var(--arch-icon-size, 1.5rem);
+    line-height: 1;
+    font-style: normal;
+    font-weight: normal;
+    speak: none;
+    user-select: none;
+    vertical-align: middle;
+}

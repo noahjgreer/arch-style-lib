@@ -113,6 +113,14 @@
             <h2>Popover</h2>
             <button class="arch-btn" id="popover-btn" type="button">Open popover</button>
         </div>
+
+        <div class="arch-glass arch-glass-panel">
+            <h2>Icons</h2>
+            <p>Referenced by name — see <code>docs/icons.md</code> (mapping is placeholder for now).</p>
+            <div class="demo-row">
+                <span class="arch-icon" data-icon="archivebox" aria-label="Archive box"></span>
+            </div>
+        </div>
     </section>
 
     <!--
@@ -153,8 +161,10 @@
         import { openPopover, closePopover, bindDismiss } from "/js/popover.js";
         import { initSwitcher } from "/js/switcher.js";
         import { makeDragReorder } from "/js/drag-reorder.js";
+        import { renderIcons } from "/js/icons.js";
 
         initTheme();
+        renderIcons();
         document.getElementById("theme-toggle").addEventListener("click", toggleTheme);
 
         document.getElementById("blur-range").addEventListener("input", (e) => {

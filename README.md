@@ -32,13 +32,15 @@ Open [`index.html`](./index.html) in a browser for a full live showcase.
 - [Getting started](./docs/getting-started.md)
 - [Tokens & theming](./docs/tokens-and-theming.md)
 - [Components](./docs/components.md)
+- [Icons](./docs/icons.md)
 - [JS behaviors](./docs/behaviors.md)
 
 ## Structure
 
 ```
-css/            tokens, reset, glass utility, components
-js/             theme, glass, popover, switcher, drag-reorder
+css/            tokens, reset, glass utility, icons, components
+js/             theme, glass, icons, popover, switcher, drag-reorder
+fonts/          bundled icon font (+ FontForge source, build tools)
 docs/           usage docs
 index.html      live showcase / demo
 ```

@@ -1,0 +1,15 @@
+{
+  "name": "arch-style-lib",
+  "version": "0.1.0",
+  "description": "Shared no-build-step pseudo-glass styling and behavior library.",
+  "type": "module",
+  "license": "SEE LICENSE IN LICENSE",
+  "exports": {
+    "./css/*": "./css/*",
+    "./js/*": "./js/*"
+  },
+  "files": [
+    "css",
+    "js"
+  ]
+}

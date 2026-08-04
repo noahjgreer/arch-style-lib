@@ -59,6 +59,7 @@
     /* ── Spacing ── */
     --arch-space-xs: 0.25rem;
     --arch-space-sm: 0.5rem;
+    --arch-space-rg: 0.75rem;
     --arch-space-md: 1rem;
     --arch-space-lg: 1.5rem;
     --arch-space-xl: 2rem;

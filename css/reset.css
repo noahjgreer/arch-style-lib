@@ -31,6 +31,7 @@ h5,
 h6 {
     font-weight: 700;
     line-height: 1.2;
+    margin-bottom: var(--arch-space-rg);
 }
 
 h1 {
@@ -43,6 +44,10 @@ h2 {
 
 a {
     color: var(--arch-accent);
+}
+
+p {
+    margin-bottom: var(--arch-space-sm);
 }
 
 img,

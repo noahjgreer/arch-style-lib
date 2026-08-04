@@ -1,0 +1,80 @@
+# Components
+
+All classes are namespaced `arch-` to avoid collisions with app-specific
+CSS. Markup examples below assume `css/arch.css` is loaded.
+
+## Glass
+
+The signature surface. Apply `.arch-glass` to any element — it keeps that
+element's own `border-radius`. `.arch-glass-panel` adds sensible rounding +
+padding for a card/panel; `.arch-glass-strong` increases the tint for
+elements that need to stay legible over busy backgrounds.
+
+```html
+<div class="arch-glass arch-glass-panel">
+    <h2>Card title</h2>
+    <p>Body content.</p>
+</div>
+```
+
+Tunable per-instance via inline custom properties:
+
+```html
+<div class="arch-glass" style="--arch-glass-blur: 16px; --arch-glass-mix: 20%;">…</div>
+```
+
+See [behaviors.md#glass](./behaviors.md#glass) for runtime blur control and
+adaptive light/dark reflex based on a background image.
+
+## Button — `.arch-btn`
+
+```html
+<button class="arch-btn">Solid</button>
+<button class="arch-btn arch-btn--ghost">Ghost</button>
+<button class="arch-btn arch-glass arch-btn--glass">Glass</button>
+<button class="arch-btn arch-btn--icon" aria-label="Add">+</button>
+<button class="arch-btn arch-btn--sm">Small</button>
+```
+
+Retint a single button with `style="--arch-accent: var(--arch-green)"`.
+
+## Badge — `.arch-badge`, `.arch-dot`
+
+```html
+<span class="arch-badge">12</span>
+<span class="arch-badge arch-badge--outline">Draft</span>
+<span class="arch-dot"></span>
+```
+
+## Popover — `.arch-popover`
+
+Chrome only — pair with [`js/popover.js`](./behaviors.md#popover) for
+positioning and open/close state. **Place it outside any `.arch-glass`
+ancestor** — see the gotcha note in [behaviors.md](./behaviors.md#popover).
+
+```html
+<div class="arch-popover arch-glass" id="menu" role="menu">
+    <div class="arch-popover__notch"></div>
+    …items…
+</div>
+```
+
+## Switcher — `.arch-switcher`
+
+Segmented control with an animated sliding pill. Pair with
+[`initSwitcher()`](./behaviors.md#switcher).
+
+```html
+<div class="arch-switcher arch-glass" id="tabs">
+    <button class="arch-switcher__tab arch-switcher__tab--active">Day</button>
+    <button class="arch-switcher__tab">Week</button>
+    <button class="arch-switcher__tab">Month</button>
+</div>
+```
+
+## Reset
+
+`css/reset.css` normalizes box-sizing/margins, sets base typography
+(`h1`–`h6`, `body`), and styles bare `<blockquote>`/`<cite>` elements
+(`.align-left` modifier available). It's intentionally minimal — style
+everything else yourself or add a new component file.

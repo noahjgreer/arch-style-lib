@@ -1,0 +1,66 @@
+/*
+ * arch-style-lib :: switcher
+ * Segmented control / pill tab bar with an animated sliding pill.
+ * Generalized from a fixed 5-tab mobile bar into an N-tab component driven
+ * by --arch-switcher-count and --arch-switcher-index (see js/switcher.js).
+ *
+ * Markup:
+ * <div class="arch-switcher arch-glass" data-arch-switcher style="--arch-switcher-count:3">
+ *   <button class="arch-switcher__tab arch-switcher__tab--active" data-index="0">One</button>
+ *   <button class="arch-switcher__tab" data-index="1">Two</button>
+ *   <button class="arch-switcher__tab" data-index="2">Three</button>
+ * </div>
+ */
+
+.arch-switcher {
+    --arch-switcher-count: 2;
+    --arch-switcher-index: 0;
+
+    display: flex;
+    align-items: stretch;
+    position: relative;
+    border-radius: var(--arch-radius-round);
+    padding: 0.25rem;
+    isolation: isolate;
+}
+
+.arch-switcher::after {
+    content: "";
+    position: absolute;
+    top: 0.25rem;
+    bottom: 0.25rem;
+    left: 0.25rem;
+    width: calc((100% - 0.5rem) / var(--arch-switcher-count));
+    border-radius: var(--arch-radius-round);
+    background-color: color-mix(in srgb, var(--arch-glass-tint) 36%, transparent);
+    box-shadow: var(--arch-shadow-sm);
+    z-index: -1;
+    pointer-events: none;
+    transform: translateX(calc(var(--arch-switcher-index) * 100%));
+    transition: transform var(--arch-duration-slow) var(--arch-ease);
+}
+
+.arch-switcher__tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    background: none;
+    border: none;
+    border-radius: var(--arch-radius-round);
+    padding: 0.5rem 0;
+    color: var(--arch-fg);
+    opacity: 0.5;
+    cursor: pointer;
+    transition: opacity var(--arch-duration-fast) ease;
+
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+.arch-switcher__tab--active {
+    opacity: 1;
+    cursor: default;
+}

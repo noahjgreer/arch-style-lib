@@ -1,0 +1,17 @@
+/*
+ * arch-style-lib
+ * Single entry point: @import this file (or link it directly) to pull in the
+ * whole library in the right cascade order. No build step required — modern
+ * browsers resolve @import at parse time.
+ *
+ * Prefer only what you need? Link the individual files in css/ instead,
+ * always after tokens.css.
+ */
+
+@import url("./tokens.css");
+@import url("./reset.css");
+@import url("./glass.css");
+@import url("./components/button.css");
+@import url("./components/badge.css");
+@import url("./components/popover.css");
+@import url("./components/switcher.css");

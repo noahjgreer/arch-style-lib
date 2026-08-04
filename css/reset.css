@@ -1,0 +1,92 @@
+/*
+ * arch-style-lib :: reset
+ * Minimal base reset + element defaults. Uses tokens from tokens.css.
+ */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    color-scheme: light dark;
+}
+
+body {
+    background-color: var(--arch-bg);
+    color: var(--arch-fg);
+    font-family: var(--arch-font-family);
+    line-height: var(--arch-line-height);
+    overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+h1 {
+    font-size: var(--arch-font-size-h1);
+}
+
+h2 {
+    font-size: var(--arch-font-size-h2);
+}
+
+a {
+    color: var(--arch-accent);
+}
+
+img,
+picture,
+svg {
+    max-width: 100%;
+    display: block;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+}
+
+.arch-style-italic {
+    font-style: italic;
+}
+
+.arch-style-normal {
+    font-style: normal;
+}
+
+blockquote {
+    text-align: center;
+    font-style: italic;
+    padding: var(--arch-space-sm) var(--arch-gutter);
+    border-left: solid 2px var(--arch-separator-opaque);
+    line-height: 2.25rem;
+
+    &.align-left {
+        text-align: left;
+    }
+
+    cite {
+        padding: 0;
+        margin: 0;
+        font-style: normal;
+        border: none;
+
+        &::before {
+            content: "\2014 ";
+        }
+    }
+}

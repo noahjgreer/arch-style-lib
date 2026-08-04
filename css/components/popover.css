@@ -1,0 +1,39 @@
+/*
+ * arch-style-lib :: popover
+ * Floating glass panel chrome. Pair with js/popover.js for positioning.
+ * Markup: <div class="arch-popover arch-glass" data-arch-popover>...</div>
+ * Toggle visibility with the "arch-popover--open" class.
+ */
+
+.arch-popover {
+    position: fixed;
+    z-index: 300;
+    min-width: 8.75rem;
+    max-width: 20rem;
+    border-radius: var(--arch-radius-md);
+    padding: var(--arch-space-sm);
+    box-shadow: var(--arch-shadow-md);
+
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+    pointer-events: none;
+    transition: opacity var(--arch-duration-fast) ease, transform var(--arch-duration-fast) ease;
+}
+
+.arch-popover--open {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+}
+
+/* Optional notch/arrow pointing at the anchor; position set via --notch-left by popover.js */
+.arch-popover__notch {
+    position: absolute;
+    top: -0.35rem;
+    left: var(--notch-left, 50%);
+    width: 0.7rem;
+    height: 0.7rem;
+    background: inherit;
+    transform: translateX(-50%) rotate(45deg);
+    border-radius: 2px;
+}

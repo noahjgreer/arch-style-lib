@@ -3,60 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Example Page - Arch Style Library</title>
-    <link rel="stylesheet" href="/style.css">
+    <title>arch-style-lib — Showcase</title>
+    <link rel="stylesheet" href="/css/arch.css">
+    <style>
+        body {
+            padding: var(--arch-space-lg) var(--arch-gutter);
+            display: flex;
+            flex-direction: column;
+            gap: var(--arch-space-xl);
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--arch-blue) 25%, transparent), transparent 60%),
+                radial-gradient(circle at 80% 0%, color-mix(in srgb, var(--arch-purple) 25%, transparent), transparent 55%),
+                radial-gradient(circle at 50% 100%, color-mix(in srgb, var(--arch-mint) 20%, transparent), transparent 55%);
+            background-attachment: fixed;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: var(--arch-space-md);
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+            gap: var(--arch-space-lg);
+        }
+
+        .demo-row {
+            display: flex;
+            align-items: center;
+            gap: var(--arch-space-sm);
+            flex-wrap: wrap;
+        }
+
+        #glass-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: var(--arch-space-sm);
+        }
+
+        #glass-list li {
+            display: flex;
+            align-items: center;
+            gap: var(--arch-space-sm);
+            padding: var(--arch-space-sm) var(--arch-space-md);
+            border-radius: var(--arch-radius-md);
+            cursor: grab;
+        }
+
+        #popover-anchor-wrap {
+            position: relative;
+        }
+    </style>
 </head>
 <body>
-    <section id="intro">
-        <h1>Example Page</h1>
-        <p>This, <em>this</em> is an example page.</p>
-    </section>
-    <section id="basics">
-        <h1>Basics</h1>
-        <p>Here are some basic elements.</p>
-        <h2>Headings</h2>
-        <blockquote class="align-left style-normal">
-            <h1>Heading 1</h1>
-            <h2>Heading 2</h2>
-            <h3>Heading 3</h3>
-            <h4>Heading 4</h4>
-            <h5>Heading 5</h5>
-            <h6>Heading 6</h6>
-        </blockquote>
-        <h2>Paragraphs</h2>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing</p>
-    </section>
-    <section id="gallery">
-        <h1>Gallery</h1>
-        <div class="gallery">
-            <div class="gallery-item">
-                <img src="https://picsum.photos/200/300" alt="Image 1">
-            </div>
-            <div class="gallery-item">
-                <img src="https://picsum.photos/200/300" alt="Image 2">
-            </div>
-            <div class="gallery-item">
-                <img src="https://picsum.photos/200/300" alt="Image 3">
-            </div>
-            <div class="gallery-item">
-                <img src="https://picsum.photos/200/300" alt="Image 4">
-            </div>
-            <div class="gallery-item">
-                <img src="https://picsum.photos/200/300" alt="Image 5">
-            </div>
-            <div class="gallery-item">
-                <img src="https://picsum.photos/200/300" alt="Image 6">
-            </div>
-            <div class="gallery-item">
-                <img src="https://picsum.photos/200/300" alt="Image 7">
-            </div>
-            <div class="gallery-item">
-                <img src="https://picsum.photos/200/300" alt="Image 8">
-            </div>
-            <div class="gallery-item">
-                <img src="https://picsum.photos/200/300" alt="Image 9">
-            </div>
+    <header class="arch-glass arch-glass-panel">
+        <div>
+            <h1>arch-style-lib</h1>
+            <p>A pseudo-glass design system — shared styling &amp; behavior for every project.</p>
+        </div>
+        <button class="arch-btn arch-btn--ghost" id="theme-toggle" type="button">Toggle theme</button>
+    </header>
+
+    <section id="glass" class="arch-glass arch-glass-panel">
+        <h2>Glass</h2>
+        <p>The core <code>.arch-glass</code> utility, with an adjustable blur.</p>
+        <div class="demo-row">
+            <label for="blur-range">Blur</label>
+            <input id="blur-range" type="range" min="0" max="40" value="8">
         </div>
     </section>
+
+    <section class="demo-grid">
+        <div class="arch-glass arch-glass-panel">
+            <h2>Buttons</h2>
+            <div class="demo-row">
+                <button class="arch-btn" type="button">Solid</button>
+                <button class="arch-btn arch-btn--ghost" type="button">Ghost</button>
+                <button class="arch-btn arch-glass arch-btn--glass" type="button">Glass</button>
+                <button class="arch-btn arch-btn--icon" type="button" aria-label="Add">+</button>
+            </div>
+        </div>
+
+        <div class="arch-glass arch-glass-panel">
+            <h2>Badges</h2>
+            <div class="demo-row">
+                <span class="arch-badge">12</span>
+                <span class="arch-badge" style="--arch-accent: var(--arch-green);">New</span>
+                <span class="arch-badge--outline arch-badge">Outline</span>
+                <span class="arch-dot"></span>
+                <span class="arch-dot" style="--arch-accent: var(--arch-red); background-color: var(--arch-red);"></span>
+            </div>
+        </div>
+
+        <div class="arch-glass arch-glass-panel">
+            <h2>Switcher</h2>
+            <div class="arch-switcher arch-glass" id="demo-switcher">
+                <button class="arch-switcher__tab arch-switcher__tab--active" type="button">Day</button>
+                <button class="arch-switcher__tab" type="button">Week</button>
+                <button class="arch-switcher__tab" type="button">Month</button>
+            </div>
+        </div>
+
+        <div class="arch-glass arch-glass-panel" id="popover-anchor-wrap">
+            <h2>Popover</h2>
+            <button class="arch-btn" id="popover-btn" type="button">Open popover</button>
+        </div>
+    </section>
+
+    <!--
+        position:fixed popovers must live outside any .arch-glass (or other
+        backdrop-filter) ancestor — backdrop-filter creates a containing
+        block, which makes descendant fixed elements position relative to
+        THAT ancestor instead of the viewport. Append popovers to <body>
+        (or a top-level portal root) rather than nesting them in a card.
+    -->
+    <div class="arch-popover arch-glass" id="demo-popover" role="menu">
+        <p>Positioned relative to the button, clamped to the viewport.</p>
+    </div>
+
+    <section class="arch-glass arch-glass-panel">
+        <h2>Drag to reorder</h2>
+        <p>Drag any row by its handle to reorder the list.</p>
+        <ul id="glass-list">
+            <li class="arch-glass"><span class="arch-dot" style="background-color: var(--arch-blue);"></span> First item</li>
+            <li class="arch-glass"><span class="arch-dot" style="background-color: var(--arch-purple);"></span> Second item</li>
+            <li class="arch-glass"><span class="arch-dot" style="background-color: var(--arch-mint);"></span> Third item</li>
+            <li class="arch-glass"><span class="arch-dot" style="background-color: var(--arch-orange);"></span> Fourth item</li>
+        </ul>
+    </section>
+
+    <section id="basics" class="arch-glass arch-glass-panel">
+        <h2>Typography &amp; basics</h2>
+        <blockquote class="align-left">
+            <h1>Heading 1</h1>
+            <h2>Heading 2</h2>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
+            <cite>arch-style-lib</cite>
+        </blockquote>
+    </section>
+
+    <script type="module">
+        import { initTheme, toggleTheme } from "/js/theme.js";
+        import { setGlassBlur } from "/js/glass.js";
+        import { openPopover, closePopover, bindDismiss } from "/js/popover.js";
+        import { initSwitcher } from "/js/switcher.js";
+        import { makeDragReorder } from "/js/drag-reorder.js";
+
+        initTheme();
+        document.getElementById("theme-toggle").addEventListener("click", toggleTheme);
+
+        document.getElementById("blur-range").addEventListener("input", (e) => {
+            setGlassBlur(Number(e.target.value));
+        });
+
+        initSwitcher(document.getElementById("demo-switcher"));
+
+        const popover = document.getElementById("demo-popover");
+        const popoverBtn = document.getElementById("popover-btn");
+        popoverBtn.addEventListener("click", () => {
+            if (popover.classList.contains("arch-popover--open")) {
+                closePopover(popover);
+            } else {
+                openPopover(popover, popoverBtn);
+            }
+        });
+        bindDismiss(popover, popoverBtn, () => closePopover(popover));
+
+        makeDragReorder(document.getElementById("glass-list"), {
+            onReorder: ({ fromIndex, toIndex }) => console.log(`Moved item ${fromIndex} -> ${toIndex}`),
+        });
+    </script>
 </body>
 </html>

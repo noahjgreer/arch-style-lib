@@ -1,6 +1,6 @@
 # Icons
 
-Icons are custom glyphs from a bundled symbol font (`fonts/SF-AlfredoSymbols.ttf`),
+Icons are custom glyphs from a bundled symbol font (`fonts/SF-Symbols.ttf`),
 referenced in markup by **name** rather than by raw character or codepoint.
 
 ## Usage
@@ -25,50 +25,54 @@ Call `renderIcons()` again after inserting new icon markup dynamically, or
 use `watchIcons(root)` once on page load to auto-render icons added later via
 a `MutationObserver` (see [behaviors reference](#api-reference) below).
 
-## ⚠️ Placeholder codepoints
+## Codepoint mapping
 
-`js/icons.js`'s `ICONS` map currently ships with **unverified placeholder**
-codepoints. The font's internal glyph names (`u100184`, `NameMe.242`, ...)
-carry no semantic meaning, so there's no automatic way to know which
-codepoint is actually an archive-box glyph, a trash-can glyph, etc.
+`js/icons.js`'s `ICONS` map holds real, verified name → codepoint pairs
+(SF Symbols-style dotted names, e.g. `square.and.arrow.down`), extracted
+from the source Figma catalog's PDF export — see the file's header comment
+for exactly how (PDF content-stream `ToUnicode` CMap, not a text-layer
+extraction, which mis-decodes supplementary-plane codepoints). Icon names
+contain dots, which aren't valid in a bare object key — **quote the key**:
 
-To fill in real mappings:
+```js
+export const ICONS = {
+    "square.and.arrow.down": "\u{100184}",
+    "trash": "\u{100233}",
+};
+```
 
-1. Open `fonts/SF-AlfredoSymbols.sfd` in [FontForge](https://fontforge.org/).
-2. Find the glyph you want visually; note its encoding/codepoint (the
-   `StartChar:`/`Encoding:` line, or FontForge's glyph inspector).
-3. Add or correct the entry in `js/icons.js`. Icon names commonly contain
-   dots (mirroring SF Symbols naming, e.g. `square.and.arrow.down`), which
-   aren't valid in a bare object key — **quote the key**:
+To add a codepoint not yet in the map, confirm it against
+`fonts/SF-Symbols.sfd` in [FontForge](https://fontforge.org/) (its
+`StartChar:`/`Encoding:` line, or the glyph inspector) or via the same
+Figma/PDF extraction process as the rest of the map — don't guess. Register
+project-local additions without editing the library via:
 
-   ```js
-   export const ICONS = {
-       "square.and.arrow.down": "\u{100184}", // confirmed against SF-AlfredoSymbols.sfd
-       "trash": "\u{100233}",
-   };
-   ```
-
-   Or register icons from your own project without editing the library:
-
-   ```js
-   import { defineIcons } from "/js/icons.js";
-   defineIcons({ "square.and.arrow.down": "\u{100184}" });
-   ```
+```js
+import { defineIcons } from "/js/icons.js";
+defineIcons({ "square.and.arrow.down": "\u{100184}" });
+```
 
 ## Adding new glyphs to the font
 
-`fonts/SF-AlfredoSymbols.sfd` is the editable FontForge source;
-`fonts/SF-AlfredoSymbols.ttf` is the compiled font `css/icons.css` actually
-loads. To add a glyph:
+`fonts/SF-Symbols.sfd` is the editable FontForge source; `fonts/SF-Symbols.ttf`
+is the compiled font `css/icons.css` actually loads. To add a glyph:
 
 1. Open the `.sfd` in FontForge, import/draw the new glyph, assign it an
    unused Private Use Area codepoint (`u10xxxx`).
 2. Run `fonts/tools/centerglyphs.py` (FontForge's built-in scripting console:
    *Tools → Execute Script*) on the selected glyph(s) to vertically center
    them on the font's midline, matching the rest of the set.
-3. **File → Generate Fonts…** → overwrite `SF-AlfredoSymbols.ttf`.
+3. **File → Generate Fonts…** → overwrite `SF-Symbols.ttf`.
 4. Add the new name/codepoint pair to `js/icons.js`.
 5. Add a demo entry to `index.html`'s icon showcase.
+6. **Verify the font still loads in a real browser** (open `index.html`,
+   check the console). FontForge's "Generate Fonts…" doesn't reliably
+   produce a spec-compliant `name` table — a malformed one gets the whole
+   font silently rejected by the browser's OTS sanitizer (all glyphs
+   disappear, not just the new one), with no error beyond a console
+   warning like `rejected by sanitizer`. If you hit that, rebuild the
+   `name` table with `fontTools` rather than re-exporting — see the
+   "Icons" section of `CLAUDE.md` for the exact script.
 
 ## Sizing & color
 

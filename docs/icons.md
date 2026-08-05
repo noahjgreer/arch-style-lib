@@ -6,7 +6,7 @@ referenced in markup by **name** rather than by raw character or codepoint.
 ## Usage
 
 ```html
-<span class="arch-icon" data-icon="archivebox"></span>
+<span class="arch-icon" data-icon="square.and.arrow.down"></span>
 ```
 
 ```js
@@ -15,10 +15,10 @@ renderIcons(); // fills every [data-icon] element on the page with its glyph
 ```
 
 `renderIcons()` adds the `arch-icon` class automatically if it's missing, so
-`<span data-icon="archivebox"></span>` alone works too. It also sets
+`<span data-icon="square.and.arrow.down"></span>` alone works too. It also sets
 `aria-hidden="true"` on icons that don't already have an `aria-label` or
 `aria-hidden`, since icons are decorative by default — add
-`aria-label="Archive"` yourself when an icon is the only content of an
+`aria-label="Save"` yourself when an icon is the only content of an
 interactive element (e.g. an icon-only button).
 
 Call `renderIcons()` again after inserting new icon markup dynamically, or
@@ -37,12 +37,14 @@ To fill in real mappings:
 1. Open `fonts/SF-AlfredoSymbols.sfd` in [FontForge](https://fontforge.org/).
 2. Find the glyph you want visually; note its encoding/codepoint (the
    `StartChar:`/`Encoding:` line, or FontForge's glyph inspector).
-3. Add or correct the entry in `js/icons.js`:
+3. Add or correct the entry in `js/icons.js`. Icon names commonly contain
+   dots (mirroring SF Symbols naming, e.g. `square.and.arrow.down`), which
+   aren't valid in a bare object key — **quote the key**:
 
    ```js
    export const ICONS = {
-       archivebox: "\u{100184}", // confirmed against SF-AlfredoSymbols.sfd
-       trash: "\u{100233}",
+       "square.and.arrow.down": "\u{100184}", // confirmed against SF-AlfredoSymbols.sfd
+       "trash": "\u{100233}",
    };
    ```
 
@@ -50,7 +52,7 @@ To fill in real mappings:
 
    ```js
    import { defineIcons } from "/js/icons.js";
-   defineIcons({ archivebox: "\u{100184}" });
+   defineIcons({ "square.and.arrow.down": "\u{100184}" });
    ```
 
 ## Adding new glyphs to the font
@@ -74,7 +76,7 @@ Icons inherit `color` and size via `--arch-icon-size` (defaults to
 `1.5rem`, from `tokens.css`):
 
 ```html
-<span class="arch-icon" data-icon="archivebox" style="--arch-icon-size: 2rem; color: var(--arch-blue);"></span>
+<span class="arch-icon" data-icon="square.and.arrow.down" style="--arch-icon-size: 2rem; color: var(--arch-blue);"></span>
 ```
 
 ## API reference

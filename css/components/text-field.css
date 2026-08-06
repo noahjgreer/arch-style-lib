@@ -1,0 +1,45 @@
+/*
+ * arch-style-lib :: text field
+ * .arch-input — a single-line text input styled to match the rest of the
+ * library. Pairs with .arch-glass the same way .arch-btn does — add
+ * .arch-input--glass alongside .arch-glass in markup for the frosted
+ * treatment; on its own it falls back to a flat fill. Set --arch-accent to
+ * retint the focus ring.
+ */
+
+.arch-input {
+    display: block;
+    width: 100%;
+    padding: 0.6rem 1.1rem;
+    border: none;
+    border-radius: var(--arch-radius-round);
+    background-color: var(--arch-fill-4);
+    color: var(--arch-fg);
+    font: inherit;
+    font-size: var(--arch-font-size-lg);
+    transition: box-shadow var(--arch-duration-fast) var(--arch-ease);
+
+    &::placeholder {
+        color: var(--arch-label-3);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 1.5px var(--arch-accent);
+    }
+
+    &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+}
+
+/* Combine with .arch-glass in markup: class="arch-input arch-glass arch-input--glass" */
+.arch-input--glass {
+    background: none;
+}
+
+.arch-input--sm {
+    padding: 0.4rem 0.9rem;
+    font-size: var(--arch-font-size-md);
+}

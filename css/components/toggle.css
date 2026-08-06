@@ -1,0 +1,75 @@
+/*
+ * arch-style-lib :: toggle
+ * .arch-toggle: an iOS-style switch built on a native <input type="checkbox">
+ * for free accessibility/keyboard support. The checkbox is visually hidden
+ * (not display:none, so it stays focusable) and the label's ::before/::after
+ * pseudo-elements draw the track/thumb, driven purely by :checked — no JS
+ * required. Set --arch-accent (globally or per-instance) to retint the
+ * checked track.
+ */
+
+.arch-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--arch-space-sm);
+    cursor: pointer;
+    user-select: none;
+}
+
+.arch-toggle__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.arch-toggle__track {
+    flex-shrink: 0;
+    position: relative;
+    width: 2.75rem;
+    height: 1.625rem;
+    border-radius: var(--arch-radius-round);
+    background-color: var(--arch-fill-3);
+    transition: background-color var(--arch-duration-fast) var(--arch-ease);
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0.125rem;
+        left: 0.125rem;
+        width: 1.375rem;
+        height: 1.375rem;
+        border-radius: 50%;
+        background-color: #fff;
+        box-shadow: var(--arch-shadow-sm);
+        transition: transform var(--arch-duration-fast) var(--arch-ease);
+    }
+}
+
+.arch-toggle__input:checked + .arch-toggle__track {
+    background-color: var(--arch-accent);
+
+    &::before {
+        transform: translateX(1.125rem);
+    }
+}
+
+.arch-toggle__input:focus-visible + .arch-toggle__track {
+    outline: 2px solid var(--arch-accent);
+    outline-offset: 2px;
+}
+
+.arch-toggle__input:disabled + .arch-toggle__track {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.arch-toggle__label {
+    font-size: var(--arch-font-size-md);
+    color: var(--arch-fg);
+}

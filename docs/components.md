@@ -38,6 +38,20 @@ adaptive light/dark reflex based on a background image.
 
 Retint a single button with `style="--arch-accent: var(--arch-green)"`.
 
+## Text field — `.arch-input`
+
+A single-line text input, pill-rounded to match the rest of the library.
+Pairs with `.arch-glass` the same way `.arch-btn` does — add
+`.arch-input--glass` alongside `.arch-glass` for the frosted treatment; on
+its own it falls back to a flat fill. `.arch-input--sm` shrinks padding/font
+for compact contexts (inline with a small button, list rows).
+
+```html
+<input class="arch-input" type="text" placeholder="Untitled project" />
+<input class="arch-input arch-glass arch-input--glass" type="text" placeholder="Untitled project" />
+<input class="arch-input arch-input--sm" type="text" />
+```
+
 ## Badge — `.arch-badge`, `.arch-dot`
 
 ```html
@@ -70,6 +84,20 @@ Segmented control with an animated sliding pill. Pair with
     <button class="arch-switcher__tab">Week</button>
     <button class="arch-switcher__tab">Month</button>
 </div>
+```
+
+## Toggle — `.arch-toggle`
+
+An iOS-style switch. Built on a native `<input type="checkbox">` for
+keyboard/screen-reader support — no JS required, driven entirely by
+`:checked`. Retint like a button via `--arch-accent`.
+
+```html
+<label class="arch-toggle">
+    <input class="arch-toggle__input" type="checkbox" />
+    <span class="arch-toggle__track"></span>
+    <span class="arch-toggle__label">Mirror seams</span>
+</label>
 ```
 
 ## Reset

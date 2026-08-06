@@ -46,3 +46,11 @@ index.html      live showcase / demo
 ```
 
 See [CLAUDE.md](./CLAUDE.md) for conventions when extending this library.
+
+## Utilizing the Library
+If you want to use the library in your project, it is recommended that you link the stylesheets directly the github repository. You can do this by adding the following lines to your HTML file:
+
+```html
+<link rel="stylesheet" href="https://raw.githubusercontent.com/noahjgreer/arch-style-lib/main/css/arch.css">
+<script type="module" src="https://raw.githubusercontent.com/noahjgreer/arch-style-lib/main/js/index.js"></script>
+```

@@ -67,12 +67,20 @@ bindDismiss(popover, btn, () => closePopover(popover));
 | Function | Description |
 |---|---|
 | `initSwitcher(container, opts?)` | Wires an `.arch-switcher`'s tab clicks: updates the sliding-pill position and active state, fires `archswitch` on the container. `opts: { onChange(index) }`. |
-| `initRadioSwitcher(container)` | For radio-group segmented controls: tracks the previously-checked `c-option` as a `c-previous` attribute, useful for animating the transition. |
+| `initRadioSwitcher(container)` | For radio-group segmented controls: drives the same sliding-pill `--arch-switcher-count`/`--arch-switcher-index` properties as `initSwitcher()` off the checked radio (active-tab styling is handled by CSS `:has()`, not a JS class), and tracks the previously-checked `c-option` as a `c-previous` attribute, useful for animating the transition. |
 
 ```js
 import { initSwitcher } from "/js/switcher.js";
 initSwitcher(document.querySelector("#tabs"), {
     onChange: (index) => console.log("active tab", index),
+});
+```
+
+```js
+import { initRadioSwitcher } from "/js/switcher.js";
+initRadioSwitcher(document.querySelector("#tabs"));
+document.querySelector("#tabs").addEventListener("change", (e) => {
+    console.log("active option", e.target.getAttribute("c-option"));
 });
 ```
 

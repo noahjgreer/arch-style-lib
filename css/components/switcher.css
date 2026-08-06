@@ -4,12 +4,22 @@
  * Generalized from a fixed 5-tab mobile bar into an N-tab component driven
  * by --arch-switcher-count and --arch-switcher-index (see js/switcher.js).
  *
- * Markup:
+ * Button-driven markup (see js/switcher.js's initSwitcher):
  * <div class="arch-switcher arch-glass" data-arch-switcher style="--arch-switcher-count:3">
  *   <button class="arch-switcher__tab arch-switcher__tab--active" data-index="0">One</button>
  *   <button class="arch-switcher__tab" data-index="1">Two</button>
  *   <button class="arch-switcher__tab" data-index="2">Three</button>
  * </div>
+ *
+ * Radio-driven markup (native keyboard/screen-reader semantics — pair with
+ * js/switcher.js's initRadioSwitcher; active-tab styling below is handled
+ * by :has(), no JS class toggling needed):
+ * <fieldset class="arch-switcher arch-glass">
+ *   <label class="arch-switcher__tab">
+ *     <input type="radio" name="mode" c-option="one" checked />One</label>
+ *   <label class="arch-switcher__tab">
+ *     <input type="radio" name="mode" c-option="two" />Two</label>
+ * </fieldset>
  */
 
 .arch-switcher {
@@ -19,9 +29,11 @@
     display: flex;
     align-items: stretch;
     position: relative;
+    border: none;
     border-radius: var(--arch-radius-round);
     padding: 0.25rem;
     isolation: isolate;
+    min-width: 0;
 }
 
 .arch-switcher::after {
@@ -60,7 +72,21 @@
     }
 }
 
-.arch-switcher__tab--active {
+.arch-switcher__tab--active,
+.arch-switcher__tab:has(input:checked) {
     opacity: 1;
     cursor: default;
+}
+
+/* Visually hide a radio input inside a label-based tab, keeping it focusable */
+.arch-switcher__tab > input[type="radio"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }

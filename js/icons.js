@@ -1,7 +1,7 @@
 /**
  * arch-style-lib :: icons
  * Name -> glyph lookup for the ArchSymbols icon font (css/icons.css,
- * fonts/SF-AlfredoSymbols.ttf). Reference icons by name in markup:
+ * fonts/SF-Symbols.ttf). Reference icons by name in markup:
  *
  *   <span class="arch-icon" data-icon="square.and.arrow.down"></span>
  *
@@ -6566,6 +6566,14 @@ export const ICONS = {
     "zr.button.roundedtop.horizontal": "\u{100A1D}",
     "zr.button.roundedtop.horizontal.fill": "\u{100A1E}",
     "zr.button.roundedtop.horizontal.fillv": "\u{100A1E}",
+
+    // ── Two glyphs confirmed present in fonts/SF-Symbols.sfd (Encoding
+    // 1049621/1049622) but missing a catalog name — no Figma/PDF entry
+    // exists for them, so they're namespaced "alf." rather than given an
+    // unverified dotted SF Symbols-style name. Requested while migrating
+    // alfredo.client onto this library. ──
+    "alf.edit": "\u{100415}",
+    "alf.edit.active": "\u{100416}",
 };
 
 /** Glyph shown when a requested icon name isn't in the map. */

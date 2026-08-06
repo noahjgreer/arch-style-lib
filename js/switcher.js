@@ -37,27 +37,42 @@ export function initSwitcher(container, opts = {}) {
 }
 
 /**
- * Tracks the previously-checked value of a radio-group-based segmented
- * control, exposing it as a "c-previous" attribute on the container — handy
- * for animating from the old to the new selection. Each radio should carry
- * a "c-option" attribute with its identifying value.
+ * Wires a radio-group-based .arch-switcher: drives the same
+ * --arch-switcher-count/--arch-switcher-index custom properties as
+ * initSwitcher() (so the sliding pill works with native
+ * <input type="radio"> tabs, for keyboard/screen-reader semantics), and
+ * tracks the previously-checked value as a "c-previous" attribute on the
+ * container — handy for animating from the old to the new selection. Each
+ * radio should carry a "c-option" attribute with its identifying value.
+ * Pair with a ".arch-switcher__tab:has(input:checked)" CSS rule (already in
+ * css/components/switcher.css) for the active-tab opacity — no JS class
+ * toggling needed, unlike the button-based initSwitcher().
  * @param {HTMLElement} container
  */
 export function initRadioSwitcher(container) {
     const radios = Array.from(container.querySelectorAll('input[type="radio"]'));
     let previous = null;
 
+    container.style.setProperty("--arch-switcher-count", String(radios.length));
+
+    const syncIndex = () => {
+        const index = radios.findIndex((radio) => radio.checked);
+        if (index !== -1) container.style.setProperty("--arch-switcher-index", String(index));
+    };
+
     const initial = container.querySelector('input[type="radio"]:checked');
     if (initial) {
         previous = initial.getAttribute("c-option");
         container.setAttribute("c-previous", previous ?? "");
     }
+    syncIndex();
 
     radios.forEach((radio) => {
         radio.addEventListener("change", () => {
             if (!radio.checked) return;
             container.setAttribute("c-previous", previous ?? "");
             previous = radio.getAttribute("c-option");
+            syncIndex();
         });
     });
 }

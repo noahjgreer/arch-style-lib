@@ -86,6 +86,25 @@ Segmented control with an animated sliding pill. Pair with
 </div>
 ```
 
+For native keyboard/screen-reader semantics, build it from radio inputs
+instead and pair with [`initRadioSwitcher()`](./behaviors.md#switcher) —
+the active-tab highlight is handled by CSS `:has()`, no class toggling
+needed:
+
+```html
+<fieldset class="arch-switcher arch-glass" id="tabs">
+    <label class="arch-switcher__tab">
+        <input type="radio" name="range" c-option="day" checked />Day
+    </label>
+    <label class="arch-switcher__tab">
+        <input type="radio" name="range" c-option="week" />Week
+    </label>
+    <label class="arch-switcher__tab">
+        <input type="radio" name="range" c-option="month" />Month
+    </label>
+</fieldset>
+```
+
 ## Toggle — `.arch-toggle`
 
 An iOS-style switch. Built on a native `<input type="checkbox">` for

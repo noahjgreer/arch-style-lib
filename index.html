@@ -112,6 +112,18 @@
                 <button class="arch-switcher__tab" type="button">Week</button>
                 <button class="arch-switcher__tab" type="button">Month</button>
             </div>
+            <p>Radio-driven variant (native keyboard/screen-reader semantics):</p>
+            <fieldset class="arch-switcher arch-glass" id="demo-radio-switcher">
+                <label class="arch-switcher__tab">
+                    <input type="radio" name="demo-range" c-option="day" checked />Day
+                </label>
+                <label class="arch-switcher__tab">
+                    <input type="radio" name="demo-range" c-option="week" />Week
+                </label>
+                <label class="arch-switcher__tab">
+                    <input type="radio" name="demo-range" c-option="month" />Month
+                </label>
+            </fieldset>
         </div>
 
         <div class="arch-glass arch-glass-panel">
@@ -173,7 +185,7 @@
         import { initTheme, toggleTheme } from "/js/theme.js";
         import { setGlassBlur } from "/js/glass.js";
         import { openPopover, closePopover, bindDismiss } from "/js/popover.js";
-        import { initSwitcher } from "/js/switcher.js";
+        import { initSwitcher, initRadioSwitcher } from "/js/switcher.js";
         import { makeDragReorder } from "/js/drag-reorder.js";
         import { renderIcons } from "/js/icons.js";
 
@@ -186,6 +198,7 @@
         });
 
         initSwitcher(document.getElementById("demo-switcher"));
+        initRadioSwitcher(document.getElementById("demo-radio-switcher"));
 
         const popover = document.getElementById("demo-popover");
         const popoverBtn = document.getElementById("popover-btn");

@@ -75,8 +75,12 @@ export function makeDragReorder(container, opts = {}) {
         document.body.appendChild(ghost);
         draggedEl.style.opacity = "0";
 
+        // `--arch-ease` is a slight-overshoot spring (see tokens.css) — this is
+        // what gives the pickup its "pop" rather than a flat linear/ease-in-out
+        // scale-up, matching the feel this was originally generalized from
+        // (F:\Alfredo\alfredo.client, see this repo's CLAUDE.md).
         requestAnimationFrame(() => {
-            ghost.style.transition = `opacity ${PICKUP_MS}ms, transform ${PICKUP_MS}ms`;
+            ghost.style.transition = `opacity ${PICKUP_MS}ms var(--arch-ease), transform ${PICKUP_MS}ms var(--arch-ease)`;
             ghost.style.opacity = "1";
             ghost.style.transform = "scale(1.02)";
         });
@@ -109,7 +113,11 @@ export function makeDragReorder(container, opts = {}) {
                     shift = draggedRect.height;
                 }
                 el.style.transform = shift ? `translateY(${shift}px)` : "";
-                el.style.transition = `transform ${PUTDOWN_MS}ms`;
+                // Deliberately not `--arch-ease` here — a bounce reads fine on
+                // the single ghost the user is actively dragging, but on a
+                // whole column of reflowing siblings it looks jittery, so
+                // these settle with a calmer, non-overshooting ease-out.
+                el.style.transition = `transform var(--arch-duration-md) var(--arch-ease-out)`;
             });
         };
 
@@ -118,7 +126,7 @@ export function makeDragReorder(container, opts = {}) {
             document.removeEventListener("pointerup", onUp);
             document.removeEventListener("pointercancel", onUp);
 
-            ghost.style.transition = `opacity ${PUTDOWN_MS}ms, transform ${PUTDOWN_MS}ms`;
+            ghost.style.transition = `opacity ${PUTDOWN_MS}ms var(--arch-ease), transform ${PUTDOWN_MS}ms var(--arch-ease)`;
             ghost.style.opacity = "0";
             ghost.style.transform = "scale(0.96)";
             setTimeout(() => ghost.remove(), PUTDOWN_MS);

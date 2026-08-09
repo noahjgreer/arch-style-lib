@@ -1,0 +1,19 @@
+/*
+ * arch-style-lib :: drag-reorder (visuals)
+ * Pairs with js/drag-reorder.js's `.arch-drag-ghost` element — the ghost's
+ * position/transform/opacity are driven inline by that module (they change
+ * every frame), so only the static depth/interaction styling lives here.
+ */
+
+.arch-drag-ghost {
+    box-shadow: var(--arch-shadow-md), var(--arch-shadow-common);
+    cursor: grabbing;
+}
+
+/* The ghost is a live clone of the dragged row — its own transitions/animations
+   (e.g. a hover effect, an icon spin) would otherwise keep running on the
+   clone while it's being carried around. */
+.arch-drag-ghost * {
+    transition: none !important;
+    animation: none !important;
+}

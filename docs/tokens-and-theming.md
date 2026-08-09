@@ -32,7 +32,11 @@ percentage), `--arch-radius-sm/md/lg/round`.
 
 ## Shadow & motion
 
-`--arch-shadow-sm/md/common`, `--arch-ease`, `--arch-duration-fast/md/slow`.
+`--arch-shadow-sm/md/common`, `--arch-ease` (slight-overshoot spring, for
+things with personality — a picked-up drag ghost, a popover appearing),
+`--arch-ease-out` (calm, non-bouncy settle — for things reflowing around a
+user action rather than being the thing the user is directly manipulating,
+e.g. drag-reorder's sibling shift), `--arch-duration-fast/md/slow`.
 
 ## Glass tokens
 

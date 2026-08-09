@@ -22,8 +22,8 @@
     border: none;
     backdrop-filter: blur(var(--arch-glass-blur)) saturate(150%);
     -webkit-backdrop-filter: blur(var(--arch-glass-blur)) saturate(150%);
-/* 
-     box-shadow: 
+
+    box-shadow:
         inset 0 0 0 1px color-mix(in srgb, var(--arch-glass-light) calc(var(--arch-glass-reflex-light) * 10%), transparent),
         inset 1.8px 3px 0 -2px color-mix(in srgb, var(--arch-glass-light) calc(var(--arch-glass-reflex-light) * 90%), transparent),
         inset -2px -2px 0 -2px color-mix(in srgb, var(--arch-glass-light) calc(var(--arch-glass-reflex-light) * 80%), transparent),
@@ -33,7 +33,7 @@
         inset 0 3px 4px -2px color-mix(in srgb, var(--arch-glass-dark) calc(var(--arch-glass-reflex-dark) * 20%), transparent),
         inset 2px -6.5px 1px -4px color-mix(in srgb, var(--arch-glass-dark) calc(var(--arch-glass-reflex-dark) * 10%), transparent),
         0 1px 5px 0 color-mix(in srgb, var(--arch-glass-dark) calc(var(--arch-glass-reflex-dark) * 10%), transparent),
-        0 6px 16px 0 color-mix(in srgb, var(--arch-glass-dark) calc(var(--arch-glass-reflex-dark) * 8%), transparent);*/
+        0 6px 16px 0 color-mix(in srgb, var(--arch-glass-dark) calc(var(--arch-glass-reflex-dark) * 8%), transparent);
 }
 
 /* Convenience preset: a rounded glass card/panel with padding */

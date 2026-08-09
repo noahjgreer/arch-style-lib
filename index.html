@@ -58,6 +58,28 @@
         #popover-anchor-wrap {
             position: relative;
         }
+
+        .demo-panel-columns {
+            display: flex;
+            gap: var(--arch-space-md);
+            align-items: flex-start;
+        }
+
+        .demo-panel-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--arch-space-sm);
+            min-height: 4rem;
+        }
+
+        .demo-panel-columns .arch-panel {
+            display: flex;
+            align-items: center;
+            gap: var(--arch-space-sm);
+            padding: var(--arch-space-sm) var(--arch-space-md);
+            border-radius: var(--arch-radius-md);
+        }
     </style>
 </head>
 <body>
@@ -171,6 +193,29 @@
         </ul>
     </section>
 
+    <section class="arch-glass arch-glass-panel">
+        <h2>Panel swap</h2>
+        <p>Drag a panel by its handle onto another to swap them, or below the last panel in a column to relocate it there.</p>
+        <div id="panel-swap-demo" class="demo-panel-columns">
+            <div class="demo-panel-column">
+                <div class="arch-panel arch-glass">
+                    <span class="arch-panel-handle"><span class="arch-icon" data-icon="line.3.horizontal"></span></span>
+                    Panel A
+                </div>
+                <div class="arch-panel arch-glass">
+                    <span class="arch-panel-handle"><span class="arch-icon" data-icon="line.3.horizontal"></span></span>
+                    Panel B
+                </div>
+            </div>
+            <div class="demo-panel-column">
+                <div class="arch-panel arch-glass">
+                    <span class="arch-panel-handle"><span class="arch-icon" data-icon="line.3.horizontal"></span></span>
+                    Panel C
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section id="basics" class="arch-glass arch-glass-panel">
         <h2>Typography &amp; basics</h2>
         <blockquote class="align-left">
@@ -187,6 +232,7 @@
         import { openPopover, closePopover, bindDismiss } from "/js/popover.js";
         import { initSwitcher, initRadioSwitcher } from "/js/switcher.js";
         import { makeDragReorder } from "/js/drag-reorder.js";
+        import { makePanelSwap } from "/js/panel-swap.js";
         import { renderIcons } from "/js/icons.js";
 
         initTheme();
@@ -213,6 +259,11 @@
 
         makeDragReorder(document.getElementById("glass-list"), {
             onReorder: ({ fromIndex, toIndex }) => console.log(`Moved item ${fromIndex} -> ${toIndex}`),
+        });
+
+        makePanelSwap(document.getElementById("panel-swap-demo"), {
+            containerSelector: ".demo-panel-column",
+            onSettle: () => console.log("panel layout settled"),
         });
     </script>
 </body>

@@ -104,3 +104,35 @@ makeDragReorder(document.querySelector("#list"), {
     onReorder: ({ fromIndex, toIndex }) => saveOrder(fromIndex, toIndex),
 });
 ```
+
+## Panel swap
+
+`js/panel-swap.js`
+
+| Function | Description |
+|---|---|
+| `makePanelSwap(root, opts?)` | Enables pointer-based grid-swap dragging of `root`'s panels with a floating ghost clone: drag one onto another and they trade DOM positions (FLIP-animated); drag below the last panel in a container and it relocates there instead. Returns a cleanup function. |
+
+Options: `itemSelector` (default `.arch-panel`), `handleSelector` (limit
+drag start to a handle within each panel; default `.arch-panel-handle`,
+pass `null` to make the whole panel a handle), `containerSelector` (selector
+for drop containers — e.g. columns or slots — that panels can relocate
+into; omit to treat `root` itself as the only container), `canDrag(root)`
+(extra gate, e.g. an edit-mode check), `isDropTarget(item)` (exclude a
+panel from hit-testing, e.g. one you've collapsed, without removing it from
+the DOM), `onSwap({ a, b })` (fired every time two panels trade positions
+during a drag), `onSettle(root)` (fired once on pointerup — the place to
+persist panel order).
+
+Markup: give each panel `.arch-panel` (compose `.arch-glass` alongside it
+yourself — this module doesn't bake glass styling in) and a
+`.arch-panel-handle` child to grab. Optional drop containers just need to
+match `containerSelector`.
+
+```js
+import { makePanelSwap } from "/js/panel-swap.js";
+makePanelSwap(document.querySelector("#dashboard"), {
+    containerSelector: ".panel-column",
+    onSettle: (root) => saveLayout(root),
+});
+```

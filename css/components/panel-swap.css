@@ -1,0 +1,78 @@
+/*
+ * arch-style-lib :: panel-swap (visuals)
+ * Pairs with js/panel-swap.js's `makePanelSwap` — the ghost's position/size
+ * and the FLIP transform on the settling panel are driven inline by that
+ * module (they change every frame), so only static depth/interaction/
+ * silhouette styling lives here. Doesn't compose `.arch-glass` onto
+ * `.arch-panel` itself — add that in markup alongside it, same as
+ * `.arch-glass.island` was composed in the Alfredo dashboard this was
+ * generalized from (see this repo's CLAUDE.md).
+ */
+
+.arch-panel-handle {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    opacity: 0.3;
+    flex-shrink: 0;
+    cursor: grab;
+    touch-action: none;
+    transition: opacity var(--arch-duration-fast) var(--arch-ease);
+}
+
+.arch-panel-handle:hover {
+    opacity: 0.65;
+}
+
+.arch-panel-handle:active {
+    opacity: 1;
+    cursor: grabbing;
+}
+
+/* Floating clone that follows the pointer while a panel is being dragged. */
+.arch-panel-ghost {
+    box-shadow: var(--arch-shadow-md), var(--arch-shadow-common);
+    cursor: grabbing;
+    overflow: hidden;
+}
+
+.arch-panel-ghost * {
+    transition: none !important;
+    animation: none !important;
+    pointer-events: none !important;
+}
+
+/* The panel being dragged — left behind as a darkened silhouette of the
+   drop target position while its content rides along on the ghost. */
+.arch-panel-swap-source {
+    pointer-events: none !important;
+    background: rgba(0, 0, 0, 0.12) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+.arch-panel-swap-source > * {
+    visibility: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .arch-panel-swap-source {
+        background: rgba(255, 255, 255, 0.08) !important;
+    }
+}
+
+:root[data-theme="dark"] .arch-panel-swap-source {
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+:root[data-theme="light"] .arch-panel-swap-source {
+    background: rgba(0, 0, 0, 0.12) !important;
+}

@@ -142,3 +142,68 @@ makePanelSwap(document.querySelector("#dashboard"), {
     onSettle: (root) => saveLayout(root),
 });
 ```
+
+## Window manager
+
+`js/window-manager.js`
+
+Free-floating, overlappable windows inside a workspace container — the
+Windows-11-style alternative to panel-swap's fixed-slot grid-swap. Drag by a
+handle to move (with edge/corner snap previews), resize from any of 8
+handles auto-injected around each window, maximize/restore (button or
+double-click the handle), and click-anywhere-on-a-window to raise it to the
+front.
+
+| Function | Description |
+|---|---|
+| `makeWindowManager(workspace, opts?)` | Enables drag/resize/snap/maximize/focus for `workspace`'s windows. Returns a cleanup function. |
+| `getWindowRect(win)` | Reads a window's current `{ left, top, width, height }` in px — the shape to persist in `onChange`. |
+| `setWindowRect(win, workspace, rect, opts?)` | Applies a rect to `win`, clamped to `workspace`'s current bounds — use this to hydrate a persisted layout on load, so restored windows get the same clamping a live drag/resize would. `opts: { minWidth, minHeight }`. |
+
+Options: `itemSelector` (default `.arch-window`), `handleSelector` (default
+`.arch-window-handle`), `maximizeSelector` (default `.arch-window-maximize`
+— an optional button inside the window; double-clicking the handle toggles
+maximize regardless of whether this button exists), `minWidth`/`minHeight`
+(px, default 240/160), `snapDistance` (px from a workspace edge/corner that
+triggers a snap preview while dragging; default 32), `isDropTarget(win)`
+(exclude a window from drag/resize/focus, e.g. a closed one, without
+removing it from the DOM), `onChange(win)` (fired after a move, resize,
+snap, or maximize/restore settles — the place to persist layout),
+`onFocus(win)` (fired when a window is raised to the front — the place to
+persist z-order).
+
+Markup: `workspace` needs `position: relative` (or `absolute`) and an
+explicit size — windows are clamped against its `clientWidth`/
+`clientHeight`. Each window needs `.arch-window` (compose `.arch-glass`
+alongside it yourself, same as `.arch-panel`) with an explicit inline
+`left`/`top`/`width`/`height` (or restore one via `setWindowRect` before
+the user's first drag) and a `.arch-window-handle` child to grab — same
+handle look/glyph as `.arch-panel-handle` (`css/components/panel-swap.css`
+styles both). Resize handles are injected automatically, one set per
+window, on `makeWindowManager` init — no markup needed for those. A
+maximize button is optional; give it `.arch-window-maximize` and any icon
+you like, this module only wires the click.
+
+Windows-11-style edge/corner snapping: dragging a window's handle within
+`snapDistance` of the workspace's top edge previews a full-size snap;
+within the left/right edge previews a half-width snap; within a corner
+(near two edges at once) previews a quadrant. Releasing while a preview is
+showing snaps into that rect and remembers the window's prior floating
+rect; dragging the handle again restores that prior size before continuing
+the free drag, positioned under the pointer — matches how Windows 11
+"un-snaps" a tiled window when you start dragging it away.
+
+```js
+import { makeWindowManager, getWindowRect, setWindowRect } from "/js/window-manager.js";
+
+const workspace = document.querySelector("#workspace");
+for (const win of workspace.querySelectorAll(".arch-window")) {
+    const saved = loadRect(win.id);
+    if (saved) setWindowRect(win, workspace, saved);
+}
+
+makeWindowManager(workspace, {
+    onChange: (win) => saveRect(win.id, getWindowRect(win)),
+    onFocus: (win) => saveZ(win.id, win.style.zIndex),
+});
+```

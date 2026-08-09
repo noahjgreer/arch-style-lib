@@ -1,0 +1,140 @@
+/*
+ * arch-style-lib :: window-manager (visuals)
+ * Pairs with js/window-manager.js's `makeWindowManager`. Positioning itself
+ * (left/top/width/height) is driven inline by that module since it changes
+ * every frame during drag/resize — only static layout/interaction styling
+ * lives here. Doesn't compose `.arch-glass` or header/body chrome onto
+ * `.arch-window` itself; that's left to the consumer, same division as
+ * `.arch-panel` in panel-swap.css.
+ */
+
+.arch-window {
+    position: absolute;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+/* Resize hit areas — thin strips along each edge, larger squares at the
+   corners so they're easy to grab without overlapping the edge strips.
+   Zero-size/invisible; only the cursor communicates they're there, matching
+   how a real OS window's resize border has no visible chrome of its own.
+   Inset 0 (fully inside the window's own box) rather than straddling the
+   edge with a negative offset — a consumer's `.arch-window` is free to set
+   `overflow: hidden` (e.g. a canvas-filled window that needs cropped
+   corners) without clipping half of every handle. */
+.arch-window-resize {
+    position: absolute;
+    z-index: 1;
+    touch-action: none;
+}
+
+.arch-window-resize--n,
+.arch-window-resize--s {
+    left: 8px;
+    right: 8px;
+    height: 6px;
+    cursor: ns-resize;
+}
+
+.arch-window-resize--n {
+    top: 0;
+}
+
+.arch-window-resize--s {
+    bottom: 0;
+}
+
+.arch-window-resize--e,
+.arch-window-resize--w {
+    top: 8px;
+    bottom: 8px;
+    width: 6px;
+    cursor: ew-resize;
+}
+
+.arch-window-resize--w {
+    left: 0;
+}
+
+.arch-window-resize--e {
+    right: 0;
+}
+
+.arch-window-resize--nw,
+.arch-window-resize--se {
+    width: 12px;
+    height: 12px;
+    cursor: nwse-resize;
+}
+
+.arch-window-resize--ne,
+.arch-window-resize--sw {
+    width: 12px;
+    height: 12px;
+    cursor: nesw-resize;
+}
+
+.arch-window-resize--nw {
+    top: 0;
+    left: 0;
+}
+
+.arch-window-resize--ne {
+    top: 0;
+    right: 0;
+}
+
+.arch-window-resize--sw {
+    bottom: 0;
+    left: 0;
+}
+
+.arch-window-resize--se {
+    bottom: 0;
+    right: 0;
+}
+
+/* A maximized window's own resize handles are pointless (it already fills
+   the workspace) and would otherwise sit right at the workspace edge,
+   inviting an accidental resize-into-nothing. */
+.arch-window--maximized .arch-window-resize {
+    display: none;
+}
+
+.arch-window--maximized {
+    border-radius: 0 !important;
+}
+
+/* Translucent rect shown while dragging a window near a workspace edge/
+   corner, previewing the half/quadrant/full rect it'll snap into on
+   release. A single shared element per workspace (created by
+   `makeWindowManager`), repositioned rather than recreated per drag. */
+.arch-window-snap-preview {
+    position: absolute;
+    /* Always below every window (which start at z-index 1+, see
+       `makeWindowManager`) — including the one currently being dragged, so
+       the preview reads as a target zone the dragged window sits on top of,
+       not an overlay obscuring it. */
+    z-index: 0;
+    pointer-events: none;
+    border-radius: var(--arch-radius-lg);
+    background: color-mix(in srgb, var(--arch-accent) 22%, transparent);
+    border: 1px solid color-mix(in srgb, var(--arch-accent) 55%, transparent);
+    opacity: 0;
+    transform: scale(0.98);
+    transition:
+        opacity var(--arch-duration-fast) var(--arch-ease),
+        transform var(--arch-duration-fast) var(--arch-ease),
+        left var(--arch-duration-fast) var(--arch-ease),
+        top var(--arch-duration-fast) var(--arch-ease),
+        width var(--arch-duration-fast) var(--arch-ease),
+        height var(--arch-duration-fast) var(--arch-ease);
+}
+
+.arch-window-snap-preview--visible {
+    opacity: 1;
+    transform: scale(1);
+}

@@ -207,3 +207,62 @@ makeWindowManager(workspace, {
     onFocus: (win) => saveZ(win.id, win.style.zIndex),
 });
 ```
+
+## Area layout
+
+`js/area-layout.js`
+
+Blender-style tiling window layout — the alternative to both panel-swap and
+window-manager for apps that want areas to always fully cover the
+workspace, never overlapping, never leaving a gap. The workspace is a
+planar graph of shared verts and rectangular areas (modeled after Blender's
+own screen-area system, see the module's doc comment for exactly how and
+where it simplifies that model): drag a corner action-zone inward, staying
+inside the same area, to split it in two (mostly-horizontal drag → left/
+right split, mostly-vertical → top/bottom, both live-previewed); drag a
+corner zone across into a neighboring area to join the two back into one,
+removing whichever area you dragged into; drag any shared border to
+resize — every border collinear with (and touching) the one you grabbed
+moves together, so a 3-way junction resizes as one run rather than opening
+a gap.
+
+| Function | Description |
+|---|---|
+| `makeAreaLayout(workspace, opts)` | Builds and wires the whole tiling layout inside `workspace`. Returns `{ destroy(), getLayout() }`. |
+
+Options: `contentTypes` (`{ id, label }[]` — every content type an area can
+show; each is offered in that area's header `<select>`, minus whichever
+other area already has it, since a content type can only be assigned to one
+area at a time), `defaultContentId` (what the very first area shows when
+`initialLayout` isn't given), `initialLayout` (a previously-`getLayout()`'d
+layout to restore), `minWidth`/`minHeight` (px, default 200/120),
+`borderHitPx` (how close the pointer must be to a border to grab it for
+resizing; default 6), `onMount(contentId, body)`/`onUnmount(contentId,
+body)` (an area started/stopped showing `contentId` — move that content's
+DOM into/out of `body` yourself; this module only manages layout, not
+content), `onChange(layout)` (fired after any split/join/resize settles, or
+a content reassignment — the place to persist `getLayout()`'s return
+value).
+
+Markup: none needed beyond `workspace` itself having `position: relative`
+(or `absolute`) and an explicit size — every area, its header, body,
+corner zones, and the split/join preview overlays are all created by this
+module.
+
+```js
+import { makeAreaLayout } from "/js/area-layout.js";
+
+const pool = document.querySelector("#content-pool"); // holds unmounted content
+
+makeAreaLayout(document.querySelector("#workspace"), {
+    contentTypes: [
+        { id: "outliner", label: "Outliner" },
+        { id: "properties", label: "Properties" },
+    ],
+    defaultContentId: "outliner",
+    initialLayout: loadLayout(),
+    onMount: (id, body) => body.appendChild(document.querySelector(`[data-content="${id}"]`)),
+    onUnmount: (id) => pool.appendChild(document.querySelector(`[data-content="${id}"]`)),
+    onChange: (layout) => saveLayout(layout),
+});
+```

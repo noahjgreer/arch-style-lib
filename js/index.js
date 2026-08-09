@@ -13,3 +13,4 @@ export * from "./switcher.js";
 export * from "./drag-reorder.js";
 export * from "./panel-swap.js";
 export * from "./window-manager.js";
+export * from "./area-layout.js";

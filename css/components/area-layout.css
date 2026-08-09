@@ -1,0 +1,119 @@
+/*
+ * arch-style-lib :: area-layout (visuals)
+ * Pairs with js/area-layout.js's `makeAreaLayout`. Positioning itself
+ * (left/top/width/height) is driven inline by that module since it changes
+ * every frame during a split/resize — only static layout/interaction
+ * styling lives here. Doesn't compose `.arch-glass` header/body chrome
+ * choices beyond the minimum needed to read as one area among others; a
+ * consumer is free to add its own look on top of `.arch-area__body`'s
+ * content.
+ */
+
+.arch-area {
+    position: absolute;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.arch-area__header {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    padding: var(--arch-space-xs) var(--arch-space-sm);
+}
+
+.arch-area__type {
+    flex: 1;
+    min-width: 0;
+    font-size: var(--arch-font-size-sm);
+}
+
+/* Flex column so a single content child (the consumer's own markup, mounted
+   via `onMount`) can `flex: 1` to fill the body exactly — same convention
+   `.window-card`/`.arch-panel__body`-style content already follows. */
+.arch-area__body {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Corner action zones — drag one inward (staying inside the same area) to
+   split the area in two, or drag it across into a neighboring area to join
+   the two back together. Sized generously for an easy grab despite reading
+   as a small glyph, matching `.arch-panel-handle`'s opacity steps. */
+.arch-area__corner {
+    position: absolute;
+    z-index: 2;
+    width: 14px;
+    height: 14px;
+    cursor: crosshair;
+    touch-action: none;
+    opacity: 0.3;
+    transition: opacity var(--arch-duration-fast) var(--arch-ease);
+}
+
+.arch-area__corner::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border-radius: 2px;
+    background: var(--arch-fg);
+}
+
+.arch-area__corner:hover,
+.arch-area__corner:active {
+    opacity: 0.65;
+}
+
+.arch-area__corner--tl {
+    top: 2px;
+    left: 2px;
+}
+
+.arch-area__corner--tr {
+    top: 2px;
+    right: 2px;
+}
+
+.arch-area__corner--br {
+    bottom: 2px;
+    right: 2px;
+}
+
+.arch-area__corner--bl {
+    bottom: 2px;
+    left: 2px;
+}
+
+/* Live preview shown while dragging a corner zone — a thin dividing line
+   for a split in progress, or a translucent fill over the neighbor that
+   will be removed for a join in progress. Two shared elements per
+   workspace (created by `makeAreaLayout`), repositioned rather than
+   recreated per drag, same pattern as window-manager.js's snap preview. */
+.arch-area-preview {
+    position: absolute;
+    z-index: 9998;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.arch-area-preview--visible {
+    opacity: 1;
+}
+
+.arch-area-preview--split {
+    background: var(--arch-accent);
+    border-radius: 1px;
+}
+
+.arch-area-preview--join {
+    border-radius: var(--arch-radius-lg);
+    background: color-mix(in srgb, var(--arch-red) 25%, transparent);
+    border: 1px solid color-mix(in srgb, var(--arch-red) 60%, transparent);
+}

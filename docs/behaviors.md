@@ -237,7 +237,11 @@ area at a time), `defaultContentId` (what the very first area shows when
 `initialLayout` isn't given), `initialLayout` (a previously-`getLayout()`'d
 layout to restore), `minWidth`/`minHeight` (px, default 200/120),
 `borderHitPx` (how close the pointer must be to a border to grab it for
-resizing; default 6), `onMount(contentId, body)`/`onUnmount(contentId,
+resizing; default 6), `gap` (visual-only gutter in px rendered between
+areas, insetting each area's box by half this on every side — the
+underlying tiling stays edge-to-edge, so the gap becomes part of the
+grabbable border region rather than dead space; default 0),
+`onMount(contentId, body)`/`onUnmount(contentId,
 body)` (an area started/stopped showing `contentId` — move that content's
 DOM into/out of `body` yourself; this module only manages layout, not
 content), `onChange(layout)` (fired after any split/join/resize settles, or

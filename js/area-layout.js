@@ -2,8 +2,11 @@
  * arch-style-lib :: area-layout
  * Blender-style tiling window layout: the workspace is always fully covered
  * by non-overlapping, axis-aligned rectangular "areas" — no floating, no
- * gaps, no overlap. Drag a corner action-zone within an area to split it in
- * two (drag mostly horizontally for a left/right split, mostly vertically
+ * overlap, and no gap in the underlying tiling itself (areas are always
+ * edge-to-edge in the data model; `opts.gap` only ever affects the
+ * rendered box, see `positionAreaElement`). Drag a corner action-zone
+ * within an area to split it in two (drag mostly horizontally for a
+ * left/right split, mostly vertically
  * for a top/bottom split, live-previewed as you drag); drag a corner zone
  * across into a neighboring area to join the two back into one, removing
  * whichever area you dragged into. Drag any shared border to resize —
@@ -262,6 +265,12 @@ function deserialize(layout) {
  * @param {number} [opts.minHeight] minimum area height in px; default 120
  * @param {number} [opts.borderHitPx] how close (px) the pointer must be to
  *   a border to grab it for resizing; default 6
+ * @param {number} [opts.gap] visual-only gutter (px) rendered between
+ *   areas — purely cosmetic, insetting each area's rendered box by half
+ *   this on every side; the underlying tiling stays edge-to-edge (border
+ *   hit-testing/resize/split/join all still operate on the true, ungapped
+ *   coordinates, so the gap itself becomes part of the grabbable border
+ *   region rather than dead space). Default 0.
  * @param {(contentId: string, body: HTMLElement) => void} [opts.onMount]
  *   called when an area starts showing `contentId` — move that content's
  *   DOM into `body`
@@ -275,7 +284,7 @@ function deserialize(layout) {
  * @returns {{ destroy(): void, getLayout(): object }}
  */
 export function makeAreaLayout(workspace, opts) {
-    const { contentTypes, minWidth = 200, minHeight = 120, borderHitPx = 6, onMount = () => {}, onUnmount = () => {}, onChange = () => {} } = opts;
+    const { contentTypes, minWidth = 200, minHeight = 120, borderHitPx = 6, gap = 0, onMount = () => {}, onUnmount = () => {}, onChange = () => {} } = opts;
 
     let state = opts.initialLayout ? deserialize(opts.initialLayout) : defaultLayout(opts.defaultContentId);
 
@@ -354,11 +363,12 @@ export function makeAreaLayout(workspace, opts) {
     function positionAreaElement(record, area) {
         const r = areaRect(state, area);
         const b = bounds();
+        const half = gap / 2;
         Object.assign(record.root.style, {
-            left: `${r.left * b.width}px`,
-            top: `${r.top * b.height}px`,
-            width: `${(r.right - r.left) * b.width}px`,
-            height: `${(r.bottom - r.top) * b.height}px`,
+            left: `${r.left * b.width + half}px`,
+            top: `${r.top * b.height + half}px`,
+            width: `${Math.max(0, (r.right - r.left) * b.width - gap)}px`,
+            height: `${Math.max(0, (r.bottom - r.top) * b.height - gap)}px`,
         });
     }
 
@@ -452,11 +462,12 @@ export function makeAreaLayout(workspace, opts) {
                 joinTarget = canJoin(state, originArea, hit) ? hit : null;
                 if (joinTarget) {
                     const r = areaRect(state, joinTarget);
+                    const half = gap / 2;
                     Object.assign(joinPreview.style, {
-                        left: `${r.left * b.width}px`,
-                        top: `${r.top * b.height}px`,
-                        width: `${(r.right - r.left) * b.width}px`,
-                        height: `${(r.bottom - r.top) * b.height}px`,
+                        left: `${r.left * b.width + half}px`,
+                        top: `${r.top * b.height + half}px`,
+                        width: `${Math.max(0, (r.right - r.left) * b.width - gap)}px`,
+                        height: `${Math.max(0, (r.bottom - r.top) * b.height - gap)}px`,
                     });
                     joinPreview.classList.add("arch-area-preview--visible");
                 } else {
@@ -505,20 +516,21 @@ export function makeAreaLayout(workspace, opts) {
     }
 
     function showSplitPreview(rect, axis, fraction, b) {
+        const half = gap / 2;
         if (axis === "v") {
             const x = (rect.left + (rect.right - rect.left) * fraction) * b.width;
             Object.assign(splitPreview.style, {
                 left: `${x - 1}px`,
-                top: `${rect.top * b.height}px`,
+                top: `${rect.top * b.height + half}px`,
                 width: "2px",
-                height: `${(rect.bottom - rect.top) * b.height}px`,
+                height: `${Math.max(0, (rect.bottom - rect.top) * b.height - gap)}px`,
             });
         } else {
             const y = (rect.top + (rect.bottom - rect.top) * fraction) * b.height;
             Object.assign(splitPreview.style, {
-                left: `${rect.left * b.width}px`,
+                left: `${rect.left * b.width + half}px`,
                 top: `${y - 1}px`,
-                width: `${(rect.right - rect.left) * b.width}px`,
+                width: `${Math.max(0, (rect.right - rect.left) * b.width - gap)}px`,
                 height: "2px",
             });
         }

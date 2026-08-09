@@ -126,8 +126,14 @@ persist panel order).
 
 Markup: give each panel `.arch-panel` (compose `.arch-glass` alongside it
 yourself — this module doesn't bake glass styling in) and a
-`.arch-panel-handle` child to grab. Optional drop containers just need to
-match `containerSelector`.
+`.arch-panel-handle` child to grab — it needs no inner content, its `⠿`
+grip glyph renders via CSS. Optional drop containers just need to match
+`containerSelector`. To make a panel closable, wire your own close button
+to add `.arch-panel--hidden` (`display: none`) and pass
+`isDropTarget: (item) => !item.classList.contains("arch-panel--hidden")`
+so a hidden panel drops out of hit-testing too — persistence and a "reopen"
+affordance (e.g. a menu listing closed panels by name) are left to you,
+the same division of labor as `onSwap`/`onSettle`.
 
 ```js
 import { makePanelSwap } from "/js/panel-swap.js";

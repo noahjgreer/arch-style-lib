@@ -18,12 +18,26 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
     padding: 0;
+    font-size: 1rem;
+    line-height: 1;
     opacity: 0.3;
     flex-shrink: 0;
     cursor: grab;
     touch-action: none;
     transition: opacity var(--arch-duration-fast) var(--arch-ease);
+}
+
+/* The grip glyph is baked in rather than left to markup — matches the
+   Alfredo dashboard this was generalized from exactly (see this repo's
+   CLAUDE.md), and means a handle needs no inner markup at all: just
+   `<span class="arch-panel-handle"></span>`. Uses the page's own font
+   stack (not the ArchSymbols icon font) since Braille Pattern glyphs
+   aren't part of that icon subset. */
+.arch-panel-handle::before {
+    content: "⠿";
 }
 
 .arch-panel-handle:hover {
@@ -75,4 +89,13 @@
 
 :root[data-theme="light"] .arch-panel-swap-source {
     background: rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Generic hidden/closed state for a panel — pair with `isDropTarget` so a
+   hidden panel drops out of hit-testing too. Consumers wire their own
+   close button and reopen affordance (e.g. a "closed windows" menu); this
+   is just the shared visual, the same division of labor as `onSwap`/
+   `onSettle` leaving persistence to the caller. */
+.arch-panel--hidden {
+    display: none;
 }

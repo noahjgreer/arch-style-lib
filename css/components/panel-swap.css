@@ -95,7 +95,10 @@
    hidden panel drops out of hit-testing too. Consumers wire their own
    close button and reopen affordance (e.g. a "closed windows" menu); this
    is just the shared visual, the same division of labor as `onSwap`/
-   `onSettle` leaving persistence to the caller. */
+   `onSettle` leaving persistence to the caller. `!important` because this
+   has to win over whatever `display` a consumer's own panel styling sets
+   (e.g. a `display: flex` card layout) regardless of cascade order —
+   same reasoning as `.arch-panel-swap-source` above. */
 .arch-panel--hidden {
-    display: none;
+    display: none !important;
 }

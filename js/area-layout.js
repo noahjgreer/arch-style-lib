@@ -281,10 +281,31 @@ function deserialize(layout) {
  * @param {(layout: object) => void} [opts.onChange] called after any
  *   split/join/resize settles, and after a content reassignment — the
  *   place to persist `getLayout()`'s return value
+ * @param {() => void} [opts.onInteractionStart] called the moment any
+ *   corner-gesture (split/join) or border-resize drag begins — before the
+ *   first `positionAreaElement` of that drag fires. A consumer whose area
+ *   content is expensive to resize (a WebGPU/WebGL canvas reconfiguring its
+ *   render targets on every intermediate size, for instance) can use this
+ *   to pause that work for the duration of the drag rather than fighting to
+ *   keep up with every pointermove.
+ * @param {() => void} [opts.onInteractionEnd] called once a drag started by
+ *   `onInteractionStart` ends (release or cancel) — the layout has already
+ *   settled into its final rects by the time this fires.
  * @returns {{ destroy(): void, getLayout(): object }}
  */
 export function makeAreaLayout(workspace, opts) {
-    const { contentTypes, minWidth = 200, minHeight = 120, borderHitPx = 6, gap = 0, onMount = () => {}, onUnmount = () => {}, onChange = () => {} } = opts;
+    const {
+        contentTypes,
+        minWidth = 200,
+        minHeight = 120,
+        borderHitPx = 6,
+        gap = 0,
+        onMount = () => {},
+        onUnmount = () => {},
+        onChange = () => {},
+        onInteractionStart = () => {},
+        onInteractionEnd = () => {},
+    } = opts;
 
     let state = opts.initialLayout ? deserialize(opts.initialLayout) : defaultLayout(opts.defaultContentId);
 
@@ -484,7 +505,10 @@ export function makeAreaLayout(workspace, opts) {
             joinPreview.classList.remove("arch-area-preview--visible");
 
             const originArea = state.areas.get(originAreaId);
-            if (!originArea) return;
+            if (!originArea) {
+                onInteractionEnd();
+                return;
+            }
             if (mode === "split" && splitAxis != null) {
                 const newArea = splitArea(state, originArea, splitAxis, splitFraction);
                 newArea.contentId = pickUnusedContentType();
@@ -499,6 +523,7 @@ export function makeAreaLayout(workspace, opts) {
                 render();
                 onChange(serialize(state));
             }
+            onInteractionEnd();
         };
 
         const onCancel = () => {
@@ -507,8 +532,10 @@ export function makeAreaLayout(workspace, opts) {
             window.removeEventListener("pointercancel", onCancel);
             splitPreview.classList.remove("arch-area-preview--visible");
             joinPreview.classList.remove("arch-area-preview--visible");
+            onInteractionEnd();
         };
 
+        onInteractionStart();
         window.addEventListener("pointermove", onMove);
         window.addEventListener("pointerup", onUp);
         window.addEventListener("pointercancel", onCancel);
@@ -586,7 +613,9 @@ export function makeAreaLayout(workspace, opts) {
             window.removeEventListener("pointerup", onUp);
             window.removeEventListener("pointercancel", onUp);
             onChange(serialize(state));
+            onInteractionEnd();
         };
+        onInteractionStart();
         window.addEventListener("pointermove", onMove);
         window.addEventListener("pointerup", onUp);
         window.addEventListener("pointercancel", onUp);

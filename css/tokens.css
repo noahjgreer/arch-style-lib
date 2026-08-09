@@ -67,10 +67,10 @@
     --arch-gutter: 7.5%;
 
     /* ── Radius ── */
-    --arch-radius-sm: 0.125rem;
+    --arch-radius-sm: 0.25rem;
     --arch-radius-md: 0.25rem;
-    --arch-radius-lg: 0.375rem;
-    --arch-radius-round: 100rem;
+    --arch-radius-lg: 0.25rem;
+    --arch-radius-round: 0.25rem;
 
     /* ── Shadow ── */
     --arch-shadow-sm: 0 1px 5px 0 rgb(0 0 0 / 10%);

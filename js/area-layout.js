@@ -359,6 +359,7 @@ export function makeAreaLayout(workspace, opts) {
             const zone = document.createElement("div");
             zone.className = `arch-area__corner arch-area__corner--${corner}`;
             zone.dataset.corner = corner;
+            zone.title = "Drag to split — drag into a neighboring area to join";
             zone.addEventListener("pointerdown", (event) => {
                 event.preventDefault();
                 event.stopPropagation();

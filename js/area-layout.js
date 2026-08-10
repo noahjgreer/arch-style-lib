@@ -33,9 +33,25 @@
  * (offered in every *other* area's dropdown only once no area currently
  * holds it) — for content that's inherently one global instance rather
  * than a "view" onto shared data.
+ *
+ * Each area's header is a single icon button (showing its current content
+ * type's `icon`, see `opts.contentTypes`) rather than a wide `<select>` —
+ * clicking it opens a small popover (built on this same library's own
+ * `popover.js`/`popover.css`, matching the app header's own popovers) to
+ * pick a different type. One popover is shared and repositioned per
+ * workspace rather than one per area, and lives as a sibling of `<body>`
+ * (not a descendant of any `.arch-area`) for the same reason the header's
+ * own popovers do: `.arch-glass`'s `backdrop-filter` creates a containing
+ * block that would otherwise clip a `position: fixed` popover to the
+ * area's own bounds.
  */
 
+import { iconChar } from "./icons.js";
+import { openPopover, closePopover, bindDismiss } from "./popover.js";
+
 const EPS = 0.0005;
+/** Shown for a content type with no `icon` given, or an empty ("—") area. */
+const DEFAULT_ICON = "square.grid.3x3.square";
 
 function approxEq(a, b) {
     return Math.abs(a - b) < EPS;
@@ -263,12 +279,15 @@ function deserialize(layout) {
  * @param {HTMLElement} workspace a `position: relative` container with an
  *   explicit size
  * @param {object} opts
- * @param {{ id: string, label: string, singleton?: boolean }[]} opts.contentTypes
- *   every content type an area can be assigned to show (offered in a
- *   `<select>` in each area's header). Duplicable across any number of
- *   areas at once by default; pass `singleton: true` on an entry to
- *   restrict it to at most one area at a time instead (see the module doc
- *   comment).
+ * @param {{ id: string, label: string, icon?: string, singleton?: boolean }[]} opts.contentTypes
+ *   every content type an area can be assigned to show, offered in the
+ *   popover each area's header icon button opens. `icon` is an
+ *   arch-style-lib icon name (see `js/icons.js`'s `ICONS` map) shown both
+ *   on that button when the type is active and next to its entry in the
+ *   popover; types without one fall back to a generic icon. Duplicable
+ *   across any number of areas at once by default; pass `singleton: true`
+ *   on an entry to restrict it to at most one area at a time instead (see
+ *   the module doc comment).
  * @param {string} [opts.defaultContentId] content id the very first area
  *   shows when `initialLayout` isn't given
  * @param {object} [opts.initialLayout] a previously-`getLayout()`'d layout
@@ -336,6 +355,67 @@ export function makeAreaLayout(workspace, opts) {
     workspace.appendChild(splitPreview);
     workspace.appendChild(joinPreview);
 
+    // Shared content-type picker popover — one instance for the whole
+    // workspace, repositioned/repopulated per area rather than one per area
+    // (same pattern as the split/join previews above). Lives outside
+    // `workspace` entirely (see the module doc comment for why).
+    const typePopover = document.createElement("div");
+    typePopover.className = "arch-popover arch-glass arch-area-type-popover";
+    typePopover.setAttribute("data-arch-popover", "");
+    typePopover.innerHTML = '<div class="arch-popover__notch"></div><ul class="arch-area-type-popover__list"></ul>';
+    document.body.appendChild(typePopover);
+    const typePopoverList = typePopover.querySelector(".arch-area-type-popover__list");
+    let typePopoverAreaId = null;
+    let typePopoverDismiss = null;
+
+    function closeTypePopover() {
+        closePopover(typePopover);
+        typePopoverDismiss?.();
+        typePopoverDismiss = null;
+        typePopoverAreaId = null;
+    }
+
+    function typeOptionButton(icon, label, active, onSelect) {
+        const item = document.createElement("li");
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "arch-area-type-popover__item" + (active ? " is-active" : "");
+        const iconEl = document.createElement("span");
+        iconEl.className = "arch-icon";
+        iconEl.setAttribute("aria-hidden", "true");
+        iconEl.textContent = iconChar(icon ?? DEFAULT_ICON);
+        button.append(iconEl, document.createTextNode(label));
+        button.addEventListener("click", onSelect);
+        item.appendChild(button);
+        return item;
+    }
+
+    function openTypePopoverFor(areaId, anchor) {
+        const area = state.areas.get(areaId);
+        if (!area) return;
+        const available = availableContentTypes(areaId, area.contentId);
+        typePopoverList.replaceChildren(
+            typeOptionButton(null, "—", area.contentId == null, () => selectContentType(areaId, null)),
+            ...available.map((t) => typeOptionButton(t.icon, t.label, t.id === area.contentId, () => selectContentType(areaId, t.id))),
+        );
+        openPopover(typePopover, anchor);
+        typePopoverDismiss?.();
+        typePopoverDismiss = bindDismiss(typePopover, anchor, closeTypePopover);
+        typePopoverAreaId = areaId;
+    }
+
+    function selectContentType(areaId, contentId) {
+        const area = state.areas.get(areaId);
+        closeTypePopover();
+        if (!area) return;
+        // Same mutate-in-place path a split/join settling takes — `render()`
+        // diffs `record.contentId` against this and handles the mount/
+        // unmount itself.
+        area.contentId = contentId;
+        render();
+        onChange(serialize(state));
+    }
+
     function bounds() {
         return workspace.getBoundingClientRect();
     }
@@ -384,9 +464,15 @@ export function makeAreaLayout(workspace, opts) {
 
         const header = document.createElement("div");
         header.className = "arch-area__header";
-        const select = document.createElement("select");
-        select.className = "arch-area__type arch-glass";
-        header.appendChild(select);
+        const typeButton = document.createElement("button");
+        typeButton.type = "button";
+        typeButton.className = "arch-area__type";
+        typeButton.setAttribute("aria-haspopup", "true");
+        const typeIcon = document.createElement("span");
+        typeIcon.className = "arch-icon";
+        typeIcon.setAttribute("aria-hidden", "true");
+        typeButton.appendChild(typeIcon);
+        header.appendChild(typeButton);
         root.appendChild(header);
 
         const body = document.createElement("div");
@@ -406,18 +492,14 @@ export function makeAreaLayout(workspace, opts) {
             root.appendChild(zone);
         }
 
-        select.addEventListener("change", () => {
-            // Mutate the shared `area` object directly (this closure's copy
-            // is the same object `state.areas` holds) — `render()` diffs
-            // `record.contentId` against it and handles the mount/unmount
-            // itself, the same path a split/join settling takes.
-            area.contentId = select.value || null;
-            render();
-            onChange(serialize(state));
+        typeButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+            if (typePopoverAreaId === area.id) closeTypePopover();
+            else openTypePopoverFor(area.id, typeButton);
         });
 
         workspace.appendChild(root);
-        return { root, select, body, contentId: undefined, instance: undefined };
+        return { root, typeButton, typeIcon, body, contentId: undefined, instance: undefined };
     }
 
     function positionAreaElement(record, area) {
@@ -436,12 +518,15 @@ export function makeAreaLayout(workspace, opts) {
         for (const [id, record] of elements) {
             const area = state.areas.get(id);
             if (!area) continue;
-            const available = availableContentTypes(area.id, area.contentId);
-            record.select.replaceChildren(
-                new Option("—", ""),
-                ...available.map((t) => new Option(t.label, t.id)),
-            );
-            record.select.value = area.contentId ?? "";
+            const type = contentTypes.find((t) => t.id === area.contentId);
+            record.typeIcon.textContent = iconChar(type?.icon ?? DEFAULT_ICON);
+            record.typeButton.title = type?.label ?? "Empty area — choose content";
+            // The popover this button opens lists options computed fresh at
+            // open time (`openTypePopoverFor`), so a change elsewhere that
+            // affects *this* area's available list (another area claiming
+            // the last instance of a singleton type, say) is only ever
+            // stale while the popover isn't open — reopening always
+            // reflects current state.
         }
     }
 
@@ -672,6 +757,8 @@ export function makeAreaLayout(workspace, opts) {
             window.removeEventListener("resize", render);
             splitPreview.remove();
             joinPreview.remove();
+            typePopoverDismiss?.();
+            typePopover.remove();
         },
         getLayout() {
             return serialize(state);

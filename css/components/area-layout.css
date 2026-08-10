@@ -9,6 +9,12 @@
  * content.
  */
 
+/* `.arch-glass` itself deliberately keeps whatever border-radius the
+   element already has (see glass.css's own doc comment) rather than
+   setting one — this is the radius that gives areas back the same
+   "beveled" glass-panel look every other `.arch-glass` surface in the app
+   has (rounded corners for the inset highlight/shadow layers to read
+   against), lost if a consumer only ever composes bare `.arch-glass`. */
 .arch-area {
     position: absolute;
     box-sizing: border-box;
@@ -17,19 +23,38 @@
     min-width: 0;
     min-height: 0;
     overflow: hidden;
+    border-radius: var(--arch-radius-lg);
 }
 
 .arch-area__header {
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    padding: var(--arch-space-xs) var(--arch-space-sm);
+    padding: var(--arch-space-xs);
 }
 
+/* Icon-only button showing the area's current content type — click opens
+   `.arch-area-type-popover` to change it. Chrome-reset the same way this
+   library's other icon buttons are (see panel-swap.css's
+   `.arch-panel-handle`): no visible button box at rest, just the glyph. */
 .arch-area__type {
-    flex: 1;
-    min-width: 0;
-    font-size: var(--arch-font-size-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    background: none;
+    border: none;
+    box-shadow: none;
+    opacity: 0.55;
+    cursor: pointer;
+    transition: opacity var(--arch-duration-fast) var(--arch-ease);
+}
+
+.arch-area__type:hover,
+.arch-area__type:active {
+    opacity: 1;
 }
 
 /* Flex column so a single content child (the consumer's own markup, mounted
@@ -124,4 +149,48 @@
     border-radius: var(--arch-radius-lg);
     background: color-mix(in srgb, var(--arch-red) 25%, transparent);
     border: 1px solid color-mix(in srgb, var(--arch-red) 60%, transparent);
+}
+
+/* Content-type picker popover — one shared instance per workspace, opened
+   by whichever area's `.arch-area__type` button was clicked (see
+   js/area-layout.js's `openTypePopoverFor`). `.arch-popover`/
+   `.arch-popover__notch` (popover.css) already provide the floating glass
+   panel chrome and open/closed transition; only the list/item styling
+   below is specific to this picker. */
+.arch-area-type-popover__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--arch-space-xs);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.arch-area-type-popover__item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--arch-space-sm);
+    padding: var(--arch-space-xs) var(--arch-space-sm);
+    border-radius: var(--arch-radius-sm);
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.arch-area-type-popover__item:hover {
+    background: var(--arch-fill-4);
+}
+
+.arch-area-type-popover__item.is-active {
+    background: color-mix(in srgb, var(--arch-accent) 14%, transparent);
+    color: var(--arch-accent);
+}
+
+.arch-area-type-popover__item .arch-icon {
+    --arch-icon-size: 1rem;
+    flex-shrink: 0;
 }

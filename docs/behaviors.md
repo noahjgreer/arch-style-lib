@@ -228,17 +228,22 @@ a gap. Content types are duplicable by default (the same type can be
 assigned to any number of areas at once, each getting its own independent
 instance — matching Blender's own multi-viewport-style editors); flag one
 `{ singleton: true }` to restrict it to at most one area at a time instead.
+Each area's header is a single icon button (not a wide `<select>`) showing
+its current type's icon — click it to open a small popover (this library's
+own `popover.js`/`popover.css`) listing the available types to switch to.
 
 | Function | Description |
 |---|---|
 | `makeAreaLayout(workspace, opts)` | Builds and wires the whole tiling layout inside `workspace`. Returns `{ destroy(), getLayout() }`. |
 
-Options: `contentTypes` (`{ id, label, singleton? }[]` — every content type
-an area can show, offered in that area's header `<select>`; duplicable
-across areas unless `singleton: true`, in which case it's offered in every
-*other* area's dropdown only once no area currently holds it),
-`defaultContentId` (what the very first area shows when `initialLayout`
-isn't given), `initialLayout` (a previously-`getLayout()`'d layout to
+Options: `contentTypes` (`{ id, label, icon?, singleton? }[]` — every
+content type an area can show, offered in the popover its header button
+opens; `icon` is an icon name from `js/icons.js`'s `ICONS` map, shown on
+the button and next to the entry in the popover, falling back to a generic
+icon if omitted; duplicable across areas unless `singleton: true`, in which
+case it's offered in every *other* area's popover only once no area
+currently holds it), `defaultContentId` (what the very first area shows
+when `initialLayout` isn't given), `initialLayout` (a previously-`getLayout()`'d layout to
 restore), `minWidth`/`minHeight` (px, default 200/120), `borderHitPx` (how
 close the pointer must be to a border to grab it for resizing; default 6),
 `gap` (visual-only gutter in px rendered between areas, insetting each

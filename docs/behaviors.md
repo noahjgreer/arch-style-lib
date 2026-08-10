@@ -224,29 +224,40 @@ corner zone across into a neighboring area to join the two back into one,
 removing whichever area you dragged into; drag any shared border to
 resize — every border collinear with (and touching) the one you grabbed
 moves together, so a 3-way junction resizes as one run rather than opening
-a gap.
+a gap. Content types are duplicable by default (the same type can be
+assigned to any number of areas at once, each getting its own independent
+instance — matching Blender's own multi-viewport-style editors); flag one
+`{ singleton: true }` to restrict it to at most one area at a time instead.
 
 | Function | Description |
 |---|---|
 | `makeAreaLayout(workspace, opts)` | Builds and wires the whole tiling layout inside `workspace`. Returns `{ destroy(), getLayout() }`. |
 
-Options: `contentTypes` (`{ id, label }[]` — every content type an area can
-show; each is offered in that area's header `<select>`, minus whichever
-other area already has it, since a content type can only be assigned to one
-area at a time), `defaultContentId` (what the very first area shows when
-`initialLayout` isn't given), `initialLayout` (a previously-`getLayout()`'d
-layout to restore), `minWidth`/`minHeight` (px, default 200/120),
-`borderHitPx` (how close the pointer must be to a border to grab it for
-resizing; default 6), `gap` (visual-only gutter in px rendered between
-areas, insetting each area's box by half this on every side — the
-underlying tiling stays edge-to-edge, so the gap becomes part of the
-grabbable border region rather than dead space; default 0),
-`onMount(contentId, body)`/`onUnmount(contentId,
-body)` (an area started/stopped showing `contentId` — move that content's
-DOM into/out of `body` yourself; this module only manages layout, not
-content), `onChange(layout)` (fired after any split/join/resize settles, or
-a content reassignment — the place to persist `getLayout()`'s return
-value).
+Options: `contentTypes` (`{ id, label, singleton? }[]` — every content type
+an area can show, offered in that area's header `<select>`; duplicable
+across areas unless `singleton: true`, in which case it's offered in every
+*other* area's dropdown only once no area currently holds it),
+`defaultContentId` (what the very first area shows when `initialLayout`
+isn't given), `initialLayout` (a previously-`getLayout()`'d layout to
+restore), `minWidth`/`minHeight` (px, default 200/120), `borderHitPx` (how
+close the pointer must be to a border to grab it for resizing; default 6),
+`gap` (visual-only gutter in px rendered between areas, insetting each
+area's box by half this on every side — the underlying tiling stays
+edge-to-edge, so the gap becomes part of the grabbable border region
+rather than dead space; default 0), `onMount(contentId, body)` (an area
+started showing `contentId` — build or otherwise obtain that specific
+area's own instance and append it into `body`; whatever this returns is
+handed back to the matching `onUnmount` call for that same area, a
+convenient place to stash a cleanup handle), `onUnmount(contentId, body,
+instance)` (an area stopped showing `contentId` — reassigned, or the area
+itself was joined away; `instance` is whatever `onMount` returned, tear it
+down here), `onChange(layout)` (fired after any split/join/resize settles,
+or a content reassignment — the place to persist `getLayout()`'s return
+value), `onInteractionStart()`/`onInteractionEnd()` (fired around every
+split/join/border-resize drag — for a consumer whose content is expensive
+to resize continuously, e.g. a GPU canvas reconfiguring its render targets
+on every intermediate size, the place to pause that work for the drag's
+duration).
 
 Markup: none needed beyond `workspace` itself having `position: relative`
 (or `absolute`) and an explicit size — every area, its header, body,
@@ -256,17 +267,20 @@ module.
 ```js
 import { makeAreaLayout } from "/js/area-layout.js";
 
-const pool = document.querySelector("#content-pool"); // holds unmounted content
-
 makeAreaLayout(document.querySelector("#workspace"), {
     contentTypes: [
-        { id: "outliner", label: "Outliner" },
+        { id: "outliner", label: "Outliner" }, // duplicable — two Outliners is fine
         { id: "properties", label: "Properties" },
+        { id: "timeline", label: "Timeline", singleton: true }, // at most one at a time
     ],
     defaultContentId: "outliner",
     initialLayout: loadLayout(),
-    onMount: (id, body) => body.appendChild(document.querySelector(`[data-content="${id}"]`)),
-    onUnmount: (id) => pool.appendChild(document.querySelector(`[data-content="${id}"]`)),
+    onMount: (id, body) => {
+        const el = createPanel(id); // a fresh instance for this specific area
+        body.appendChild(el);
+        return el;
+    },
+    onUnmount: (id, body, el) => el.remove(),
     onChange: (layout) => saveLayout(layout),
 });
 ```

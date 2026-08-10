@@ -24,6 +24,15 @@
  * need any post-op graph repair, at the cost of only handling the simple
  * "shares one full border exactly" case for joins (see `canJoin`) rather
  * than Blender's fuzzy tolerance-based join/straighten.
+ *
+ * Content types are duplicable by default — the same type can be assigned
+ * to any number of areas at once, each getting its own independently
+ * created instance via `opts.onMount` (matching Blender's own multi-
+ * viewport-style editors). Flag a type `{ singleton: true }` in
+ * `opts.contentTypes` to restrict it to at most one area at a time instead
+ * (offered in every *other* area's dropdown only once no area currently
+ * holds it) — for content that's inherently one global instance rather
+ * than a "view" onto shared data.
  */
 
 const EPS = 0.0005;
@@ -254,9 +263,12 @@ function deserialize(layout) {
  * @param {HTMLElement} workspace a `position: relative` container with an
  *   explicit size
  * @param {object} opts
- * @param {{ id: string, label: string }[]} opts.contentTypes every content
- *   type an area can be assigned to show; each can be assigned to at most
- *   one area at a time (offered in a `<select>` in each area's header)
+ * @param {{ id: string, label: string, singleton?: boolean }[]} opts.contentTypes
+ *   every content type an area can be assigned to show (offered in a
+ *   `<select>` in each area's header). Duplicable across any number of
+ *   areas at once by default; pass `singleton: true` on an entry to
+ *   restrict it to at most one area at a time instead (see the module doc
+ *   comment).
  * @param {string} [opts.defaultContentId] content id the very first area
  *   shows when `initialLayout` isn't given
  * @param {object} [opts.initialLayout] a previously-`getLayout()`'d layout
@@ -271,13 +283,19 @@ function deserialize(layout) {
  *   hit-testing/resize/split/join all still operate on the true, ungapped
  *   coordinates, so the gap itself becomes part of the grabbable border
  *   region rather than dead space). Default 0.
- * @param {(contentId: string, body: HTMLElement) => void} [opts.onMount]
- *   called when an area starts showing `contentId` — move that content's
- *   DOM into `body`
- * @param {(contentId: string, body: HTMLElement) => void} [opts.onUnmount]
+ * @param {(contentId: string, body: HTMLElement) => *} [opts.onMount]
+ *   called every time an area starts showing `contentId` — for a
+ *   duplicable type this fires once per area showing it, independently;
+ *   build (or otherwise obtain) that area's own instance and append it
+ *   into `body`. Whatever this returns is handed back verbatim to the
+ *   matching `onUnmount` call for that same area, so it's a convenient
+ *   place to return a handle (the built element, a dispose function, ...)
+ *   for later cleanup rather than needing to re-derive one from `body`.
+ * @param {(contentId: string, body: HTMLElement, instance: *) => void} [opts.onUnmount]
  *   called just before an area stops showing `contentId` (reassigned, or
- *   the area itself was joined away) — move the content's DOM back out of
- *   `body` so it isn't destroyed
+ *   the area itself was joined away) — `instance` is whatever the matching
+ *   `onMount` call returned; tear it down (unsubscribe listeners, remove
+ *   its DOM, etc.) here.
  * @param {(layout: object) => void} [opts.onChange] called after any
  *   split/join/resize settles, and after a content reassignment — the
  *   place to persist `getLayout()`'s return value
@@ -327,17 +345,37 @@ export function makeAreaLayout(workspace, opts) {
         return { x: (clientX - b.left) / b.width, y: (clientY - b.top) / b.height };
     }
 
-    function usedContentIds(excludingAreaId) {
+    function isSingleton(contentId) {
+        return contentTypes.find((t) => t.id === contentId)?.singleton === true;
+    }
+
+    // Only `singleton`-flagged content types need "who else has this"
+    // tracking at all — everything else can be assigned to any number of
+    // areas at once (see the module doc comment on duplicates).
+    function usedSingletonIds(excludingAreaId) {
         const used = new Set();
         for (const area of state.areas.values()) {
-            if (area.id !== excludingAreaId && area.contentId) used.add(area.contentId);
+            if (area.id !== excludingAreaId && area.contentId && isSingleton(area.contentId)) used.add(area.contentId);
         }
         return used;
     }
 
-    function pickUnusedContentType() {
-        const used = usedContentIds(null);
-        return contentTypes.find((t) => !used.has(t.id))?.id ?? null;
+    /** Content types selectable in `areaId`'s own dropdown right now (its current selection, plus anything not a singleton already claimed elsewhere). */
+    function availableContentTypes(areaId, currentContentId) {
+        const used = usedSingletonIds(areaId);
+        return contentTypes.filter((t) => !t.singleton || !used.has(t.id) || t.id === currentContentId);
+    }
+
+    /**
+     * What a newly-split area should default to. Matches Blender's own
+     * default (the new area starts as a copy of the one being split) for
+     * any duplicable type; a `singleton` type can't be copied like that, so
+     * this falls back to the first type not currently claimed elsewhere.
+     */
+    function pickSplitDefault(originContentId) {
+        if (originContentId && !isSingleton(originContentId)) return originContentId;
+        const used = usedSingletonIds(null);
+        return contentTypes.find((t) => !t.singleton || !used.has(t.id))?.id ?? null;
     }
 
     function createAreaElement(area) {
@@ -379,7 +417,7 @@ export function makeAreaLayout(workspace, opts) {
         });
 
         workspace.appendChild(root);
-        return { root, select, body, contentId: undefined };
+        return { root, select, body, contentId: undefined, instance: undefined };
     }
 
     function positionAreaElement(record, area) {
@@ -398,8 +436,7 @@ export function makeAreaLayout(workspace, opts) {
         for (const [id, record] of elements) {
             const area = state.areas.get(id);
             if (!area) continue;
-            const used = usedContentIds(area.id);
-            const available = contentTypes.filter((t) => !used.has(t.id) || t.id === area.contentId);
+            const available = availableContentTypes(area.id, area.contentId);
             record.select.replaceChildren(
                 new Option("—", ""),
                 ...available.map((t) => new Option(t.label, t.id)),
@@ -419,14 +456,14 @@ export function makeAreaLayout(workspace, opts) {
             }
             positionAreaElement(record, area);
             if (record.contentId !== area.contentId) {
-                if (record.contentId) onUnmount(record.contentId, record.body);
-                if (area.contentId) onMount(area.contentId, record.body);
+                if (record.contentId) onUnmount(record.contentId, record.body, record.instance);
+                record.instance = area.contentId ? onMount(area.contentId, record.body) : undefined;
                 record.contentId = area.contentId;
             }
         }
         for (const [id, record] of Array.from(elements)) {
             if (!seen.has(id)) {
-                if (record.contentId) onUnmount(record.contentId, record.body);
+                if (record.contentId) onUnmount(record.contentId, record.body, record.instance);
                 record.root.remove();
                 elements.delete(id);
             }
@@ -512,7 +549,7 @@ export function makeAreaLayout(workspace, opts) {
             }
             if (mode === "split" && splitAxis != null) {
                 const newArea = splitArea(state, originArea, splitAxis, splitFraction);
-                newArea.contentId = pickUnusedContentType();
+                newArea.contentId = pickSplitDefault(originArea.contentId);
                 render();
                 onChange(serialize(state));
             } else if (mode === "join" && joinTarget) {

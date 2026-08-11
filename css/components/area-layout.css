@@ -43,11 +43,16 @@
 /* Icon-only button showing the area's current content type — click opens
    `.arch-area-type-popover` to change it. A small floating chip
    (deliberately *not* a full-width header bar eating into the content,
-   which is what this replaced), reading as an ordinary standalone button —
-   a rounded square, not a bare circle, and opaque enough at rest to look
-   clickable without needing a hover first. Anchored top-left rather than
-   centered (centering it over the top edge made it straddle the area's own
-   rounded corner + `overflow: hidden`, visually clipping it) — inset past
+   which is what this replaced), reading as an ordinary standalone button,
+   fully round like a switcher tab or toolbar button rather than a bare
+   square. Sized to 3rem — a plain icon button elsewhere in the app is
+   2.5rem, but those normally sit inside a padded container (e.g.
+   `.viewport-toolbar`'s own `padding: var(--arch-space-xs)`) that adds to
+   their visible footprint; this chip has no such wrapper, so it's sized up
+   on its own to read as the same overall size rather than looking smaller
+   for lacking one. Anchored top-left rather than centered (centering it
+   over the top edge made it straddle the area's own rounded corner +
+   `overflow: hidden`, visually clipping it) — inset past
    `.arch-area__corner--tl`'s own footprint (20px, see below) plus a gap, so
    the two don't overlap and fight for the same clicks. Layered above
    (z-index) the corner zones since both occupy the same top-left region. */
@@ -59,11 +64,11 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 3rem;
+    height: 3rem;
     padding: 0;
     border: none;
-    border-radius: var(--arch-radius-md);
+    border-radius: var(--arch-radius-round);
     /* `.arch-glass`'s tint (`--arch-glass-tint`, glass.css) is a *light*
        gray in both themes — deliberately, since on a large surface the
        backdrop-blur beneath it dominates and the panel still reads as

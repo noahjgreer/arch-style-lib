@@ -565,7 +565,8 @@ export function makeAreaLayout(workspace, opts) {
     // --- Corner gesture: split within the origin area, or join if the
     // pointer crosses into a neighboring area. ---
     function startCornerGesture(originAreaId, corner, downEvent) {
-        const originStart = toFraction(downEvent.clientX, downEvent.clientY);
+        const downX = downEvent.clientX;
+        const downY = downEvent.clientY;
         let mode = null; // "split" | "join" | null
         let splitAxis = null;
         let splitFraction = null;
@@ -582,6 +583,18 @@ export function makeAreaLayout(workspace, opts) {
         };
 
         const onMove = (event) => {
+            // A plain click (pointerdown immediately followed by pointerup
+            // at the same spot) used to commit a split anyway, because the
+            // very first `onMove` call below — fired synchronously with the
+            // down event itself, see the bottom of this function — already
+            // set `mode`/`splitAxis` before the user had moved the pointer
+            // at all. Ignoring moves under this threshold means `mode`
+            // stays `null` until there's an actual drag, and `onUp` only
+            // ever commits when it isn't.
+            const dx = event.clientX - downX;
+            const dy = event.clientY - downY;
+            if (Math.hypot(dx, dy) < 4) return;
+
             const originArea = state.areas.get(originAreaId);
             if (!originArea) return;
             const pos = toFraction(event.clientX, event.clientY);
@@ -594,18 +607,37 @@ export function makeAreaLayout(workspace, opts) {
                 const origin = cornerPoint(originArea);
                 const pxDx = (pos.x - origin.x) * b.width;
                 const pxDy = (pos.y - origin.y) * b.height;
-                splitAxis = Math.abs(pxDx) > Math.abs(pxDy) ? "v" : "h";
                 const r = areaRect(state, originArea);
                 const minFracW = minWidth / (b.width * (r.right - r.left));
                 const minFracH = minHeight / (b.height * (r.bottom - r.top));
-                if (splitAxis === "v") {
+                // An area narrower/shorter than 2x the minimum can't be cut
+                // in that direction without one side ending up under the
+                // minimum — `1 - minFrac` would then be *less* than
+                // `minFrac`, and clamping via `min(1-minFrac, max(minFrac,
+                // raw))` silently picks the smaller bound instead of
+                // catching the contradiction, producing a sub-minimum (even
+                // zero-width) area rather than refusing the split. Falling
+                // back to whichever axis actually fits — or, if neither
+                // does, refusing the split outright (`splitAxis = null`,
+                // nothing for `onUp` to commit) — is what Blender itself
+                // does here (`area_split_allowed`).
+                const canSplitV = minFracW <= 0.5;
+                const canSplitH = minFracH <= 0.5;
+                let axis = Math.abs(pxDx) > Math.abs(pxDy) ? "v" : "h";
+                if (axis === "v" && !canSplitV) axis = canSplitH ? "h" : null;
+                else if (axis === "h" && !canSplitH) axis = canSplitV ? "v" : null;
+                splitAxis = axis;
+                if (axis === "v") {
                     const raw = (pos.x - r.left) / (r.right - r.left);
                     splitFraction = Math.min(1 - minFracW, Math.max(minFracW, raw));
-                } else {
+                    showSplitPreview(r, axis, splitFraction, b);
+                } else if (axis === "h") {
                     const raw = (pos.y - r.top) / (r.bottom - r.top);
                     splitFraction = Math.min(1 - minFracH, Math.max(minFracH, raw));
+                    showSplitPreview(r, axis, splitFraction, b);
+                } else {
+                    splitPreview.classList.remove("arch-area-preview--visible");
                 }
-                showSplitPreview(r, splitAxis, splitFraction, b);
             } else {
                 mode = "join";
                 splitPreview.classList.remove("arch-area-preview--visible");

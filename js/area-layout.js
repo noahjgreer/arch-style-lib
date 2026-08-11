@@ -493,6 +493,13 @@ export function makeAreaLayout(workspace, opts) {
             zone.addEventListener("pointerdown", (event) => {
                 event.preventDefault();
                 event.stopPropagation();
+                // Guarantees this pointer keeps delivering move/up events
+                // even if the cursor exits the browser's viewport entirely
+                // mid-drag (dragged fast enough, or released just outside
+                // the window edge) — without it that can silently drop the
+                // gesture's pointerup, same underlying class of problem the
+                // `blur` listener in `startCornerGesture` guards against.
+                zone.setPointerCapture(event.pointerId);
                 startCornerGesture(area.id, corner, event);
             });
             root.appendChild(zone);
@@ -658,10 +665,15 @@ export function makeAreaLayout(workspace, opts) {
             }
         };
 
-        const onUp = () => {
+        const cleanupListeners = () => {
             window.removeEventListener("pointermove", onMove);
             window.removeEventListener("pointerup", onUp);
             window.removeEventListener("pointercancel", onCancel);
+            window.removeEventListener("blur", onCancel);
+        };
+
+        const onUp = () => {
+            cleanupListeners();
             splitPreview.classList.remove("arch-area-preview--visible");
             joinPreview.classList.remove("arch-area-preview--visible");
 
@@ -688,9 +700,7 @@ export function makeAreaLayout(workspace, opts) {
         };
 
         const onCancel = () => {
-            window.removeEventListener("pointermove", onMove);
-            window.removeEventListener("pointerup", onUp);
-            window.removeEventListener("pointercancel", onCancel);
+            cleanupListeners();
             splitPreview.classList.remove("arch-area-preview--visible");
             joinPreview.classList.remove("arch-area-preview--visible");
             onInteractionEnd();
@@ -700,6 +710,19 @@ export function makeAreaLayout(workspace, opts) {
         window.addEventListener("pointermove", onMove);
         window.addEventListener("pointerup", onUp);
         window.addEventListener("pointercancel", onCancel);
+        // A real desktop browser can lose the matching pointerup/pointercancel
+        // entirely — the window loses focus mid-drag (alt-tab, an OS dialog
+        // stealing focus, the pointer leaving the window fast enough to slip
+        // past it) — which without this leaves `onInteractionEnd()` never
+        // called (so `Viewer.setRenderingPaused(true)`, wired to
+        // `onInteractionStart`/`onInteractionEnd` in main.ts, never gets
+        // undone — the viewport looks permanently frozen) *and* leaks these
+        // `window`-scoped listeners forever, so the next unrelated pointerup
+        // anywhere on the page spuriously fires this stale `onUp` and
+        // commits a split/join from a gesture the user thinks already ended.
+        // `blur` reliably fires in exactly this situation even when the
+        // pointer events don't.
+        window.addEventListener("blur", onCancel);
         onMove(downEvent);
     }
 
@@ -752,6 +775,10 @@ export function makeAreaLayout(workspace, opts) {
 
         event.preventDefault();
         resizing = true;
+        // See the matching call in the corner-zone pointerdown handler —
+        // same reasoning: guarantees this drag keeps delivering move/up
+        // even if the cursor exits the browser viewport mid-drag.
+        if (event.target instanceof Element) event.target.setPointerCapture(event.pointerId);
         const minSize = hit.axis === "x" ? minWidth / b.width : minHeight / b.height;
         const affected = findAffectedVerts(state, hit.axis, hit.coord, hit.seedVerts);
         const [min, max] = resizeBounds(state, hit.axis, affected, minSize);
@@ -773,6 +800,7 @@ export function makeAreaLayout(workspace, opts) {
             window.removeEventListener("pointermove", onMove);
             window.removeEventListener("pointerup", onUp);
             window.removeEventListener("pointercancel", onUp);
+            window.removeEventListener("blur", onUp);
             onChange(serialize(state));
             onInteractionEnd();
         };
@@ -780,6 +808,11 @@ export function makeAreaLayout(workspace, opts) {
         window.addEventListener("pointermove", onMove);
         window.addEventListener("pointerup", onUp);
         window.addEventListener("pointercancel", onUp);
+        // See the matching `blur` listener in `startCornerGesture` — same
+        // reasoning: a lost pointerup here would leave `resizing` stuck
+        // `true` (freezing further border-hover cursor updates) and the
+        // renderer paused forever.
+        window.addEventListener("blur", onUp);
     }
 
     workspace.addEventListener("pointermove", onWorkspacePointerMove);

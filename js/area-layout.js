@@ -499,7 +499,17 @@ export function makeAreaLayout(workspace, opts) {
                 // the window edge) — without it that can silently drop the
                 // gesture's pointerup, same underlying class of problem the
                 // `blur` listener in `startCornerGesture` guards against.
-                zone.setPointerCapture(event.pointerId);
+                // Wrapped in try/catch since the browser can reject a
+                // pointerId it doesn't currently consider active (observed
+                // with synthetic/automated pointer events specifically) —
+                // this is a hardening measure on top of the gesture, not a
+                // prerequisite for it, so a rejection here must never
+                // prevent the gesture itself from starting.
+                try {
+                    zone.setPointerCapture(event.pointerId);
+                } catch {
+                    // Not fatal — the window-level listeners below still work.
+                }
                 startCornerGesture(area.id, corner, event);
             });
             root.appendChild(zone);
@@ -775,10 +785,18 @@ export function makeAreaLayout(workspace, opts) {
 
         event.preventDefault();
         resizing = true;
-        // See the matching call in the corner-zone pointerdown handler —
-        // same reasoning: guarantees this drag keeps delivering move/up
-        // even if the cursor exits the browser viewport mid-drag.
-        if (event.target instanceof Element) event.target.setPointerCapture(event.pointerId);
+        // See the matching call (and try/catch reasoning) in the
+        // corner-zone pointerdown handler — same idea: guarantees this drag
+        // keeps delivering move/up even if the cursor exits the browser
+        // viewport mid-drag, but must never block the resize itself if the
+        // browser rejects it.
+        if (event.target instanceof Element) {
+            try {
+                event.target.setPointerCapture(event.pointerId);
+            } catch {
+                // Not fatal — the window-level listeners below still work.
+            }
+        }
         const minSize = hit.axis === "x" ? minWidth / b.width : minHeight / b.height;
         const affected = findAffectedVerts(state, hit.axis, hit.coord, hit.seedVerts);
         const [min, max] = resizeBounds(state, hit.axis, affected, minSize);

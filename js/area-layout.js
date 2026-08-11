@@ -473,6 +473,10 @@ export function makeAreaLayout(workspace, opts) {
         // other overlay in the area, including the corner action zones.
         const typeButton = document.createElement("button");
         typeButton.type = "button";
+        // area-layout.css pushes `--arch-glass-mix` well past its default
+        // on `.arch-area__type` itself, so plain `.arch-glass` here already
+        // renders as a solid-reading button rather than a barely-visible
+        // tint (see that rule's comment for why).
         typeButton.className = "arch-area__type arch-glass";
         typeButton.setAttribute("aria-haspopup", "true");
         const typeIcon = document.createElement("span");

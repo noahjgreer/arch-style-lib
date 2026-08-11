@@ -64,6 +64,15 @@
     padding: 0;
     border: none;
     border-radius: var(--arch-radius-md);
+    /* `.arch-glass`'s default tint (~12%, see glass.css) is tuned for
+       larger surfaces; at this button's small size it's barely visible,
+       leaving only the glass reflex highlight/shadow strokes to see — an
+       outline around the icon, not a filled button. Pushed well past even
+       `.arch-glass-strong`'s 36% (used for e.g. `.arch-switcher`'s active
+       pill) so it reads as solid at rest, the way a real switcher tab or
+       toolbar button does — sets the same custom property `.arch-glass`
+       itself reads, so this only needs a plain `.arch-glass` in markup. */
+    --arch-glass-mix: 60%;
     opacity: 0.85;
     cursor: pointer;
     transition: opacity var(--arch-duration-fast) var(--arch-ease);

@@ -26,28 +26,44 @@
     border-radius: var(--arch-radius-lg);
 }
 
-.arch-area__header {
-    flex-shrink: 0;
+/* Flex column so a single content child (the consumer's own markup, mounted
+   via `onMount`) can `flex: 1` to fill the body exactly — same convention
+   `.window-card`/`.arch-panel__body`-style content already follows. No
+   header bar reserving space above it — `.arch-area__type` (below) floats
+   over the body instead of pushing it down, so the body gets the area's
+   full height. */
+.arch-area__body {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
     display: flex;
-    align-items: center;
-    padding: var(--arch-space-xs);
+    flex-direction: column;
 }
 
 /* Icon-only button showing the area's current content type — click opens
-   `.arch-area-type-popover` to change it. Chrome-reset the same way this
-   library's other icon buttons are (see panel-swap.css's
-   `.arch-panel-handle`): no visible button box at rest, just the glyph. */
+   `.arch-area-type-popover` to change it. A small floating chip
+   (deliberately *not* a full-width header bar eating into the content,
+   which is what this replaced), centered along the top edge, clear of the
+   corner action zones on either side and layered above them (z-index)
+   since both live in the same top edge. Its own `.arch-glass` surface
+   (composed in markup) rather than the chrome-reset-to-nothing look
+   `.arch-area__corner` uses, since unlike the corners this needs to read
+   as a distinct, clickable object at rest, not just a hover affordance. */
 .arch-area__type {
+    position: absolute;
+    z-index: 3;
+    top: var(--arch-space-xs);
+    left: 50%;
+    transform: translateX(-50%);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 1.75rem;
     height: 1.75rem;
     padding: 0;
-    background: none;
     border: none;
-    box-shadow: none;
-    opacity: 0.55;
+    border-radius: var(--arch-radius-round);
+    opacity: 0.7;
     cursor: pointer;
     transition: opacity var(--arch-duration-fast) var(--arch-ease);
 }
@@ -55,17 +71,6 @@
 .arch-area__type:hover,
 .arch-area__type:active {
     opacity: 1;
-}
-
-/* Flex column so a single content child (the consumer's own markup, mounted
-   via `onMount`) can `flex: 1` to fill the body exactly — same convention
-   `.window-card`/`.arch-panel__body`-style content already follows. */
-.arch-area__body {
-    flex: 1;
-    min-height: 0;
-    overflow: auto;
-    display: flex;
-    flex-direction: column;
 }
 
 /* Corner action zones — drag one inward (staying inside the same area) to

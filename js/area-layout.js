@@ -34,16 +34,17 @@
  * holds it) — for content that's inherently one global instance rather
  * than a "view" onto shared data.
  *
- * Each area's header is a single icon button (showing its current content
- * type's `icon`, see `opts.contentTypes`) rather than a wide `<select>` —
- * clicking it opens a small popover (built on this same library's own
- * `popover.js`/`popover.css`, matching the app header's own popovers) to
- * pick a different type. One popover is shared and repositioned per
- * workspace rather than one per area, and lives as a sibling of `<body>`
- * (not a descendant of any `.arch-area`) for the same reason the header's
- * own popovers do: `.arch-glass`'s `backdrop-filter` creates a containing
- * block that would otherwise clip a `position: fixed` popover to the
- * area's own bounds.
+ * Each area shows its current content type as a single small icon-button
+ * chip (its `icon`, see `opts.contentTypes`) floating along the top edge —
+ * not a wide `<select>`, and deliberately not a full-width header bar
+ * either (that ate into the content underneath); clicking it opens a small
+ * popover (built on this same library's own `popover.js`/`popover.css`,
+ * matching the app header's own popovers) to pick a different type. One
+ * popover is shared and repositioned per workspace rather than one per
+ * area, and lives as a sibling of `<body>` (not a descendant of any
+ * `.arch-area`) for the same reason the app header's own popovers do:
+ * `.arch-glass`'s `backdrop-filter` creates a containing block that would
+ * otherwise clip a `position: fixed` popover to the area's own bounds.
  */
 
 import { iconChar } from "./icons.js";
@@ -462,22 +463,22 @@ export function makeAreaLayout(workspace, opts) {
         const root = document.createElement("div");
         root.className = "arch-area arch-glass";
 
-        const header = document.createElement("div");
-        header.className = "arch-area__header";
+        const body = document.createElement("div");
+        body.className = "arch-area__body";
+        root.appendChild(body);
+
+        // A small floating chip, not a full-width header bar — sits above
+        // (both visually, via z-index, and physically, top-center) every
+        // other overlay in the area, including the corner action zones.
         const typeButton = document.createElement("button");
         typeButton.type = "button";
-        typeButton.className = "arch-area__type";
+        typeButton.className = "arch-area__type arch-glass";
         typeButton.setAttribute("aria-haspopup", "true");
         const typeIcon = document.createElement("span");
         typeIcon.className = "arch-icon";
         typeIcon.setAttribute("aria-hidden", "true");
         typeButton.appendChild(typeIcon);
-        header.appendChild(typeButton);
-        root.appendChild(header);
-
-        const body = document.createElement("div");
-        body.className = "arch-area__body";
-        root.appendChild(body);
+        root.appendChild(typeButton);
 
         for (const corner of ["tl", "tr", "br", "bl"]) {
             const zone = document.createElement("div");

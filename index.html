@@ -163,6 +163,11 @@
         </div>
 
         <div class="arch-glass arch-glass-panel">
+            <h2>Modal</h2>
+            <button class="arch-btn" id="modal-btn" type="button">Open modal</button>
+        </div>
+
+        <div class="arch-glass arch-glass-panel">
             <h2>Icons</h2>
             <p>Referenced by name — see <code>docs/icons.md</code>.</p>
             <div class="demo-row">
@@ -180,6 +185,21 @@
     -->
     <div class="arch-popover arch-glass" id="demo-popover" role="menu">
         <p>Positioned relative to the button, clamped to the viewport.</p>
+    </div>
+
+    <!-- Same containing-block reasoning as the popover above — a modal
+         backdrop is position:fixed, so it must not be nested inside a
+         .arch-glass card. -->
+    <div class="arch-modal-backdrop" id="demo-modal">
+        <div class="arch-modal arch-glass" role="dialog" aria-modal="true" aria-labelledby="demo-modal-title">
+            <h2 class="arch-modal__title" id="demo-modal-title">Modal dialog</h2>
+            <div class="arch-modal__body">
+                <p>The body scrolls on its own when the content outgrows the dialog.</p>
+            </div>
+            <div class="arch-modal__actions">
+                <button class="arch-btn" id="modal-close-btn" type="button">Close</button>
+            </div>
+        </div>
     </div>
 
     <section class="arch-glass arch-glass-panel">
@@ -256,6 +276,14 @@
             }
         });
         bindDismiss(popover, popoverBtn, () => closePopover(popover));
+
+        const modal = document.getElementById("demo-modal");
+        document.getElementById("modal-btn").addEventListener("click", () => {
+            modal.classList.add("arch-modal-backdrop--open");
+        });
+        document.getElementById("modal-close-btn").addEventListener("click", () => {
+            modal.classList.remove("arch-modal-backdrop--open");
+        });
 
         makeDragReorder(document.getElementById("glass-list"), {
             onReorder: ({ fromIndex, toIndex }) => console.log(`Moved item ${fromIndex} -> ${toIndex}`),

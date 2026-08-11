@@ -73,6 +73,32 @@ ancestor** — see the gotcha note in [behaviors.md](./behaviors.md#popover).
 </div>
 ```
 
+## Modal — `.arch-modal`
+
+Centered glass dialog over a dimmed, blurred backdrop. Chrome only — toggle
+the `arch-modal-backdrop--open` class on the backdrop to show it. Dismissal
+(backdrop click, Escape, focus return) is deliberately left to the consumer,
+since a *blocking* dialog wants none of it.
+
+Same containing-block gotcha as the popover: `position: fixed` inside a
+`.arch-glass` (or any `backdrop-filter`) ancestor positions against that
+ancestor, not the viewport — keep the backdrop a direct child of `<body>`.
+
+```html
+<div class="arch-modal-backdrop" id="picker">
+    <div class="arch-modal arch-glass" role="dialog" aria-modal="true" aria-labelledby="picker-title">
+        <h2 class="arch-modal__title" id="picker-title">Choose a project</h2>
+        <div class="arch-modal__body">…scrolls if tall…</div>
+        <div class="arch-modal__actions">
+            <button class="arch-btn" type="button">Continue</button>
+        </div>
+    </div>
+</div>
+```
+
+Tunables: `--arch-modal-width` (default `32rem`), `--arch-modal-max-block`
+(default `85vh`).
+
 ## Switcher — `.arch-switcher`
 
 Segmented control with an animated sliding pill. Pair with

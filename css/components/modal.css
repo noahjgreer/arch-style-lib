@@ -1,0 +1,100 @@
+/*
+ * arch-style-lib :: modal
+ * Centered glass dialog over a dimmed, blurred backdrop.
+ * Markup:
+ *   <div class="arch-modal-backdrop">
+ *     <div class="arch-modal arch-glass" role="dialog" aria-modal="true">
+ *       <h2 class="arch-modal__title">…</h2>
+ *       <div class="arch-modal__body">…</div>
+ *       <div class="arch-modal__actions">…</div>
+ *     </div>
+ *   </div>
+ * Toggle visibility with the "arch-modal-backdrop--open" class on the
+ * backdrop. Chrome only — dismissal (backdrop click, Escape, focus handling)
+ * is left to the consumer, since a blocking dialog deliberately wants none
+ * of it.
+ *
+ * Tunables:
+ *   --arch-modal-width      max dialog width      (default 32rem)
+ *   --arch-modal-max-block  max dialog height     (default 85% of viewport)
+ */
+
+.arch-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 400;
+
+    display: grid;
+    place-items: center;
+    padding: var(--arch-space-lg);
+
+    background-color: color-mix(in srgb, var(--arch-glass-dark) 45%, transparent);
+    backdrop-filter: blur(var(--arch-glass-blur));
+    -webkit-backdrop-filter: blur(var(--arch-glass-blur));
+
+    opacity: 0;
+    pointer-events: none;
+    /* `visibility` keeps a closed modal out of the a11y/tab order without
+       display:none, which would kill the fade — stepped to hidden only after
+       the opacity transition has finished (and immediately on open). */
+    visibility: hidden;
+    transition:
+        opacity var(--arch-duration-md) var(--arch-ease-out),
+        visibility 0s linear var(--arch-duration-md);
+}
+
+.arch-modal-backdrop--open {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+    transition:
+        opacity var(--arch-duration-md) var(--arch-ease-out),
+        visibility 0s;
+}
+
+.arch-modal {
+    display: flex;
+    flex-direction: column;
+    gap: var(--arch-space-md);
+
+    width: min(var(--arch-modal-width, 32rem), 100%);
+    max-height: var(--arch-modal-max-block, 85vh);
+
+    border-radius: var(--arch-radius-lg);
+    padding: var(--arch-space-lg);
+    box-shadow: var(--arch-shadow-md);
+
+    transform: translateY(8px) scale(0.98);
+    transition: transform var(--arch-duration-md) var(--arch-ease);
+}
+
+.arch-modal-backdrop--open .arch-modal {
+    transform: none;
+}
+
+.arch-modal__title {
+    margin: 0;
+    font-size: var(--arch-font-size-lg);
+}
+
+/* Scrolling lives here rather than on .arch-modal — .arch-glass sets
+   overflow:hidden on its own element, so the dialog's own box can't scroll. */
+.arch-modal__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.arch-modal__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--arch-space-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .arch-modal-backdrop,
+    .arch-modal {
+        transition-duration: 1ms;
+    }
+}

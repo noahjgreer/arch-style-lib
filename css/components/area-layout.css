@@ -109,10 +109,12 @@
    further inset, a drag has to cross that dead space *in addition to* the
    visual gap before `area-layout.js` ever sees the pointer as having
    entered the neighbor, which reads as "joining doesn't do anything" if
-   you don't drag far enough past where the zone visually ends. Sized
-   generously for an easy grab despite reading as a small glyph, opacity
-   raised above `.arch-panel-handle`'s resting level (0.3) since this one
-   also needs to be findable without hovering first. */
+   you don't drag far enough past where the zone visually ends. Invisible
+   at rest and on hover — same convention the border-resize drag elsewhere
+   in this file already uses (no visible highlight, just a cursor change) —
+   rather than the small square glyph this used to render; the hit area,
+   `title` tooltip, and drag behavior are all unchanged, only the `::before`
+   glyph's opacity dropped to 0, so this is purely cosmetic. */
 .arch-area__corner {
     position: absolute;
     z-index: 2;
@@ -120,8 +122,6 @@
     height: 20px;
     cursor: crosshair;
     touch-action: none;
-    opacity: 0.45;
-    transition: opacity var(--arch-duration-fast) var(--arch-ease);
 }
 
 .arch-area__corner::before {
@@ -130,11 +130,7 @@
     inset: 6px;
     border-radius: 2px;
     background: var(--arch-fg);
-}
-
-.arch-area__corner:hover,
-.arch-area__corner:active {
-    opacity: 0.85;
+    opacity: 0;
 }
 
 .arch-area__corner--tl {

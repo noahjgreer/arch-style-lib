@@ -229,10 +229,10 @@ assigned to any number of areas at once, each getting its own independent
 instance — matching Blender's own multi-viewport-style editors); flag one
 `{ singleton: true }` to restrict it to at most one area at a time instead.
 Each area shows its current content type as a small floating icon-button
-chip centered along its top edge (not a wide `<select>`, and not a
-full-width header bar either) — click it to open a small popover (this
-library's own `popover.js`/`popover.css`) listing the available types to
-switch to.
+chip in its top-left corner, clear of the corner action zone there (not a
+wide `<select>`, and not a full-width header bar either) — click it to
+open a small popover (this library's own `popover.js`/`popover.css`)
+listing the available types to switch to.
 
 | Function | Description |
 |---|---|

@@ -35,9 +35,10 @@
  * than a "view" onto shared data.
  *
  * Each area shows its current content type as a single small icon-button
- * chip (its `icon`, see `opts.contentTypes`) floating along the top edge —
- * not a wide `<select>`, and deliberately not a full-width header bar
- * either (that ate into the content underneath); clicking it opens a small
+ * chip (its `icon`, see `opts.contentTypes`) floating in the top-left
+ * corner, just clear of the corner action zone there — not a wide
+ * `<select>`, and deliberately not a full-width header bar either (that ate
+ * into the content underneath); clicking it opens a small
  * popover (built on this same library's own `popover.js`/`popover.css`,
  * matching the app header's own popovers) to pick a different type. One
  * popover is shared and repositioned per workspace rather than one per

@@ -16,6 +16,17 @@
    has (rounded corners for the inset highlight/shadow layers to read
    against), lost if a consumer only ever composes bare `.arch-glass`. */
 .arch-area {
+    /* How far `.arch-area__type` sits from the area's top-left corner —
+       overridable per consumer (e.g. Replushed sets this on its own
+       `.workspace` so its content padding can reference the exact same
+       value and stay in lockstep, see that repo's style.css). Default
+       clears `.arch-area__corner--tl`'s own 20px footprint plus a gap, so
+       the chip and the corner action zone don't overlap and fight for the
+       same clicks. Equal top/left (rather than a small top offset with a
+       bigger left one, tried first) is what makes the chip read as evenly
+       inset from the corner instead of hugging the top edge. */
+    --arch-area-inset: calc(20px + var(--arch-space-sm));
+
     position: absolute;
     box-sizing: border-box;
     display: flex;
@@ -52,15 +63,14 @@
    on its own to read as the same overall size rather than looking smaller
    for lacking one. Anchored top-left rather than centered (centering it
    over the top edge made it straddle the area's own rounded corner +
-   `overflow: hidden`, visually clipping it) — inset past
-   `.arch-area__corner--tl`'s own footprint (20px, see below) plus a gap, so
-   the two don't overlap and fight for the same clicks. Layered above
+   `overflow: hidden`, visually clipping it) — inset by `--arch-area-inset`
+   (set on `.arch-area` above) on both axes equally. Layered above
    (z-index) the corner zones since both occupy the same top-left region. */
 .arch-area__type {
     position: absolute;
     z-index: 3;
-    top: var(--arch-space-xs);
-    left: calc(20px + var(--arch-space-sm));
+    top: var(--arch-area-inset);
+    left: var(--arch-area-inset);
     display: inline-flex;
     align-items: center;
     justify-content: center;

@@ -56,7 +56,13 @@
     padding: 0;
     width: 2.5rem;
     height: 2.5rem;
-    border-radius: 50%;
+    /* Inherits the same shape token as every other button rather than a
+       hardcoded 50%: on a square the default `100rem` clamps to a circle
+       anyway, so the default look is unchanged — but a consumer that
+       reshapes by overriding `--arch-radius-round` (the documented
+       retheming path) gets the icon button's hover fill following along,
+       instead of one stubbornly circular control among squared-off ones. */
+    border-radius: var(--arch-radius-round);
     background: none;
     color: var(--arch-fg);
     font-size: var(--arch-font-size-lg);

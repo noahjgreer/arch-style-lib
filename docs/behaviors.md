@@ -241,6 +241,13 @@ Click it to open a small popover (this library's own `popover.js`/
 |---|---|
 | `makeAreaLayout(workspace, opts)` | Builds and wires the whole tiling layout inside `workspace`. Returns `{ destroy(), getLayout(), setContentSubtitle() }`. |
 
+Each `.arch-area` carries two custom properties content can lay itself out
+against: `--arch-area-chip-height` (the chip's fixed height, declared in
+`area-layout.css`) and `--arch-area-chip-width` (its *measured* width,
+written by the module itself and kept current as the label/sublabel/font
+change) — between them, a consumer can either start its content below the
+chip or run a toolbar row beside it on the chip's own line.
+
 The returned handle's `setContentSubtitle(contentId, subtitle)` sets the
 smaller secondary line under that type's name on every chip currently
 showing it (`null`/`""` clears it), and on any area that starts showing it

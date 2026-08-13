@@ -1,0 +1,121 @@
+/*
+ * arch-style-lib :: toggle button
+ * .arch-toggle-btn: a button-shaped, stateful toggle — a glass pill that reads
+ * neutral (label in --arch-fg) when off and accent-tinted when on, with a small
+ * state dot at its leading edge so it's legible as a toggle rather than as an
+ * action button even at a glance. Deliberately quieter than .arch-btn's solid
+ * fill: it sits in toolbars/filter rows next to switchers and inputs, where a
+ * fully saturated button would out-shout the content it filters.
+ *
+ * Combine with .arch-glass in markup for the frosted surface. Both states only
+ * ever set background-color — never box-shadow — so .arch-glass's reflex
+ * highlights survive the accent tint rather than being replaced by it.
+ *
+ * Two markup forms, matching .arch-switcher's own two:
+ *
+ * Checkbox-driven (no JS — state lives in the input, keyboard/screen-reader
+ * semantics come free; prefer this):
+ * <label class="arch-toggle-btn arch-glass">
+ *   <input class="arch-toggle-btn__input" type="checkbox" checked />
+ *   <span class="arch-toggle-btn__label">Follow</span>
+ * </label>
+ *
+ * Button-driven (when the state is owned elsewhere — flip aria-pressed in JS):
+ * <button class="arch-toggle-btn arch-glass" type="button" aria-pressed="true">
+ *   <span class="arch-toggle-btn__label">Follow</span>
+ * </button>
+ */
+
+.arch-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--arch-space-xs);
+    border: none;
+    border-radius: var(--arch-radius-round);
+    padding: 0.4rem 0.85rem;
+    font-size: var(--arch-font-size-md);
+    font-weight: 500;
+    line-height: 1;
+    color: var(--arch-fg);
+    cursor: pointer;
+    user-select: none;
+    background-color: color-mix(in srgb, var(--arch-glass-tint) var(--arch-glass-mix), transparent);
+    transition:
+        background-color var(--arch-duration-fast) ease,
+        color var(--arch-duration-fast) ease;
+
+    /* The state dot: hollow when off, filled when on. It's what separates this
+       from a plain button — a label alone leaves "is this on?" to guesswork. */
+    &::before {
+        content: "";
+        flex-shrink: 0;
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background-color: transparent;
+        box-shadow: inset 0 0 0 1.5px currentColor;
+        opacity: 0.5;
+        transition:
+            background-color var(--arch-duration-fast) ease,
+            opacity var(--arch-duration-fast) ease;
+    }
+
+    &:hover {
+        background-color: color-mix(in srgb, var(--arch-glass-tint) calc(var(--arch-glass-mix) + 10%), transparent);
+    }
+
+    &:active {
+        transform: scale(0.97);
+    }
+}
+
+.arch-toggle-btn__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.arch-toggle-btn[aria-pressed="true"],
+.arch-toggle-btn:has(> .arch-toggle-btn__input:checked) {
+    color: var(--arch-accent);
+    background-color: color-mix(in srgb, var(--arch-accent) 20%, transparent);
+
+    &::before {
+        background-color: currentColor;
+        opacity: 1;
+    }
+
+    &:hover {
+        background-color: color-mix(in srgb, var(--arch-accent) 28%, transparent);
+    }
+}
+
+.arch-toggle-btn:focus-visible,
+.arch-toggle-btn:has(> .arch-toggle-btn__input:focus-visible) {
+    outline: 2px solid var(--arch-accent);
+    outline-offset: 2px;
+}
+
+.arch-toggle-btn:disabled,
+.arch-toggle-btn:has(> .arch-toggle-btn__input:disabled) {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.arch-toggle-btn--sm {
+    padding: 0.3rem 0.65rem;
+    font-size: var(--arch-font-size-sm);
+
+    &::before {
+        width: 0.4rem;
+        height: 0.4rem;
+    }
+}

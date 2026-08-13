@@ -35,6 +35,13 @@
        it: see `.arch-area__type-label`/`--sublabel` below. */
     --arch-area-chip-height: 3rem;
 
+    /* The chip's *rendered* width, written here by `makeAreaLayout` (see
+       its `chipObserver`) rather than declared — read it to lay content out
+       beside the chip on its own line instead of below it. Falls back to 0
+       so a rule using it still resolves before the first measurement lands
+       (or if the JS half isn't in play at all). */
+    --arch-area-chip-width: 0px;
+
     position: absolute;
     box-sizing: border-box;
     display: flex;

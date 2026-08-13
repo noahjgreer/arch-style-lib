@@ -362,6 +362,21 @@ export function makeAreaLayout(workspace, opts) {
     // all views of the same thing, so they say the same thing.
     const subtitles = new Map();
 
+    // Publishes each chip's rendered width as `--arch-area-chip-width` on
+    // its own area root, so consumer content can flow *beside* the chip
+    // (a toolbar row sharing the chip's line rather than starting below it)
+    // without hardcoding a width that depends on the type's label, the
+    // sublabel, the font, and the area's own max-width clamp. Observed
+    // rather than measured once per render: a webfont landing or a
+    // `setContentSubtitle` call resizes the chip without any layout change
+    // this module would otherwise hear about.
+    const chipObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+            const width = entry.borderBoxSize?.[0]?.inlineSize ?? entry.target.getBoundingClientRect().width;
+            entry.target.closest(".arch-area")?.style.setProperty("--arch-area-chip-width", `${width}px`);
+        }
+    });
+
     const splitPreview = document.createElement("div");
     splitPreview.className = "arch-area-preview arch-area-preview--split";
     const joinPreview = document.createElement("div");
@@ -522,6 +537,7 @@ export function makeAreaLayout(workspace, opts) {
         typeText.append(typeLabel, typeSublabel);
         typeButton.append(typeIcon, typeText);
         root.appendChild(typeButton);
+        chipObserver.observe(typeButton);
 
         for (const corner of ["tl", "tr", "br", "bl"]) {
             const zone = document.createElement("div");
@@ -887,6 +903,7 @@ export function makeAreaLayout(workspace, opts) {
             workspace.removeEventListener("pointermove", onWorkspacePointerMove);
             workspace.removeEventListener("pointerdown", onWorkspacePointerDown);
             window.removeEventListener("resize", render);
+            chipObserver.disconnect();
             splitPreview.remove();
             joinPreview.remove();
             typePopoverDismiss?.();

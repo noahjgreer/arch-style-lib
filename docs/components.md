@@ -145,6 +145,41 @@ keyboard/screen-reader support — no JS required, driven entirely by
 </label>
 ```
 
+## Toggle button — `.arch-toggle-btn`
+
+A button-shaped toggle for toolbars and filter rows: a glass pill that reads
+neutral (`--arch-fg`) when off and accent-tinted when on, with a small state
+dot at its leading edge so it's recognizable as a toggle rather than an action
+button. Deliberately quieter than `.arch-btn`'s solid fill — it's meant to sit
+beside switchers and inputs without out-shouting the content it controls. Use
+`.arch-toggle` instead when the control is a settings-style on/off switch in a
+list of them; use this when it belongs in a row of buttons.
+
+Combine with `.arch-glass` for the frosted surface. Both states only ever set
+`background-color`, never `box-shadow`, so the glass reflex highlights survive
+the accent tint rather than being replaced by it. Retint via `--arch-accent`.
+
+Checkbox-driven (no JS — state lives in the input, keyboard/screen-reader
+semantics come free; prefer this form):
+
+```html
+<label class="arch-toggle-btn arch-glass">
+    <input class="arch-toggle-btn__input" type="checkbox" checked />
+    <span class="arch-toggle-btn__label">Follow</span>
+</label>
+```
+
+Button-driven, for when the state is owned elsewhere — flip `aria-pressed` in
+your own code:
+
+```html
+<button class="arch-toggle-btn arch-glass" type="button" aria-pressed="true">
+    <span class="arch-toggle-btn__label">Follow</span>
+</button>
+```
+
+`.arch-toggle-btn--sm` is the compact size, matching `.arch-btn--sm`.
+
 ## Reset
 
 `css/reset.css` normalizes box-sizing/margins, sets base typography

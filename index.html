@@ -157,6 +157,21 @@
             </label>
         </div>
 
+        <div class="arch-glass arch-glass-panel">
+            <h2>Toggle button</h2>
+            <label class="arch-toggle-btn arch-glass">
+                <input class="arch-toggle-btn__input" type="checkbox" checked />
+                <span class="arch-toggle-btn__label">Follow</span>
+            </label>
+            <label class="arch-toggle-btn arch-glass">
+                <input class="arch-toggle-btn__input" type="checkbox" />
+                <span class="arch-toggle-btn__label">Wrap lines</span>
+            </label>
+            <button class="arch-toggle-btn arch-toggle-btn--sm arch-glass" type="button" aria-pressed="false">
+                <span class="arch-toggle-btn__label">Small, aria-pressed</span>
+            </button>
+        </div>
+
         <div class="arch-glass arch-glass-panel" id="popover-anchor-wrap">
             <h2>Popover</h2>
             <button class="arch-btn" id="popover-btn" type="button">Open popover</button>
@@ -262,6 +277,14 @@
         document.getElementById("blur-range").addEventListener("input", (e) => {
             setGlassBlur(Number(e.target.value));
         });
+
+        // The checkbox form of .arch-toggle-btn needs no JS; the aria-pressed
+        // form is state-owned-elsewhere by design, so the demo flips it itself.
+        for (const btn of document.querySelectorAll("button.arch-toggle-btn")) {
+            btn.addEventListener("click", () => {
+                btn.setAttribute("aria-pressed", btn.getAttribute("aria-pressed") === "true" ? "false" : "true");
+            });
+        }
 
         initSwitcher(document.getElementById("demo-switcher"));
         initRadioSwitcher(document.getElementById("demo-radio-switcher"));

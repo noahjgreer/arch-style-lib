@@ -178,7 +178,9 @@ your own code:
 </button>
 ```
 
-`.arch-toggle-btn--sm` is the compact size, matching `.arch-btn--sm`.
+Sizing deliberately mirrors the button/input scale so the three read as peers
+in one row: the base matches `.arch-btn`, and `.arch-toggle-btn--sm` matches
+`.arch-btn--sm` and `.arch-input--sm`.
 
 ## Reset
 

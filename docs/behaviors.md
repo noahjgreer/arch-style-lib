@@ -228,19 +228,31 @@ a gap. Content types are duplicable by default (the same type can be
 assigned to any number of areas at once, each getting its own independent
 instance — matching Blender's own multi-viewport-style editors); flag one
 `{ singleton: true }` to restrict it to at most one area at a time instead.
-Each area shows its current content type as a small floating icon-button
-chip in its top-left corner, clear of the corner action zone there (not a
-wide `<select>`, and not a full-width header bar either) — click it to
-open a small popover (this library's own `popover.js`/`popover.css`)
-listing the available types to switch to.
+Each area shows its current content type as a small floating chip in its
+top-left corner, clear of the corner action zone there (not a wide
+`<select>`, and not a full-width header bar either) — the type's icon and
+its label together, optionally over a smaller second line
+(`setContentSubtitle`). That chip is the area's only title, so content
+mounted into the area shouldn't repeat the name in a heading of its own.
+Click it to open a small popover (this library's own `popover.js`/
+`popover.css`) listing the available types to switch to.
 
 | Function | Description |
 |---|---|
-| `makeAreaLayout(workspace, opts)` | Builds and wires the whole tiling layout inside `workspace`. Returns `{ destroy(), getLayout() }`. |
+| `makeAreaLayout(workspace, opts)` | Builds and wires the whole tiling layout inside `workspace`. Returns `{ destroy(), getLayout(), setContentSubtitle() }`. |
+
+The returned handle's `setContentSubtitle(contentId, subtitle)` sets the
+smaller secondary line under that type's name on every chip currently
+showing it (`null`/`""` clears it), and on any area that starts showing it
+later — for a content type whose own heading changes while its identity
+doesn't (a tool-options editor that stays "Tool Options" while its sublabel
+becomes "Island Editor"). It's keyed by content type, not by area: a
+duplicable type's instances are all views of the same thing.
 
 Options: `contentTypes` (`{ id, label, icon?, singleton? }[]` — every
 content type an area can show, offered in the popover its type chip
-opens; `icon` is an icon name from `js/icons.js`'s `ICONS` map, shown on
+opens; `label` is the area's title, shown on the chip itself; `icon` is an
+icon name from `js/icons.js`'s `ICONS` map, shown on
 the button and next to the entry in the popover, falling back to a generic
 icon if omitted; duplicable across areas unless `singleton: true`, in which
 case it's offered in every *other* area's popover only once no area

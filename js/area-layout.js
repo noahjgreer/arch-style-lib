@@ -34,11 +34,14 @@
  * holds it) — for content that's inherently one global instance rather
  * than a "view" onto shared data.
  *
- * Each area shows its current content type as a single small icon-button
- * chip (its `icon`, see `opts.contentTypes`) floating in the top-left
- * corner, just clear of the corner action zone there — not a wide
- * `<select>`, and deliberately not a full-width header bar either (that ate
- * into the content underneath); clicking it opens a small
+ * Each area shows its current content type as a single small chip floating
+ * in the top-left corner, just clear of the corner action zone there — not
+ * a wide `<select>`, and deliberately not a full-width header bar either
+ * (that ate into the content underneath). The chip carries the type's icon
+ * *and* its label (plus an optional smaller sublabel, see
+ * `setContentSubtitle`), so an area names itself in one place rather than
+ * leaving the consumer to repeat that name in a heading inside the content;
+ * clicking it opens a small
  * popover (built on this same library's own `popover.js`/`popover.css`,
  * matching the app header's own popovers) to pick a different type. One
  * popover is shared and repositioned per workspace rather than one per
@@ -283,7 +286,10 @@ function deserialize(layout) {
  * @param {object} opts
  * @param {{ id: string, label: string, icon?: string, singleton?: boolean }[]} opts.contentTypes
  *   every content type an area can be assigned to show, offered in the
- *   popover each area's header icon button opens. `icon` is an
+ *   popover each area's type chip opens. `label` is shown on that chip
+ *   alongside the icon (it's the area's title — content mounted into the
+ *   area shouldn't repeat it), optionally over a secondary line set via
+ *   the returned handle's `setContentSubtitle`. `icon` is an
  *   arch-style-lib icon name (see `js/icons.js`'s `ICONS` map) shown both
  *   on that button when the type is active and next to its entry in the
  *   popover; types without one fall back to a generic icon. Duplicable
@@ -330,7 +336,7 @@ function deserialize(layout) {
  * @param {() => void} [opts.onInteractionEnd] called once a drag started by
  *   `onInteractionStart` ends (release or cancel) — the layout has already
  *   settled into its final rects by the time this fires.
- * @returns {{ destroy(): void, getLayout(): object }}
+ * @returns {{ destroy(): void, getLayout(): object, setContentSubtitle(contentId: string, subtitle: string | null): void }}
  */
 export function makeAreaLayout(workspace, opts) {
     const {
@@ -348,7 +354,13 @@ export function makeAreaLayout(workspace, opts) {
 
     let state = opts.initialLayout ? deserialize(opts.initialLayout) : defaultLayout(opts.defaultContentId);
 
-    const elements = new Map(); // area id -> { root, select, body, contentId }
+    const elements = new Map(); // area id -> { root, typeButton, typeIcon, typeLabel, typeSublabel, body, contentId, instance }
+
+    // Content id -> secondary line shown under that type's name on every
+    // chip currently showing it (see `setContentSubtitle`). Keyed by content
+    // type rather than by area on purpose: a duplicable type's instances are
+    // all views of the same thing, so they say the same thing.
+    const subtitles = new Map();
 
     const splitPreview = document.createElement("div");
     splitPreview.className = "arch-area-preview arch-area-preview--split";
@@ -377,7 +389,7 @@ export function makeAreaLayout(workspace, opts) {
         typePopoverAreaId = null;
     }
 
-    function typeOptionButton(icon, label, active, onSelect) {
+    function typeOptionButton(icon, label, subtitle, active, onSelect) {
         const item = document.createElement("li");
         const button = document.createElement("button");
         button.type = "button";
@@ -386,7 +398,21 @@ export function makeAreaLayout(workspace, opts) {
         iconEl.className = "arch-icon";
         iconEl.setAttribute("aria-hidden", "true");
         iconEl.textContent = iconChar(icon ?? DEFAULT_ICON);
-        button.append(iconEl, document.createTextNode(label));
+        // Same label-over-sublabel stack the chip itself uses, so an entry
+        // reads as the thing the chip will become once picked.
+        const text = document.createElement("span");
+        text.className = "arch-area-type-popover__text";
+        const labelEl = document.createElement("span");
+        labelEl.className = "arch-area-type-popover__label";
+        labelEl.textContent = label;
+        text.appendChild(labelEl);
+        if (subtitle) {
+            const subEl = document.createElement("span");
+            subEl.className = "arch-area-type-popover__sublabel";
+            subEl.textContent = subtitle;
+            text.appendChild(subEl);
+        }
+        button.append(iconEl, text);
         button.addEventListener("click", onSelect);
         item.appendChild(button);
         return item;
@@ -397,8 +423,10 @@ export function makeAreaLayout(workspace, opts) {
         if (!area) return;
         const available = availableContentTypes(areaId, area.contentId);
         typePopoverList.replaceChildren(
-            typeOptionButton(null, "—", area.contentId == null, () => selectContentType(areaId, null)),
-            ...available.map((t) => typeOptionButton(t.icon, t.label, t.id === area.contentId, () => selectContentType(areaId, t.id))),
+            typeOptionButton(null, "—", "", area.contentId == null, () => selectContentType(areaId, null)),
+            ...available.map((t) =>
+                typeOptionButton(t.icon, t.label, subtitles.get(t.id) ?? "", t.id === area.contentId, () => selectContentType(areaId, t.id)),
+            ),
         );
         openPopover(typePopover, anchor);
         typePopoverDismiss?.();
@@ -469,8 +497,10 @@ export function makeAreaLayout(workspace, opts) {
         root.appendChild(body);
 
         // A small floating chip, not a full-width header bar — sits above
-        // (both visually, via z-index, and physically, top-center) every
+        // (both visually, via z-index, and physically, top-left) every
         // other overlay in the area, including the corner action zones.
+        // Icon *and* name together: this chip is the area's only title, so
+        // the content mounted below it doesn't have to repeat one.
         const typeButton = document.createElement("button");
         typeButton.type = "button";
         // area-layout.css overrides `.arch-glass`'s own background-color
@@ -482,7 +512,15 @@ export function makeAreaLayout(workspace, opts) {
         const typeIcon = document.createElement("span");
         typeIcon.className = "arch-icon";
         typeIcon.setAttribute("aria-hidden", "true");
-        typeButton.appendChild(typeIcon);
+        const typeText = document.createElement("span");
+        typeText.className = "arch-area__type-text";
+        const typeLabel = document.createElement("span");
+        typeLabel.className = "arch-area__type-label";
+        const typeSublabel = document.createElement("span");
+        typeSublabel.className = "arch-area__type-sublabel";
+        typeSublabel.hidden = true;
+        typeText.append(typeLabel, typeSublabel);
+        typeButton.append(typeIcon, typeText);
         root.appendChild(typeButton);
 
         for (const corner of ["tl", "tr", "br", "bl"]) {
@@ -522,7 +560,7 @@ export function makeAreaLayout(workspace, opts) {
         });
 
         workspace.appendChild(root);
-        return { root, typeButton, typeIcon, body, contentId: undefined, instance: undefined };
+        return { root, typeButton, typeIcon, typeLabel, typeSublabel, body, contentId: undefined, instance: undefined };
     }
 
     function positionAreaElement(record, area) {
@@ -542,8 +580,13 @@ export function makeAreaLayout(workspace, opts) {
             const area = state.areas.get(id);
             if (!area) continue;
             const type = contentTypes.find((t) => t.id === area.contentId);
+            const label = type?.label ?? "Empty area";
+            const subtitle = (area.contentId && subtitles.get(area.contentId)) || "";
             record.typeIcon.textContent = iconChar(type?.icon ?? DEFAULT_ICON);
-            record.typeButton.title = type?.label ?? "Empty area — choose content";
+            record.typeLabel.textContent = label;
+            record.typeSublabel.textContent = subtitle;
+            record.typeSublabel.hidden = subtitle === "";
+            record.typeButton.title = subtitle ? `${label} — ${subtitle}` : (type?.label ?? "Empty area — choose content");
             // The popover this button opens lists options computed fresh at
             // open time (`openTypePopoverFor`), so a change elsewhere that
             // affects *this* area's available list (another area claiming
@@ -851,6 +894,24 @@ export function makeAreaLayout(workspace, opts) {
         },
         getLayout() {
             return serialize(state);
+        },
+        /**
+         * Sets the smaller secondary line shown under `contentId`'s name on
+         * every chip currently showing it (pass `null`/`""` to clear it) —
+         * for a content type whose *own* heading changes while its identity
+         * doesn't: a properties/tool-options editor reflecting whichever
+         * tool is active, say, which stays "Tool Options" while its
+         * sublabel becomes "Island Editor". Applies to every area showing
+         * that type at once, and to areas that start showing it later, so a
+         * consumer sets it when the underlying thing changes rather than
+         * per area.
+         */
+        setContentSubtitle(contentId, subtitle) {
+            const value = subtitle ?? "";
+            if ((subtitles.get(contentId) ?? "") === value) return;
+            if (value) subtitles.set(contentId, value);
+            else subtitles.delete(contentId);
+            syncOptions();
         },
     };
 }

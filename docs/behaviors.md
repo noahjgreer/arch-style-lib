@@ -268,9 +268,11 @@ when `initialLayout` isn't given), `initialLayout` (a previously-`getLayout()`'d
 restore), `minWidth`/`minHeight` (px, default 200/120), `borderHitPx` (how
 close the pointer must be to a border to grab it for resizing; default 6),
 `gap` (visual-only gutter in px rendered between areas, insetting each
-area's box by half this on every side — the underlying tiling stays
-edge-to-edge, so the gap becomes part of the grabbable border region
-rather than dead space; default 0), `onMount(contentId, body)` (an area
+area's box by half this on every side it shares with another area — sides
+on the workspace's own boundary stay flush, so the layout still fills its
+container exactly instead of floating inside a half-gap margin; the
+underlying tiling stays edge-to-edge, so the gap becomes part of the
+grabbable border region rather than dead space; default 0), `onMount(contentId, body)` (an area
 started showing `contentId` — build or otherwise obtain that specific
 area's own instance and append it into `body`; whatever this returns is
 handed back to the matching `onUnmount` call for that same area, a

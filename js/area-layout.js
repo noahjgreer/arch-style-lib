@@ -327,10 +327,13 @@ function deserialize(layout) {
  *   a border to grab it for resizing; default 6
  * @param {number} [opts.gap] visual-only gutter (px) rendered between
  *   areas — purely cosmetic, insetting each area's rendered box by half
- *   this on every side; the underlying tiling stays edge-to-edge (border
- *   hit-testing/resize/split/join all still operate on the true, ungapped
- *   coordinates, so the gap itself becomes part of the grabbable border
- *   region rather than dead space). Default 0.
+ *   this on every side it shares with another area. Sides lying on the
+ *   workspace's own boundary are left flush, so the layout still fills its
+ *   container exactly rather than floating inside a half-gap margin. The
+ *   underlying tiling stays edge-to-edge (border hit-testing/resize/split/
+ *   join all still operate on the true, ungapped coordinates, so the gap
+ *   itself becomes part of the grabbable border region rather than dead
+ *   space). Default 0.
  * @param {(contentId: string, body: HTMLElement) => *} [opts.onMount]
  *   called every time an area starts showing `contentId` — for a
  *   duplicable type this fires once per area showing it, independently;
@@ -600,15 +603,38 @@ export function makeAreaLayout(workspace, opts) {
         return { root, typeButton, typeIcon, typeLabel, typeSublabel, body, contentId: undefined, instance: undefined };
     }
 
-    function positionAreaElement(record, area) {
-        const r = areaRect(state, area);
-        const b = bounds();
+    /**
+     * The rendered (gapped) pixel box for a normalized rect. Each side is
+     * inset by half the gap only where it borders *another area* — a side
+     * lying on the workspace boundary is left flush, so the gutter reads as
+     * spacing between areas rather than as padding around the whole
+     * workspace (which would offset every area from the container's own
+     * edges and make aligning anything outside the layout against it
+     * needlessly fiddly).
+     */
+    function gappedBox(r, b) {
         const half = gap / 2;
+        // Same boundary test `borderHitAt` uses — a side is "on the
+        // workspace edge" if its fraction is 0 or 1 within EPS.
+        const insetLeft = r.left > EPS ? half : 0;
+        const insetTop = r.top > EPS ? half : 0;
+        const insetRight = r.right < 1 - EPS ? half : 0;
+        const insetBottom = r.bottom < 1 - EPS ? half : 0;
+        return {
+            left: r.left * b.width + insetLeft,
+            top: r.top * b.height + insetTop,
+            width: Math.max(0, (r.right - r.left) * b.width - insetLeft - insetRight),
+            height: Math.max(0, (r.bottom - r.top) * b.height - insetTop - insetBottom),
+        };
+    }
+
+    function positionAreaElement(record, area) {
+        const box = gappedBox(areaRect(state, area), bounds());
         Object.assign(record.root.style, {
-            left: `${r.left * b.width + half}px`,
-            top: `${r.top * b.height + half}px`,
-            width: `${Math.max(0, (r.right - r.left) * b.width - gap)}px`,
-            height: `${Math.max(0, (r.bottom - r.top) * b.height - gap)}px`,
+            left: `${box.left}px`,
+            top: `${box.top}px`,
+            width: `${box.width}px`,
+            height: `${box.height}px`,
         });
     }
 
@@ -740,13 +766,12 @@ export function makeAreaLayout(workspace, opts) {
                 splitPreview.classList.remove("arch-area-preview--visible");
                 joinTarget = canJoin(state, originArea, hit) ? hit : null;
                 if (joinTarget) {
-                    const r = areaRect(state, joinTarget);
-                    const half = gap / 2;
+                    const box = gappedBox(areaRect(state, joinTarget), b);
                     Object.assign(joinPreview.style, {
-                        left: `${r.left * b.width + half}px`,
-                        top: `${r.top * b.height + half}px`,
-                        width: `${Math.max(0, (r.right - r.left) * b.width - gap)}px`,
-                        height: `${Math.max(0, (r.bottom - r.top) * b.height - gap)}px`,
+                        left: `${box.left}px`,
+                        top: `${box.top}px`,
+                        width: `${box.width}px`,
+                        height: `${box.height}px`,
                     });
                     joinPreview.classList.add("arch-area-preview--visible");
                 } else {
@@ -817,21 +842,21 @@ export function makeAreaLayout(workspace, opts) {
     }
 
     function showSplitPreview(rect, axis, fraction, b) {
-        const half = gap / 2;
+        const box = gappedBox(rect, b);
         if (axis === "v") {
             const x = (rect.left + (rect.right - rect.left) * fraction) * b.width;
             Object.assign(splitPreview.style, {
                 left: `${x - 1}px`,
-                top: `${rect.top * b.height + half}px`,
+                top: `${box.top}px`,
                 width: "2px",
-                height: `${Math.max(0, (rect.bottom - rect.top) * b.height - gap)}px`,
+                height: `${box.height}px`,
             });
         } else {
             const y = (rect.top + (rect.bottom - rect.top) * fraction) * b.height;
             Object.assign(splitPreview.style, {
-                left: `${rect.left * b.width + half}px`,
+                left: `${box.left}px`,
                 top: `${y - 1}px`,
-                width: `${Math.max(0, (rect.right - rect.left) * b.width - gap)}px`,
+                width: `${box.width}px`,
                 height: "2px",
             });
         }

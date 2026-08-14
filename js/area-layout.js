@@ -67,6 +67,25 @@ function makeId(prefix) {
     return `${prefix}${uid++}`;
 }
 
+/**
+ * Bumps the id counter past every id already present in a restored layout.
+ *
+ * `uid` is module-level and starts fresh on every page load, but a restored
+ * layout carries ids minted by an *earlier* load — so without this, the first
+ * split after restoring re-mints ids that are already taken and
+ * `state.verts.set(...)`/`state.areas.set(...)` silently overwrites a live
+ * record. Overwriting a vert is the visible failure: the split moves an
+ * existing corner (e.g. the workspace's own 0,0) onto the new border's
+ * coordinates, which drags every area sharing that corner with it and leaves
+ * dead space where the layout no longer covers the workspace.
+ */
+function seedUid(state) {
+    for (const id of [...state.verts.keys(), ...state.areas.keys()]) {
+        const n = Number.parseInt(String(id).replace(/^\D+/, ""), 10);
+        if (Number.isFinite(n) && n >= uid) uid = n + 1;
+    }
+}
+
 function findOrCreateVert(state, x, y) {
     for (const v of state.verts.values()) {
         if (approxEq(v.x, x) && approxEq(v.y, y)) return v;
@@ -272,10 +291,12 @@ function serialize(state) {
 }
 
 function deserialize(layout) {
-    return {
+    const state = {
         verts: new Map(layout.verts.map((v) => [v.id, { ...v }])),
         areas: new Map(layout.areas.map((a) => [a.id, { ...a }])),
     };
+    seedUid(state);
+    return state;
 }
 
 /**

@@ -239,7 +239,7 @@ Click it to open a small popover (this library's own `popover.js`/
 
 | Function | Description |
 |---|---|
-| `makeAreaLayout(workspace, opts)` | Builds and wires the whole tiling layout inside `workspace`. Returns `{ destroy(), getLayout(), setContentSubtitle() }`. |
+| `makeAreaLayout(workspace, opts)` | Builds and wires the whole tiling layout inside `workspace`. Returns `{ destroy(), getLayout(), setLayout(), setContentSubtitle() }`. |
 
 Each `.arch-area` carries two custom properties content can lay itself out
 against: `--arch-area-chip-height` (the chip's fixed height, declared in
@@ -284,6 +284,14 @@ split/join/border-resize drag — for a consumer whose content is expensive
 to resize continuously, e.g. a GPU canvas reconfiguring its render targets
 on every intermediate size, the place to pause that work for the drag's
 duration).
+
+`setLayout(layout)` swaps the whole arrangement in place (pass nothing to
+reset to the default single area) — for a consumer offering saved layouts to
+switch between without reloading the page. Areas are diffed rather than
+rebuilt: one whose id *and* content type both survive keeps its mounted
+instance, so an expensive instance (a canvas holding a GPU context) isn't
+torn down for nothing. It deliberately doesn't fire `onChange` — the caller
+already has the layout it just applied.
 
 Markup: none needed beyond `workspace` itself having `position: relative`
 (or `absolute`) and an explicit size — every area, its header, body,

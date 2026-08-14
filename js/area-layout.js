@@ -357,7 +357,7 @@ function deserialize(layout) {
  * @param {() => void} [opts.onInteractionEnd] called once a drag started by
  *   `onInteractionStart` ends (release or cancel) — the layout has already
  *   settled into its final rects by the time this fires.
- * @returns {{ destroy(): void, getLayout(): object, setContentSubtitle(contentId: string, subtitle: string | null): void }}
+ * @returns {{ destroy(): void, getLayout(): object, setLayout(layout?: object | null): void, setContentSubtitle(contentId: string, subtitle: string | null): void }}
  */
 export function makeAreaLayout(workspace, opts) {
     const {
@@ -932,6 +932,28 @@ export function makeAreaLayout(workspace, opts) {
         },
         getLayout() {
             return serialize(state);
+        },
+        /**
+         * Replaces the whole layout in place with `layout` (a previously
+         * `getLayout()`'d blob), or resets to the default single-area layout
+         * when passed nothing — so a consumer offering saved arrangements can
+         * switch between them without reloading the page.
+         *
+         * Areas are diffed, not rebuilt wholesale: an area whose id and
+         * content type both survive keeps its mounted instance untouched (its
+         * box just moves), and only genuinely new/removed/reassigned areas get
+         * an `onMount`/`onUnmount`. That's what makes this cheap enough to use
+         * for a live layout switch — an expensive instance (a canvas holding a
+         * GPU context, say) isn't torn down and rebuilt for nothing.
+         *
+         * Deliberately does *not* fire `onChange`: the caller already has the
+         * layout in hand and is the one choosing to apply it, so echoing it
+         * back would just make persist-on-change handlers re-save what they
+         * were given.
+         */
+        setLayout(layout) {
+            state = layout ? deserialize(layout) : defaultLayout(opts.defaultContentId);
+            render();
         },
         /**
          * Sets the smaller secondary line shown under `contentId`'s name on

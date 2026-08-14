@@ -49,6 +49,9 @@
     /* ── Typography ── */
     --arch-font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
         Roboto, "Helvetica Neue", Arial, sans-serif;
+    /* Caption size — a label subordinate to the thing it names (a stacked
+       switcher tab's caption, a chip's second line), not body text. */
+    --arch-font-size-xs: 0.7rem;
     --arch-font-size-sm: 0.8rem;
     --arch-font-size-md: 0.875rem;
     --arch-font-size-lg: 1rem;

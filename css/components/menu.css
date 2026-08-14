@@ -140,7 +140,16 @@
 
 /* Every row reserves the same leading slot — icon, check state, or nothing —
    so labels line up down the whole menu instead of stepping in and out
-   depending on which rows happen to have an icon. */
+   depending on which rows happen to have an icon.
+
+   The reservation is per list, not per row: a menu where *nothing* fills the
+   slot (no icons, no checkable rows) drops it entirely rather than indenting
+   every label past an empty gutter. A menu with even one filled slot keeps it
+   on all of its rows — that's the alignment the gutter exists for. */
+.arch-menu:not(:has(.arch-menu__lead > *)) .arch-menu__lead {
+    display: none;
+}
+
 .arch-menu__lead {
     flex: 0 0 auto;
     display: inline-flex;

@@ -67,6 +67,11 @@ function isInteractive(item) {
  * @param {Record<string, (container: HTMLElement) => void>} [options.renderers]
  *   Builders for `type: "custom"` rows, keyed by the row's id. Called once per
  *   (re)build with the row's own container.
+ * @param {(id: string, item: ArchMenuItem) => boolean|undefined} [options.resolveChecked]
+ *   Asked for a checkable row's state as it's built, falling back to the
+ *   item's own `checked`. Prefer this over `setChecked` for anything inside a
+ *   submenu: submenu panels are built fresh on every open, so state pushed in
+ *   once at startup would be lost the first time one is reopened.
  * @param {(root?: HTMLElement) => void} [options.renderIcons] Pass `renderIcons`
  *   from icons.js to fill in icon glyphs; omit if the consumer renders icons
  *   itself afterwards.
@@ -76,7 +81,7 @@ function isInteractive(item) {
  *   setLabel: (id: string, label: string) => void, destroy: () => void }}
  */
 export function makeMenuBar(root, options = {}) {
-    const { onSelect, onToggle, renderers = {}, renderIcons } = options;
+    const { onSelect, onToggle, renderers = {}, resolveChecked, renderIcons } = options;
 
     root.classList.add("arch-menu-bar");
 
@@ -233,7 +238,8 @@ export function makeMenuBar(root, options = {}) {
             const input = document.createElement("input");
             input.type = "checkbox";
             input.className = "arch-menu__check-input";
-            input.checked = Boolean(item.checked);
+            const resolved = item.id !== undefined ? resolveChecked?.(item.id, item) : undefined;
+            input.checked = Boolean(resolved ?? item.checked);
             input.disabled = Boolean(item.disabled);
             row.appendChild(input);
             const state = document.createElement("span");

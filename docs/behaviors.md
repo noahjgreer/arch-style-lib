@@ -80,6 +80,7 @@ out of a submenu, Enter/Space, Escape).
 | `onSelect(id, item)` | An action row was activated. The menu closes *first*, so the handler is free to open a dialog or move focus. |
 | `onToggle(id, checked, item)` | A `type: "check"` row changed. The menu deliberately stays open — flipping two related switches shouldn't cost two trips through the bar. |
 | `renderers` | `{ [id]: (container) => void }` builders for `type: "custom"` rows, called once per (re)build. |
+| `resolveChecked(id, item)` | Asked for a checkable row's state as it's built, falling back to the item's own `checked`. Prefer this over `setChecked` for rows inside a **submenu** — submenu panels are rebuilt on every open, so state pushed in once at startup is lost the first time one is reopened. |
 | `renderIcons` | Pass `renderIcons` from `icons.js` to fill in icon glyphs. |
 
 Item types: `"item"` (default; `{ id, name, icon, shortcut, disabled }`, or

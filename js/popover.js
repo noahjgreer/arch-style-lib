@@ -9,18 +9,28 @@
  * the viewport and flipping above the anchor if it would overflow below.
  * @param {HTMLElement} popover
  * @param {HTMLElement} anchor
- * @param {{ gap?: number, edgePadding?: number, reserveBottom?: number }} [opts]
+ * @param {{ gap?: number, edgePadding?: number, reserveBottom?: number,
+ *   align?: "center"|"start"|"end" }} [opts]
  *   reserveBottom: extra space to avoid at the bottom of the viewport, e.g.
  *   for a fixed tab bar or toolbar sitting below the popover's anchor area.
+ *   align: which of the popover's edges lines up with the anchor's — "center"
+ *   (default) for a notched popover hanging under a button, "start"/"end" for
+ *   a menu, whose left (or right) edge is expected to sit flush with its
+ *   trigger's rather than straddling it.
  */
 export function positionPopover(popover, anchor, opts = {}) {
-    const { gap = 10, edgePadding = 8, reserveBottom = 0 } = opts;
+    const { gap = 10, edgePadding = 8, reserveBottom = 0, align = "center" } = opts;
 
     const anchorRect = anchor.getBoundingClientRect();
     const width = popover.offsetWidth || 140;
     const height = popover.offsetHeight || 180;
 
-    const idealLeft = anchorRect.left + anchorRect.width / 2 - width / 2;
+    const idealLeft =
+        align === "start"
+            ? anchorRect.left
+            : align === "end"
+              ? anchorRect.right - width
+              : anchorRect.left + anchorRect.width / 2 - width / 2;
     const clampedLeft = Math.max(
         edgePadding,
         Math.min(idealLeft, window.innerWidth - width - edgePadding)

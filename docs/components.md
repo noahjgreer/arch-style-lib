@@ -73,6 +73,67 @@ ancestor** — see the gotcha note in [behaviors.md](./behaviors.md#popover).
 </div>
 ```
 
+## Menu — `.arch-menu-bar`, `.arch-menu`
+
+A desktop-style application menu bar: a row of text triggers, each dropping a
+stacked list of rows. Normally you don't write this markup —
+[`js/menu.js`](./behaviors.md#menu) builds all of it from a definition array —
+but the classes are here for anything hand-rolled.
+
+Deliberately **not** a column of `.arch-btn`/`.arch-toggle-btn` pills in a
+popover: a pill carries its own surface, so a stack of them reads as loose
+buttons sharing a panel. A menu row has no surface until hovered, spans the
+panel's full width, and aligns its label against every other row's — that
+shared leading slot (`.arch-menu__lead`, always reserved whether or not the
+row has an icon) is most of what makes a list read as one menu.
+
+For the same reason, use `.arch-menu__item--check` for an on/off row *inside a
+menu* even in a project that otherwise standardizes on `.arch-toggle-btn` — it
+keeps that component's hollow→filled state dot, in the menu's own row idiom.
+
+```html
+<nav class="arch-menu-bar">
+    <button class="arch-menu-bar__trigger" type="button" aria-haspopup="true">Project</button>
+    <div class="arch-menu-bar__spacer"></div>
+    <button class="arch-menu-bar__trigger" type="button" aria-haspopup="true">Account</button>
+</nav>
+
+<!-- Sibling of the bar at <body> level — same containing-block gotcha as any popover. -->
+<div class="arch-popover arch-popover--menu arch-glass" data-arch-popover>
+    <div class="arch-menu" role="menu">
+        <button class="arch-menu__item" type="button" role="menuitem">
+            <span class="arch-menu__lead"><span class="arch-icon" data-icon="plus"></span></span>
+            <span class="arch-menu__label">New project</span>
+            <span class="arch-menu__shortcut">Ctrl+N</span>
+        </button>
+
+        <div class="arch-menu__separator" role="separator"></div>
+        <div class="arch-menu__group-label">Preferences</div>
+
+        <label class="arch-menu__item arch-menu__item--check" role="menuitemcheckbox">
+            <input class="arch-menu__check-input" type="checkbox" checked />
+            <span class="arch-menu__lead"><span class="arch-menu__state"></span></span>
+            <span class="arch-menu__label">Dark theme</span>
+        </label>
+
+        <button class="arch-menu__item" type="button" role="menuitem" aria-haspopup="true">
+            <span class="arch-menu__lead"></span>
+            <span class="arch-menu__label">Recent</span>
+            <span class="arch-icon arch-menu__marker" data-icon="chevron.right"></span>
+        </button>
+
+        <div class="arch-menu__text">you@example.com</div>
+        <div class="arch-menu__custom">…any control the app builds itself…</div>
+    </div>
+</div>
+```
+
+Rows: `.arch-menu__item` (`--check` / `--disabled` / `--active`, the last set by
+`menu.js` on the keyboard-focused row so arrow keys and the mouse highlight
+identically), `.arch-menu__separator`, `.arch-menu__group-label`,
+`.arch-menu__text`, `.arch-menu__custom`. `.arch-menu-bar__spacer` pushes
+everything after it to the far end of the bar.
+
 ## Modal — `.arch-modal`
 
 Centered glass dialog over a dimmed, blurred backdrop. Chrome only — toggle

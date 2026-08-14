@@ -234,6 +234,15 @@
     </div>
 
     <section class="arch-glass arch-glass-panel">
+        <h2>Menu bar</h2>
+        <p>Built entirely from a definition array by <code>js/menu.js</code> — click a
+            trigger, then sweep across the bar to switch menus, or use the arrow keys.</p>
+        <!-- The bar itself is safe inside a glass card; its panels are appended
+             to <body> by menu.js for the containing-block reason noted above. -->
+        <nav id="demo-menu-bar"></nav>
+    </section>
+
+    <section class="arch-glass arch-glass-panel">
         <h2>Drag to reorder</h2>
         <p>Drag any row by its handle to reorder the list.</p>
         <ul id="glass-list">
@@ -284,6 +293,7 @@
         import { initSwitcher, initRadioSwitcher } from "/js/switcher.js";
         import { makeDragReorder } from "/js/drag-reorder.js";
         import { makePanelSwap } from "/js/panel-swap.js";
+        import { makeMenuBar } from "/js/menu.js";
         import { renderIcons } from "/js/icons.js";
 
         initTheme();
@@ -316,6 +326,56 @@
             }
         });
         bindDismiss(popover, popoverBtn, () => closePopover(popover));
+
+        // Plain data in, behavior keyed by id — a consuming app can keep this
+        // array in a JSON file and edit its menus without touching code.
+        makeMenuBar(document.getElementById("demo-menu-bar"), {
+            renderIcons,
+            menus: [
+                {
+                    name: "File",
+                    items: [
+                        { id: "file.new", name: "New", icon: "plus", shortcut: "Ctrl+N" },
+                        { id: "file.open", name: "Open…", icon: "folder", shortcut: "Ctrl+O" },
+                        {
+                            name: "Open recent",
+                            items: [
+                                { id: "file.recent.1", name: "sketch.json" },
+                                { id: "file.recent.2", name: "notes.json" },
+                            ],
+                        },
+                        { type: "separator" },
+                        { id: "file.export", name: "Export…", icon: "square.and.arrow.down" },
+                        { id: "file.print", name: "Print", disabled: true, shortcut: "Ctrl+P" },
+                    ],
+                },
+                {
+                    name: "View",
+                    items: [
+                        { type: "check", id: "view.grid", name: "Show grid", checked: true },
+                        { type: "check", id: "view.rulers", name: "Show rulers" },
+                        {
+                            type: "group",
+                            name: "Appearance",
+                            items: [{ type: "check", id: "view.dark", name: "Dark theme" }],
+                        },
+                    ],
+                },
+                {
+                    name: "Account",
+                    align: "end",
+                    items: [
+                        { type: "text", name: "you@example.com" },
+                        { id: "account.signout", name: "Sign out", icon: "rectangle.portrait.and.arrow.right" },
+                    ],
+                },
+            ],
+            onSelect: (id) => console.log("menu select:", id),
+            onToggle: (id, checked) => {
+                if (id === "view.dark") toggleTheme();
+                console.log("menu toggle:", id, checked);
+            },
+        });
 
         const modal = document.getElementById("demo-modal");
         document.getElementById("modal-btn").addEventListener("click", () => {

@@ -1,0 +1,258 @@
+/*
+ * arch-style-lib :: menu
+ * A real application menu bar — a row of text triggers, each dropping a
+ * stacked list of rows, the way a desktop app's File/Edit/Help bar works.
+ *
+ * Deliberately *not* a stack of `.arch-btn`/`.arch-toggle-btn` pills inside a
+ * popover: a pill is a self-contained object with its own surface, so a column
+ * of them reads as loose buttons that happen to share a panel. A menu row has
+ * no surface of its own until it's hovered, sits flush to the panel's own
+ * width, and aligns its label against every other row's — which is what makes
+ * a group of them read as one menu. (This is why consuming projects that
+ * otherwise standardize on `.arch-toggle-btn` for every on/off control should
+ * still use `.arch-menu__item--check` *inside a menu* — the checkable row is
+ * the menu's own idiom for the same state.)
+ *
+ * Pair with js/menu.js, which builds all of this from a definition array and
+ * owns open/close, hover-to-switch, submenus and keyboard navigation. The
+ * markup below is what it produces:
+ *
+ * <nav class="arch-menu-bar">
+ *   <button class="arch-menu-bar__trigger" type="button">Project</button>
+ *   ...
+ * </nav>
+ * <div class="arch-popover arch-popover--menu arch-glass" data-arch-popover>
+ *   <div class="arch-menu" role="menu">
+ *     <button class="arch-menu__item" role="menuitem">
+ *       <span class="arch-menu__lead"><span class="arch-icon" data-icon="plus"></span></span>
+ *       <span class="arch-menu__label">New project</span>
+ *       <span class="arch-menu__shortcut">Ctrl+N</span>
+ *     </button>
+ *     <div class="arch-menu__separator" role="separator"></div>
+ *   </div>
+ * </div>
+ *
+ * Panels must be siblings of the bar at <body> level, never descendants of an
+ * `.arch-glass` surface — see popover.css and docs/behaviors.md for why.
+ */
+
+.arch-menu-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    width: 100%;
+}
+
+/* Pushes everything after it to the far end of the bar — how js/menu.js
+   implements a menu declared with `align: "end"` (an Account/user menu, say)
+   without needing a second container. */
+.arch-menu-bar__spacer {
+    flex: 1 1 auto;
+}
+
+/* A trigger is text only — no border, no fill at rest. It picks up a surface
+   only on hover/open, so the bar itself reads as a strip of labels rather
+   than as a toolbar of buttons. */
+.arch-menu-bar__trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--arch-space-xs);
+    border: none;
+    border-radius: var(--arch-radius-sm);
+    padding: 0.3rem var(--arch-space-sm);
+    background: transparent;
+    color: var(--arch-fg);
+    font: inherit;
+    font-size: var(--arch-font-size-md);
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        background-color var(--arch-duration-fast) ease,
+        color var(--arch-duration-fast) ease;
+
+    &:hover {
+        background-color: color-mix(in srgb, var(--arch-glass-tint) var(--arch-glass-mix), transparent);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--arch-accent);
+        outline-offset: 1px;
+    }
+}
+
+.arch-menu-bar__trigger--open {
+    background-color: color-mix(in srgb, var(--arch-accent) 18%, transparent);
+    color: var(--arch-accent);
+}
+
+/* The dropped panel. Tighter padding than a general-purpose popover, since a
+   menu's own rows carry the inset — the panel's job is just the surface. */
+.arch-popover--menu {
+    padding: var(--arch-space-xs);
+    min-width: 11rem;
+    max-width: 22rem;
+}
+
+.arch-menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.arch-menu__item {
+    display: flex;
+    align-items: center;
+    gap: var(--arch-space-sm);
+    width: 100%;
+    border: none;
+    /* Inset from the panel's own radius so a hovered row's corners sit
+       concentrically inside it rather than cutting across the bevel. */
+    border-radius: calc(var(--arch-radius-md) - var(--arch-space-xs));
+    padding: 0.35rem var(--arch-space-sm);
+    background: transparent;
+    color: var(--arch-fg);
+    font: inherit;
+    font-size: var(--arch-font-size-md);
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color var(--arch-duration-fast) ease;
+
+    &:hover,
+    &:focus-visible {
+        background-color: color-mix(in srgb, var(--arch-accent) 16%, transparent);
+        outline: none;
+    }
+}
+
+/* Set by js/menu.js on the keyboard-focused row, so arrow-key navigation and
+   the mouse highlight the same way. */
+.arch-menu__item--active {
+    background-color: color-mix(in srgb, var(--arch-accent) 16%, transparent);
+}
+
+.arch-menu__item--disabled {
+    opacity: 0.4;
+    cursor: default;
+    pointer-events: none;
+}
+
+/* Every row reserves the same leading slot — icon, check state, or nothing —
+   so labels line up down the whole menu instead of stepping in and out
+   depending on which rows happen to have an icon. */
+.arch-menu__lead {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.15em;
+    font-size: 1em;
+    color: var(--arch-label-2);
+}
+
+.arch-menu__label {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.arch-menu__shortcut {
+    flex: 0 0 auto;
+    margin-left: var(--arch-space-md);
+    color: var(--arch-label-3);
+    font-size: var(--arch-font-size-sm);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Submenu chevron. Same slot as a shortcut — a row never has both. */
+.arch-menu__marker {
+    flex: 0 0 auto;
+    margin-left: var(--arch-space-sm);
+    color: var(--arch-label-3);
+    font-size: 0.75em;
+}
+
+/* Checkable row: the same hollow→filled state dot `.arch-toggle-btn` uses, in
+   the shared leading slot, so "this is a toggle" reads identically whether the
+   control is a pill in a toolbar or a row in a menu. */
+.arch-menu__state {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background-color: transparent;
+    box-shadow: inset 0 0 0 1.5px currentColor;
+    opacity: 0.5;
+    transition:
+        background-color var(--arch-duration-fast) ease,
+        opacity var(--arch-duration-fast) ease;
+}
+
+.arch-menu__check-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.arch-menu__item--check:has(> .arch-menu__check-input:checked) {
+    color: var(--arch-accent);
+
+    & .arch-menu__lead {
+        color: inherit;
+    }
+
+    & .arch-menu__state {
+        background-color: currentColor;
+        opacity: 1;
+    }
+}
+
+.arch-menu__item--check:has(> .arch-menu__check-input:focus-visible) {
+    background-color: color-mix(in srgb, var(--arch-accent) 16%, transparent);
+}
+
+.arch-menu__separator {
+    height: 1px;
+    margin: var(--arch-space-xs) var(--arch-space-sm);
+    background-color: var(--arch-separator);
+}
+
+/* A named section *within* one menu — a caption plus its rows, separated from
+   what came before by a hairline. Cheaper than a submenu for a handful of
+   related rows the user shouldn't have to hunt for behind another hover. */
+.arch-menu__group-label {
+    padding: var(--arch-space-sm) var(--arch-space-sm) var(--arch-space-xs);
+    color: var(--arch-label-2);
+    font-size: var(--arch-font-size-xs);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+/* Non-interactive informational row (a signed-in address, a status line). */
+.arch-menu__text {
+    padding: 0.35rem var(--arch-space-sm);
+    color: var(--arch-label-2);
+    font-size: var(--arch-font-size-sm);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Escape hatch for a row that isn't a row at all — a switcher, a slider, a
+   whole sub-control the consuming app builds into the menu itself. Stays a
+   plain container so the app's own component keeps its own look. */
+.arch-menu__custom {
+    display: flex;
+    flex-direction: column;
+    gap: var(--arch-space-xs);
+    padding: var(--arch-space-xs) var(--arch-space-sm);
+}

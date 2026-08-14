@@ -43,7 +43,7 @@ await applyAdaptiveGlass("/backgrounds/sunset.jpg");
 
 | Function | Description |
 |---|---|
-| `positionPopover(popover, anchor, opts?)` | Positions a `position: fixed` popover against an anchor, clamped to the viewport, flipping above the anchor if there's no room below. `opts: { gap, edgePadding, reserveBottom }`. |
+| `positionPopover(popover, anchor, opts?)` | Positions a `position: fixed` popover against an anchor, clamped to the viewport, flipping above the anchor if there's no room below. `opts: { gap, edgePadding, reserveBottom, align }` — `align` is `"center"` (default, for a notched popover hanging under a button), `"start"` or `"end"` (flush with the anchor's left/right edge, which is what a menu wants). |
 | `openPopover(popover, anchor, opts?)` | Positions, then adds `.arch-popover--open`. |
 | `closePopover(popover)` | Removes `.arch-popover--open`. |
 | `bindDismiss(popover, anchor, onClose)` | Closes on outside pointerdown. Returns a cleanup function. |
@@ -59,6 +59,54 @@ bindDismiss(popover, btn, () => closePopover(popover));
 > containing block, so a `position: fixed` descendant positions itself
 > relative to *that* ancestor instead of the viewport. Keep popovers as
 > siblings at the end of `<body>` — see `index.html` for the pattern.
+
+## Menu
+
+`js/menu.js` — builds a whole [menu bar](./components.md#menu--arch-menu-bar-arch-menu)
+from a definition array: triggers, dropped panels, sections, checkable rows,
+submenus, hover-to-switch between open menus, and keyboard navigation
+(up/down through rows with wrap-around, left/right along the bar or in and
+out of a submenu, Enter/Space, Escape).
+
+| Function | Description |
+|---|---|
+| `makeMenuBar(root, opts)` | Builds the bar into `root` and returns `{ setMenus, closeAll, setChecked, setDisabled, setLabel, destroy }`. |
+
+`opts`:
+
+| Option | Description |
+|---|---|
+| `menus` | `[{ name, align?, items }]`. `align: "end"` pushes this menu and any after it to the far end of the bar. |
+| `onSelect(id, item)` | An action row was activated. The menu closes *first*, so the handler is free to open a dialog or move focus. |
+| `onToggle(id, checked, item)` | A `type: "check"` row changed. The menu deliberately stays open — flipping two related switches shouldn't cost two trips through the bar. |
+| `renderers` | `{ [id]: (container) => void }` builders for `type: "custom"` rows, called once per (re)build. |
+| `renderIcons` | Pass `renderIcons` from `icons.js` to fill in icon glyphs. |
+
+Item types: `"item"` (default; `{ id, name, icon, shortcut, disabled }`, or
+`items` for a submenu), `"check"` (`checked`), `"separator"`, `"group"`
+(`{ name, items }` — a captioned section within one menu, with a rule above),
+`"text"` (a non-interactive line) and `"custom"`.
+
+The definition is plain data on purpose, so an app can keep its menus in a JSON
+file and edit them without touching code — behavior arrives separately, keyed
+by each row's `id`.
+
+```js
+import { makeMenuBar } from "/js/menu.js";
+import { renderIcons } from "/js/icons.js";
+
+const bar = makeMenuBar(document.querySelector("#menu-bar"), {
+    menus: await fetch("/menus.json").then((r) => r.json()),
+    renderIcons,
+    onSelect: (id) => actions[id]?.(),
+    onToggle: (id, checked) => preferences[id]?.(checked),
+});
+bar.setChecked("theme.dark", true);
+```
+
+> Panels are appended to `<body>`, never to `root` — the same
+> `backdrop-filter` containing-block gotcha as any popover, which a menu bar
+> living inside a glass header would otherwise hit every time.
 
 ## Switcher
 

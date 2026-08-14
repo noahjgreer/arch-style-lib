@@ -20,6 +20,16 @@
  *   <label class="arch-switcher__tab">
  *     <input type="radio" name="mode" c-option="two" />Two</label>
  * </fieldset>
+ *
+ * Vertical variant (--vertical): the same control stacked down a sidebar,
+ * with the pill sliding on Y instead of X. Tabs stack their own contents too,
+ * so an icon over a .arch-switcher__label caption needs no extra class:
+ * <div class="arch-switcher arch-switcher--vertical arch-glass">
+ *   <button class="arch-switcher__tab arch-switcher__tab--active">
+ *     <span class="arch-icon" data-icon="cube"></span>
+ *     <span class="arch-switcher__label">Modeling</span>
+ *   </button>
+ * </div>
  */
 
 .arch-switcher {
@@ -76,6 +86,43 @@
 .arch-switcher__tab:has(input:checked) {
     opacity: 1;
     cursor: default;
+}
+
+/* Vertical variant — the pill slides down instead of across. Tabs keep
+   `flex: 1`, so they share the container's height equally whenever it has
+   height to give; in an auto-height container they size to their content,
+   which the sliding pill's `100% / count` geometry assumes is uniform (keep
+   captions to one line — .arch-switcher__label below does). */
+.arch-switcher--vertical {
+    flex-direction: column;
+}
+
+.arch-switcher--vertical::after {
+    right: 0.25rem;
+    bottom: auto;
+    width: auto;
+    height: calc((100% - 0.5rem) / var(--arch-switcher-count));
+    transform: translateY(calc(var(--arch-switcher-index) * 100%));
+}
+
+.arch-switcher--vertical .arch-switcher__tab {
+    flex-direction: column;
+    padding: 0.5rem 0.25rem;
+    /* A vertical tab's own width is the container's, so an over-long caption
+       has to be clipped rather than allowed to stretch the whole control. */
+    min-width: 0;
+}
+
+/* Caption under a stacked tab's icon. Deliberately single-line: a wrapped
+   caption would make one tab taller than the rest and desynchronize the
+   sliding pill, which positions itself off an equal-share assumption. */
+.arch-switcher__label {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--arch-font-size-sm);
+    line-height: 1.2;
 }
 
 /* Visually hide a radio input inside a label-based tab, keeping it focusable */

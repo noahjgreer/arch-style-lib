@@ -146,6 +146,22 @@
                     <input type="radio" name="demo-range" c-option="month" />Month
                 </label>
             </fieldset>
+            <p>Vertical variant, with an icon over a caption per tab:</p>
+            <div class="arch-switcher arch-switcher--vertical arch-glass" id="demo-vertical-switcher"
+                style="max-width: 8rem;">
+                <button class="arch-switcher__tab arch-switcher__tab--active" type="button">
+                    <span class="arch-icon" data-icon="house" aria-hidden="true"></span>
+                    <span class="arch-switcher__label">Home</span>
+                </button>
+                <button class="arch-switcher__tab" type="button">
+                    <span class="arch-icon" data-icon="tray" aria-hidden="true"></span>
+                    <span class="arch-switcher__label">Inbox</span>
+                </button>
+                <button class="arch-switcher__tab" type="button">
+                    <span class="arch-icon" data-icon="gearshape" aria-hidden="true"></span>
+                    <span class="arch-switcher__label">Settings</span>
+                </button>
+            </div>
         </div>
 
         <div class="arch-glass arch-glass-panel">
@@ -288,6 +304,7 @@
 
         initSwitcher(document.getElementById("demo-switcher"));
         initRadioSwitcher(document.getElementById("demo-radio-switcher"));
+        initSwitcher(document.getElementById("demo-vertical-switcher"));
 
         const popover = document.getElementById("demo-popover");
         const popoverBtn = document.getElementById("popover-btn");

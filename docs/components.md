@@ -131,6 +131,28 @@ needed:
 </fieldset>
 ```
 
+### Vertical — `.arch-switcher--vertical`
+
+The same control turned down a sidebar: tabs stack, and the pill slides on Y.
+A vertical tab lays its own contents out in a column too, so an icon over a
+caption needs nothing but `.arch-switcher__label` on the caption — which stays
+on one line (ellipsized), since a wrapped caption would make one tab taller
+than its siblings and the sliding pill assumes every tab is an equal share of
+the container.
+
+```html
+<div class="arch-switcher arch-switcher--vertical arch-glass" id="places">
+    <button class="arch-switcher__tab arch-switcher__tab--active">
+        <span class="arch-icon" data-icon="house"></span>
+        <span class="arch-switcher__label">Home</span>
+    </button>
+    <button class="arch-switcher__tab">
+        <span class="arch-icon" data-icon="tray"></span>
+        <span class="arch-switcher__label">Inbox</span>
+    </button>
+</div>
+```
+
 ## Toggle — `.arch-toggle`
 
 An iOS-style switch. Built on a native `<input type="checkbox">` for

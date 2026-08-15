@@ -1,26 +1,38 @@
 /*
  * arch-style-lib :: icons
- * Custom symbol font + the .arch-icon base class. Icons are referenced by
- * name in markup (data-icon="archivebox") and resolved to the right glyph
- * by js/icons.js — see docs/icons.md.
+ * The .arch-icon base class. Icons are referenced by name in markup
+ * (data-icon="download") and filled in as inline SVG by js/icons.js — see
+ * docs/icons.md.
+ *
+ * Every presentation attribute of the Lucide set lives here rather than in
+ * the icon data, which is what makes stroke weight tunable at runtime: the
+ * data is raw geometry in a 0 0 24 24 box, and stroke/fill/caps are
+ * inherited SVG properties, so setting them on the wrapper reaches the
+ * paths inside for free.
  */
 
-@font-face {
-    font-family: "ArchSymbols";
-    src: url("../fonts/SF-Symbols.ttf") format("truetype");
-    font-weight: normal;
-    font-style: normal;
-    font-display: block;
-}
-
 .arch-icon {
-    display: inline-block;
-    font-family: "ArchSymbols";
-    font-size: var(--arch-icon-size, 1.5rem);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--arch-icon-size, 1.5rem);
+    block-size: var(--arch-icon-size, 1.5rem);
+    flex: none;
     line-height: 1;
-    font-style: normal;
-    font-weight: normal;
-    speak: none;
     user-select: none;
     vertical-align: middle;
+
+    /* Inherited by the <svg> and its paths — see the file comment. */
+    fill: none;
+    stroke: currentColor;
+    stroke-width: var(--arch-icon-stroke, 2.5);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.arch-icon > svg {
+    inline-size: 100%;
+    block-size: 100%;
+    display: block;
+    overflow: visible;
 }

@@ -51,12 +51,12 @@
  * otherwise clip a `position: fixed` popover to the area's own bounds.
  */
 
-import { iconChar } from "./icons.js";
+import { setIcon } from "./icons.js";
 import { openPopover, closePopover, bindDismiss } from "./popover.js";
 
 const EPS = 0.0005;
 /** Shown for a content type with no `icon` given, or an empty ("—") area. */
-const DEFAULT_ICON = "square.grid.3x3.square";
+const DEFAULT_ICON = "grid-3x3";
 
 function approxEq(a, b) {
     return Math.abs(a - b) < EPS;
@@ -439,8 +439,7 @@ export function makeAreaLayout(workspace, opts) {
         button.className = "arch-area-type-popover__item" + (active ? " is-active" : "");
         const iconEl = document.createElement("span");
         iconEl.className = "arch-icon";
-        iconEl.setAttribute("aria-hidden", "true");
-        iconEl.textContent = iconChar(icon ?? DEFAULT_ICON);
+        setIcon(iconEl, icon ?? DEFAULT_ICON);
         // Same label-over-sublabel stack the chip itself uses, so an entry
         // reads as the thing the chip will become once picked.
         const text = document.createElement("span");
@@ -655,7 +654,7 @@ export function makeAreaLayout(workspace, opts) {
             const type = contentTypes.find((t) => t.id === area.contentId);
             const label = type?.label ?? "Empty area";
             const subtitle = (area.contentId && subtitles.get(area.contentId)) || "";
-            record.typeIcon.textContent = iconChar(type?.icon ?? DEFAULT_ICON);
+            setIcon(record.typeIcon, type?.icon ?? DEFAULT_ICON);
             record.typeLabel.textContent = label;
             record.typeSublabel.textContent = subtitle;
             record.typeSublabel.hidden = subtitle === "";

@@ -33,9 +33,9 @@
 /* The grip glyph is baked in rather than left to markup — matches the
    Alfredo dashboard this was generalized from exactly (see this repo's
    CLAUDE.md), and means a handle needs no inner markup at all: just
-   `<span class="arch-panel-handle"></span>`. Uses the page's own font
-   stack (not the ArchSymbols icon font) since Braille Pattern glyphs
-   aren't part of that icon subset. */
+   `<span class="arch-panel-handle"></span>`. It's a text glyph in the
+   page's own font stack rather than an `.arch-icon` — the icon set has no
+   equivalent, and a `::before` can't hold SVG anyway. */
 .arch-panel-handle::before {
     content: "⠿";
 }

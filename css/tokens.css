@@ -59,6 +59,9 @@
     --arch-font-size-h1: 2.5rem;
     --arch-line-height: 1.5;
     --arch-icon-size: 1.5rem;
+    /* Lucide stroke weight, in the icons' own 24-unit box — so it scales
+       with --arch-icon-size rather than being a fixed pixel width. */
+    --arch-icon-stroke: 2.5;
 
     /* ── Spacing ── */
     --arch-space-xs: 0.25rem;

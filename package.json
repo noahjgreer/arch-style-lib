@@ -4,12 +4,19 @@
   "description": "Shared no-build-step pseudo-glass styling and behavior library.",
   "type": "module",
   "license": "SEE LICENSE IN LICENSE",
+  "scripts": {
+    "build:icons": "node tools/build-icons.mjs"
+  },
+  "devDependencies": {
+    "lucide-static": "^1.31.0"
+  },
   "exports": {
     "./css/*": "./css/*",
     "./js/*": "./js/*"
   },
   "files": [
     "css",
-    "js"
+    "js",
+    "LICENSE-lucide"
   ]
 }

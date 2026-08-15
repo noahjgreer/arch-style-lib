@@ -73,7 +73,7 @@ function isInteractive(item) {
  *   submenu: submenu panels are built fresh on every open, so state pushed in
  *   once at startup would be lost the first time one is reopened.
  * @param {(root?: HTMLElement) => void} [options.renderIcons] Pass `renderIcons`
- *   from icons.js to fill in icon glyphs; omit if the consumer renders icons
+ *   from icons.js to fill in row icons; omit if the consumer renders icons
  *   itself afterwards.
  * @returns {{ setMenus: (menus: ArchMenu[]) => void, closeAll: () => void,
  *   setChecked: (id: string, checked: boolean) => void,
@@ -263,7 +263,7 @@ export function makeMenuBar(root, options = {}) {
         if (item.items?.length) {
             const marker = document.createElement("span");
             marker.className = "arch-icon arch-menu__marker";
-            marker.dataset.icon = "chevron.right";
+            marker.dataset.icon = "chevron-right";
             marker.setAttribute("aria-hidden", "true");
             row.appendChild(marker);
         } else if (item.shortcut) {

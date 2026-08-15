@@ -40,7 +40,7 @@ Open [`index.html`](./index.html) in a browser for a full live showcase.
 ```
 css/            tokens, reset, glass utility, icons, components
 js/             theme, glass, icons, popover, switcher, drag-reorder
-fonts/          bundled icon font (+ FontForge source, build tools)
+tools/          icon-data generator (see docs/icons.md)
 docs/           usage docs
 index.html      live showcase / demo
 ```

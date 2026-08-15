@@ -181,7 +181,8 @@
     flex: 0 0 auto;
     margin-left: var(--arch-space-sm);
     color: var(--arch-label-3);
-    font-size: 0.75em;
+    /* Icons size off --arch-icon-size, not font-size — see css/icons.css. */
+    --arch-icon-size: 1em;
 }
 
 /* Checkable row: the same hollow→filled state dot `.arch-toggle-btn` uses, in

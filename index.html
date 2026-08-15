@@ -154,11 +154,11 @@
                     <span class="arch-switcher__label">Home</span>
                 </button>
                 <button class="arch-switcher__tab" type="button">
-                    <span class="arch-icon" data-icon="tray" aria-hidden="true"></span>
+                    <span class="arch-icon" data-icon="inbox" aria-hidden="true"></span>
                     <span class="arch-switcher__label">Inbox</span>
                 </button>
                 <button class="arch-switcher__tab" type="button">
-                    <span class="arch-icon" data-icon="gearshape" aria-hidden="true"></span>
+                    <span class="arch-icon" data-icon="settings" aria-hidden="true"></span>
                     <span class="arch-switcher__label">Settings</span>
                 </button>
             </div>
@@ -200,9 +200,27 @@
 
         <div class="arch-glass arch-glass-panel">
             <h2>Icons</h2>
-            <p>Referenced by name — see <code>docs/icons.md</code>.</p>
+            <p>Lucide, referenced by name — see <code>docs/icons.md</code>.</p>
             <div class="demo-row">
-                <span class="arch-icon" data-icon="square.and.arrow.down" aria-label="Save"></span>
+                <span class="arch-icon" data-icon="download" aria-label="Save"></span>
+                <span class="arch-icon" data-icon="scissors" aria-hidden="true"></span>
+                <span class="arch-icon" data-icon="palette" aria-hidden="true"></span>
+                <span class="arch-icon" data-icon="settings" aria-hidden="true"></span>
+                <span class="arch-icon" data-icon="trash-2" aria-hidden="true"></span>
+            </div>
+            <p>Sized by <code>--arch-icon-size</code>:</p>
+            <div class="demo-row" style="align-items: center;">
+                <span class="arch-icon" data-icon="star" style="--arch-icon-size: 1rem;" aria-hidden="true"></span>
+                <span class="arch-icon" data-icon="star" aria-hidden="true"></span>
+                <span class="arch-icon" data-icon="star" style="--arch-icon-size: 2rem;" aria-hidden="true"></span>
+                <span class="arch-icon" data-icon="star" style="--arch-icon-size: 3rem;" aria-hidden="true"></span>
+            </div>
+            <p>Stroke weight by <code>--arch-icon-stroke</code> (1.5 / 2 / 2.5 default / 3):</p>
+            <div class="demo-row">
+                <span class="arch-icon" data-icon="pen-tool" style="--arch-icon-size: 2rem; --arch-icon-stroke: 1.5;" aria-hidden="true"></span>
+                <span class="arch-icon" data-icon="pen-tool" style="--arch-icon-size: 2rem; --arch-icon-stroke: 2;" aria-hidden="true"></span>
+                <span class="arch-icon" data-icon="pen-tool" style="--arch-icon-size: 2rem;" aria-hidden="true"></span>
+                <span class="arch-icon" data-icon="pen-tool" style="--arch-icon-size: 2rem; --arch-icon-stroke: 3;" aria-hidden="true"></span>
             </div>
         </div>
     </section>
@@ -345,7 +363,7 @@
                             ],
                         },
                         { type: "separator" },
-                        { id: "file.export", name: "Export…", icon: "square.and.arrow.down" },
+                        { id: "file.export", name: "Export…", icon: "download" },
                         { id: "file.print", name: "Print", disabled: true, shortcut: "Ctrl+P" },
                     ],
                 },
@@ -366,7 +384,7 @@
                     align: "end",
                     items: [
                         { type: "text", name: "you@example.com" },
-                        { id: "account.signout", name: "Sign out", icon: "rectangle.portrait.and.arrow.right" },
+                        { id: "account.signout", name: "Sign out", icon: "log-out" },
                     ],
                 },
             ],

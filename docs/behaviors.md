@@ -154,6 +154,21 @@ makeDragReorder(document.querySelector("#list"), {
 });
 ```
 
+`css/components/drag-reorder.css` also ships **`.arch-jitter`**, the iOS
+"jiggling icons" affordance: put it on each reorderable item while your list
+is in edit mode, to say "these are objects you can pick up" without spending
+layout on saying it. It's a pure CSS class with no JS side — add and remove it
+around whatever your own edit mode is. Give each item a **negative**
+`--arch-jitter-offset` (e.g. `-0.42s`) to start it mid-cycle; without that a
+column wobbles in lockstep and reads as one block moving rather than several
+loose objects. It animates `transform`, so don't put it on an element that
+sets its own. Motion is suppressed under `prefers-reduced-motion: reduce`.
+
+```js
+item.style.setProperty("--arch-jitter-offset", `${-Math.random() * 0.75}s`);
+item.classList.add("arch-jitter");
+```
+
 ## Panel swap
 
 `js/panel-swap.js`

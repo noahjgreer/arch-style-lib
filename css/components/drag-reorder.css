@@ -17,3 +17,54 @@
     transition: none !important;
     animation: none !important;
 }
+
+/* The iOS "jiggling icons" affordance: put this on each reorderable item while
+   the list is in edit mode, to say "these are objects you can pick up" without
+   spending any layout on saying it. Pairs with `makeDragReorder`, but it's a
+   pure CSS class — a consumer adds and removes it around whatever its own edit
+   mode is.
+
+   The motion is deliberately tiny (sub-pixel translation, ~1deg): it has to
+   read as "loose" at a glance and still leave text legible, since the items
+   carry their own labels. Set a per-item **negative** `--arch-jitter-offset`
+   (e.g. `-0.42s`) to start each one mid-cycle — without that a column of items
+   wobbles in lockstep, which reads as one block moving rather than several
+   loose objects.
+
+   Note this animates `transform`, so it can't be combined with an item that
+   sets its own — including `makeDragReorder`'s sibling-shifting during a drag,
+   which is why the ghost rule above kills animations inside the clone. */
+.arch-jitter {
+    animation: arch-jitter 0.75s ease-in-out infinite;
+    animation-delay: var(--arch-jitter-offset, 0s);
+}
+
+@keyframes arch-jitter {
+    0% {
+        transform: translate(-0.5px, -0.5px) rotate(1deg);
+    }
+
+    25% {
+        transform: translate(0.5px, 0.5px) rotate(-1deg);
+    }
+
+    50% {
+        transform: translate(0.5px, -0.5px) rotate(1deg);
+    }
+
+    75% {
+        transform: translate(-0.5px, 0.5px) rotate(-1deg);
+    }
+
+    100% {
+        transform: translate(-0.5px, -0.5px) rotate(1deg);
+    }
+}
+
+/* Purely decorative, and continuous — exactly the kind of motion this query
+   exists for. The class stays applied; it simply stops moving. */
+@media (prefers-reduced-motion: reduce) {
+    .arch-jitter {
+        animation: none;
+    }
+}

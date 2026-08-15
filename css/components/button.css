@@ -47,8 +47,17 @@
     box-shadow: inset 0 0 0 1.5px var(--arch-accent);
 }
 
-/* Combine with .arch-glass in markup: class="arch-btn arch-glass arch-btn--glass" */
+/* Combine with .arch-glass in markup: class="arch-btn arch-glass arch-btn--glass"
+ *
+ * The background has to be restated here, not left to `.arch-glass`: glass.css
+ * is imported *before* this file (see arch.css), so at equal specificity
+ * `.arch-btn`'s accent background wins and the button came out solid accent
+ * despite carrying `.arch-glass` — the combination this modifier exists for
+ * simply didn't work. It's the identical expression glass.css uses, built from
+ * the same custom properties, so a retheme (or the adaptive
+ * `[data-glass-scheme]` sampler) still moves both together. */
 .arch-btn--glass {
+    background-color: color-mix(in srgb, var(--arch-glass-tint) var(--arch-glass-mix), transparent);
     color: var(--arch-fg);
 }
 

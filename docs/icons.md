@@ -123,7 +123,7 @@ defineIcons({ "my-glyph": '<path d="M4 4h16"/>' });
 | `iconSvg(name)` | Returns the complete `<svg>` markup for `name` (fallback icon + a console warning if unknown). For building HTML strings. |
 | `setIcon(el, name)` | Points an existing element at an icon, replacing its contents and keeping its identity. |
 | `defineIcons(entries)` | Merges additional `{ name: innerSvgMarkup }` pairs into the shared map. |
-| `renderIcons(root?, opts?)` | Fills in every unrendered `[data-icon]` element under `root` (default `document`). Pass `{ force: true }` to re-render already-rendered icons. |
+| `renderIcons(root?, opts?)` | Fills in every unrendered `[data-icon]` element in `root` (default `document`), including `root` itself if it carries the attribute. Pass `{ force: true }` to re-render already-rendered icons. |
 | `watchIcons(root?)` | Renders icons now, then keeps rendering new/changed `[data-icon]` elements under `root` via a `MutationObserver`. Returns the observer (`.disconnect()` to stop). |
 | `iconChar(name)` | **Deprecated**, renders nothing — see "Legacy names" above. |
 

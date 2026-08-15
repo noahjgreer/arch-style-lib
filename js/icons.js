@@ -91,9 +91,14 @@ export function iconSvg(name) {
  */
 export function setIcon(el, name) {
     el.classList.add("arch-icon");
-    el.dataset.icon = name;
+    // Only write data-icon when it actually differs: an attribute *set* queues
+    // a MutationObserver record even when the value is unchanged, so a
+    // gratuitous write here feeds watchIcons() its own output forever.
+    if (el.dataset.icon !== name) el.dataset.icon = name;
     el.innerHTML = iconSvg(name);
-    el.dataset.iconRendered = "true";
+    // Records *which* icon is drawn, not merely that one is — that is what
+    // lets renderIcons() tell a real name change from a redundant re-render.
+    el.dataset.iconRendered = name;
     if (!el.hasAttribute("aria-label") && !el.hasAttribute("aria-hidden")) {
         el.setAttribute("aria-hidden", "true");
     }
@@ -113,18 +118,23 @@ export function defineIcons(entries) {
 }
 
 /**
- * Fills in every unrendered `[data-icon]` element under `root` with its SVG.
- * Safe to call repeatedly — already-rendered icons are skipped unless
- * `force` is set (e.g. after calling defineIcons() with overrides).
+ * Fills in every unrendered `[data-icon]` element in `root`, including `root`
+ * itself when it carries the attribute — watchIcons() hands us freshly
+ * inserted nodes directly, and those are often the icon rather than its
+ * container. Safe to call repeatedly: already-rendered icons are skipped
+ * unless `force` is set (e.g. after calling defineIcons() with overrides).
  * @param {ParentNode} [root]
  * @param {{ force?: boolean }} [opts]
  */
 export function renderIcons(root = document, opts = {}) {
     const { force = false } = opts;
-    root.querySelectorAll("[data-icon]").forEach((el) => {
-        if (!force && el.dataset.iconRendered === "true") return;
-        setIcon(el, el.dataset.icon ?? "");
-    });
+    const render = (el) => {
+        const name = el.dataset.icon ?? "";
+        if (!force && el.dataset.iconRendered === name) return;
+        setIcon(el, name);
+    };
+    if (root instanceof Element && root.hasAttribute("data-icon")) render(root);
+    root.querySelectorAll("[data-icon]").forEach(render);
 }
 
 /**
@@ -139,7 +149,9 @@ export function watchIcons(root = document.body) {
     const observer = new MutationObserver((mutations) => {
         for (const mutation of mutations) {
             if (mutation.type === "attributes" && mutation.target instanceof Element) {
-                mutation.target.dataset.iconRendered = "false";
+                // No need to clear the guard first — renderIcons() compares the
+                // rendered name against the current one, so a genuine change is
+                // picked up and a no-op write stops here instead of looping.
                 renderIcons(mutation.target.parentNode ?? root);
             }
             mutation.addedNodes.forEach((node) => {

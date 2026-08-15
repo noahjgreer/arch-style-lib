@@ -19,6 +19,13 @@ const PUTDOWN_MS = 140;
  *   direct children; defaults to ":scope > *"
  * @param {(el: HTMLElement) => boolean} [opts.canDrag]  extra gate, e.g. an
  *   "edit mode" check; return false to ignore the pointerdown
+ * @param {number} [opts.threshold]  px the pointer must travel before the
+ *   drag begins at all; default 0 (begin on pointerdown). Set this whenever
+ *   the row *itself* is the handle and also does something on click — the
+ *   press is then ambiguous until it moves, and starting a drag immediately
+ *   flashes the ghost on every ordinary click. A drag that does begin
+ *   swallows the `click` that follows it, so the row's own action doesn't
+ *   fire as a side effect of having been dropped on itself.
  * @param {(order: { fromIndex: number, toIndex: number, item: HTMLElement }) => void} [opts.onReorder]
  *   called after the DOM has been reordered
  * @returns {() => void} cleanup function that removes the listener
@@ -28,6 +35,7 @@ export function makeDragReorder(container, opts = {}) {
         handleSelector = null,
         itemSelector = ":scope > *",
         canDrag = () => true,
+        threshold = 0,
         onReorder = () => {},
     } = opts;
 
@@ -44,6 +52,49 @@ export function makeDragReorder(container, opts = {}) {
         const draggedEl = handle.closest(itemSelector);
         if (!draggedEl || draggedEl.parentElement !== container) return;
 
+        if (threshold <= 0) {
+            beginDrag(draggedEl, event);
+            return;
+        }
+
+        // Nothing is committed to yet — no ghost, no preventDefault — so a
+        // press that turns out to be a plain click behaves exactly as if this
+        // module weren't here at all.
+        const startX = event.clientX;
+        const startY = event.clientY;
+        const onPreMove = (moveEvent) => {
+            if (Math.hypot(moveEvent.clientX - startX, moveEvent.clientY - startY) < threshold) return;
+            stopWaiting();
+            beginDrag(draggedEl, moveEvent);
+        };
+        const stopWaiting = () => {
+            document.removeEventListener("pointermove", onPreMove);
+            document.removeEventListener("pointerup", stopWaiting);
+            document.removeEventListener("pointercancel", stopWaiting);
+        };
+        document.addEventListener("pointermove", onPreMove);
+        document.addEventListener("pointerup", stopWaiting);
+        document.addEventListener("pointercancel", stopWaiting);
+    };
+
+    /**
+     * Swallows the `click` the browser fires after the pointer is released,
+     * once. Only relevant when the row itself is the handle: without it,
+     * picking a row up and putting it down activates it.
+     */
+    const suppressNextClick = () => {
+        const swallow = (clickEvent) => {
+            clickEvent.stopPropagation();
+            clickEvent.preventDefault();
+        };
+        document.addEventListener("click", swallow, { capture: true, once: true });
+        // The click lands before this task does; the timeout is only so a
+        // release that produces no click at all (dropped outside the window)
+        // doesn't leave the listener armed for the user's next, unrelated one.
+        setTimeout(() => document.removeEventListener("click", swallow, { capture: true }), 0);
+    };
+
+    function beginDrag(draggedEl, event) {
         event.preventDefault();
 
         const items = Array.from(container.querySelectorAll(itemSelector));
@@ -74,6 +125,10 @@ export function makeDragReorder(container, opts = {}) {
         });
         document.body.appendChild(ghost);
         draggedEl.style.opacity = "0";
+        // A whole-row drag sweeps across the rows' own text; without this the
+        // browser selects it as the pointer moves. Restored on release.
+        const previousUserSelect = document.body.style.userSelect;
+        document.body.style.userSelect = "none";
 
         // `--arch-ease` is a slight-overshoot spring (see tokens.css) — this is
         // what gives the pickup its "pop" rather than a flat linear/ease-in-out
@@ -126,6 +181,9 @@ export function makeDragReorder(container, opts = {}) {
             document.removeEventListener("pointerup", onUp);
             document.removeEventListener("pointercancel", onUp);
 
+            document.body.style.userSelect = previousUserSelect;
+            suppressNextClick();
+
             ghost.style.transition = `opacity ${PUTDOWN_MS}ms var(--arch-ease), transform ${PUTDOWN_MS}ms var(--arch-ease)`;
             ghost.style.opacity = "0";
             ghost.style.transform = "scale(0.96)";
@@ -150,7 +208,7 @@ export function makeDragReorder(container, opts = {}) {
         document.addEventListener("pointermove", onMove);
         document.addEventListener("pointerup", onUp);
         document.addEventListener("pointercancel", onUp);
-    };
+    }
 
     container.addEventListener("pointerdown", onPointerDown);
     return () => container.removeEventListener("pointerdown", onPointerDown);

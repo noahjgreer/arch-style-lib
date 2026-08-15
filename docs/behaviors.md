@@ -144,6 +144,7 @@ document.querySelector("#tabs").addEventListener("change", (e) => {
 Options: `handleSelector` (limit drag start to a handle within each row;
 omit to make the whole row draggable), `itemSelector` (default
 `:scope > *`), `canDrag(container)` (extra gate, e.g. an edit-mode check),
+`threshold` (px of travel before a drag starts at all; default `0`),
 `onReorder({ fromIndex, toIndex, item })`.
 
 ```js
@@ -152,6 +153,20 @@ makeDragReorder(document.querySelector("#list"), {
     handleSelector: ".drag-handle",
     onReorder: ({ fromIndex, toIndex }) => saveOrder(fromIndex, toIndex),
 });
+```
+
+**Set `threshold` whenever the draggable row also does something on click** —
+a tab that selects, a row that opens something — including when you point
+`handleSelector` at the row itself. Such a press is ambiguous until it moves,
+and with the default `0` every ordinary click flashes the ghost and hides the
+row for a frame. Below the threshold nothing is committed to (no ghost, no
+`preventDefault`), so the click behaves exactly as if this module weren't
+attached; above it, the drag begins from wherever the pointer already is, and
+the `click` that follows the release is swallowed so the row's own action
+doesn't fire as a side effect of having been dropped.
+
+```js
+makeDragReorder(list, { handleSelector: ".row--draggable", threshold: 5 });
 ```
 
 `css/components/drag-reorder.css` also ships **`.arch-jitter`**, the iOS

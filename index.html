@@ -294,6 +294,26 @@
         </div>
     </section>
 
+    <section id="scrollbars" class="arch-glass arch-glass-panel">
+        <h2>Scrollbars</h2>
+        <p>Applied globally to every scrolling element — no class needed.
+            <code>.arch-scrollbar-none</code> opts a region out of showing one at all.</p>
+        <div style="display: flex; gap: var(--arch-space-md); flex-wrap: wrap;">
+            <div style="height: 8rem; width: 18rem; overflow: auto; background: var(--arch-bg-2); border-radius: var(--arch-radius-md); padding: var(--arch-space-sm);">
+                <p>Scrolls vertically.</p>
+                <p style="height: 20rem;">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+            </div>
+            <div style="height: 8rem; width: 18rem; overflow: auto; background: var(--arch-bg-2); border-radius: var(--arch-radius-md); padding: var(--arch-space-sm);">
+                <p>Scrolls both ways.</p>
+                <p style="height: 20rem; width: 40rem;">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+            </div>
+            <div class="arch-scrollbar-none" style="height: 8rem; width: 18rem; overflow: auto; background: var(--arch-bg-2); border-radius: var(--arch-radius-md); padding: var(--arch-space-sm);">
+                <p><code>.arch-scrollbar-none</code> — still scrolls.</p>
+                <p style="height: 20rem;">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+            </div>
+        </div>
+    </section>
+
     <section id="basics" class="arch-glass arch-glass-panel">
         <h2>Typography &amp; basics</h2>
         <blockquote class="align-left">

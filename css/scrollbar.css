@@ -1,0 +1,111 @@
+/*
+ * arch-style-lib :: scrollbar
+ * Slim, rounded, unobtrusive scrollbars applied to every scrolling element.
+ *
+ * This is a global element-level style like reset.css/glass.css, not a
+ * class-based component — a scrollbar isn't something markup opts into, and
+ * the whole point is that a consuming app doesn't have a Windows 10 Chrome
+ * window full of chunky square gray bars next to its glass panels.
+ *
+ * Two implementations, deliberately mutually exclusive:
+ *
+ *   - `::-webkit-scrollbar` (Chromium, Safari) — the richer one: a fully
+ *     transparent track, a rounded thumb inset from the gutter by a
+ *     transparent border, and a hover/active state.
+ *   - `scrollbar-width`/`scrollbar-color` (Firefox) — the standard
+ *     properties, which offer only "thin" and two colors. No radius control,
+ *     but Firefox already draws a rounded thumb at that width.
+ *
+ * They're split rather than both being declared, because Chromium 121+
+ * *ignores* the `::-webkit-*` pseudo-elements entirely on any element where
+ * the standard properties are also set — declaring both would silently
+ * downgrade Chromium to the two-color version and lose the inset thumb.
+ *
+ * The split probes `::-webkit-scrollbar-thumb`, **not `::-webkit-scrollbar`**:
+ * Firefox parses the latter for web-compat and reports it as supported, so
+ * gating on it disables the Firefox branch in Firefox — i.e. exactly nothing
+ * gets styled there (verified in Firefox 153: `selector(::-webkit-scrollbar)`
+ * is true, `selector(::-webkit-scrollbar-thumb)` is false). If some future
+ * engine reports the thumb unsupported while honoring it anyway, the failure
+ * mode is a degrade to the two-color version, not an unstyled scrollbar.
+ */
+
+:root {
+    /* Width of the scrollbar gutter (the track). The thumb is drawn narrower
+       than this by --arch-scrollbar-inset, so the grab target stays generous
+       while the visible bar reads slim. */
+    --arch-scrollbar-size: 0.75rem;
+    /* Transparent border around the thumb, clipped out of its background —
+       this is the difference between "slim bar" and "slim bar that's hard to
+       hit". Purely visual; it doesn't shrink the hit area. */
+    --arch-scrollbar-inset: 0.25rem;
+    --arch-scrollbar-radius: var(--arch-radius-round);
+    /* Fill tokens, so light/dark comes for free and the thumb reads as the
+       same material as any other secondary UI fill in the library. */
+    --arch-scrollbar-thumb: var(--arch-fill-4);
+    --arch-scrollbar-thumb-hover: var(--arch-fill-3);
+    --arch-scrollbar-thumb-active: var(--arch-fill-2);
+    /* Firefox's standard properties give one static color with no hover or
+       active state, so the thumb rests a step stronger there — at the webkit
+       path's *hover* value. A resting 18% fill you can never brighten by
+       pointing at it is unobtrusive to the point of being hard to find. */
+    --arch-scrollbar-thumb-static: var(--arch-fill-3);
+    --arch-scrollbar-track: transparent;
+}
+
+/* ── Chromium / Safari ───────────────────────────────────────────────── */
+
+*::-webkit-scrollbar {
+    width: var(--arch-scrollbar-size);
+    height: var(--arch-scrollbar-size);
+}
+
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-corner {
+    background: var(--arch-scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: var(--arch-scrollbar-thumb);
+    border: var(--arch-scrollbar-inset) solid transparent;
+    /* Without padding-box the border area would be painted too, and the
+       thumb would fill the whole gutter. */
+    background-clip: padding-box;
+    border-radius: var(--arch-scrollbar-radius);
+    transition: background-color var(--arch-duration-fast) var(--arch-ease-out);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background-color: var(--arch-scrollbar-thumb-hover);
+}
+
+*::-webkit-scrollbar-thumb:active {
+    background-color: var(--arch-scrollbar-thumb-active);
+}
+
+/* Windows 10 Chromium draws stepper arrows at each end by default; nothing
+   else in this library has a control that small, so they go. */
+*::-webkit-scrollbar-button {
+    display: none;
+}
+
+/* ── Firefox ─────────────────────────────────────────────────────────── */
+
+@supports not selector(::-webkit-scrollbar-thumb) {
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--arch-scrollbar-thumb-static) var(--arch-scrollbar-track);
+    }
+}
+
+/* ── Utility ─────────────────────────────────────────────────────────── */
+
+/* Scrolls, but shows no scrollbar at all — for a region with its own
+   affordance (a drag-panned canvas, a carousel with arrows). */
+.arch-scrollbar-none {
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}

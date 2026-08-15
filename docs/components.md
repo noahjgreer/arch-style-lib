@@ -265,6 +265,52 @@ Sizing deliberately mirrors the button/input scale so the three read as peers
 in one row: the base matches `.arch-btn`, and `.arch-toggle-btn--sm` matches
 `.arch-btn--sm` and `.arch-input--sm`.
 
+## Scrollbars
+
+`css/scrollbar.css` restyles **every** scrolling element — slim, rounded,
+transparent-tracked, drawn from the `--arch-fill-*` tokens so it adapts to
+light/dark for free. There's no class to apply: a scrollbar isn't something
+markup opts into, and the point is that a consuming app doesn't show chunky
+square platform scrollbars (Windows 10 Chromium especially) beside its glass
+panels.
+
+Knobs, all on `:root`:
+
+| Property | Default | Notes |
+| --- | --- | --- |
+| `--arch-scrollbar-size` | `0.75rem` | Width of the gutter, i.e. the grab target. |
+| `--arch-scrollbar-inset` | `0.25rem` | Transparent border clipped out of the thumb, so the visible bar reads slimmer than the gutter without shrinking the hit area. |
+| `--arch-scrollbar-radius` | `--arch-radius-round` | |
+| `--arch-scrollbar-thumb` | `--arch-fill-4` | Resting thumb, Chromium/Safari. |
+| `--arch-scrollbar-thumb-hover` | `--arch-fill-3` | Chromium/Safari only. |
+| `--arch-scrollbar-thumb-active` | `--arch-fill-2` | Chromium/Safari only. |
+| `--arch-scrollbar-thumb-static` | `--arch-fill-3` | Firefox's single, stateless thumb color — deliberately a step stronger than `--arch-scrollbar-thumb`, since there's no hover state to brighten it. |
+| `--arch-scrollbar-track` | `transparent` | |
+
+```html
+<!-- Scrolls, but shows no scrollbar — for a region with its own affordance -->
+<div class="arch-scrollbar-none">…</div>
+```
+
+**Two implementations, deliberately mutually exclusive.** Chromium and Safari
+get `::-webkit-scrollbar` (transparent track, inset rounded thumb, hover and
+active states); Firefox gets the standard `scrollbar-width: thin` +
+`scrollbar-color`, which offers no radius or hover control but already draws a
+rounded thumb at that width. They're split rather than both being declared,
+because **Chromium 121+ ignores the `::-webkit-*` pseudo-elements on any
+element that also sets the standard properties** — declaring both silently
+downgrades Chromium to the plainer version.
+
+The split probes `@supports not selector(::-webkit-scrollbar-thumb)`, **not
+`::-webkit-scrollbar`** — Firefox parses that one for web-compat and reports
+it supported, so gating on it turns off the Firefox branch *in Firefox* and
+leaves platform scrollbars everywhere. Verified in Firefox 153.
+
+Not set here, on purpose: `scrollbar-gutter: stable`. Reserving the gutter
+whether or not content overflows is a per-layout decision (it prevents a
+reflow when a list grows past its container, at the cost of a permanent strip
+of dead space), so set it on the specific scroll containers that want it.
+
 ## Reset
 
 `css/reset.css` normalizes box-sizing/margins, sets base typography

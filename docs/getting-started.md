@@ -10,7 +10,7 @@
 ```
 
 `arch.css` `@import`s the rest of the library in the right order (tokens →
-reset → glass → components). If you only need part of the library, link the
+reset → scrollbar → glass → components). If you only need part of the library, link the
 individual files instead — just make sure `tokens.css` loads first, since
 everything else reads its custom properties:
 

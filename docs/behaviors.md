@@ -297,6 +297,13 @@ written by the module itself and kept current as the label/sublabel/font
 change) — between them, a consumer can either start its content below the
 chip or run a toolbar row beside it on the chip's own line.
 
+It also carries `data-area-id`, the area's own id — the same one it has in
+`getLayout()`. `onMount` hands over the *body* element, so
+`body.closest(".arch-area").dataset.areaId` is how a consumer keys per-area
+state (a saved camera position per viewport, say) to the specific area
+showing it. Because `setLayout` diffs areas rather than rebuilding them, an
+area that survives a layout switch keeps its id, and so keeps that state.
+
 The returned handle's `setContentSubtitle(contentId, subtitle)` sets the
 smaller secondary line under that type's name on every chip currently
 showing it (`null`/`""` clears it), and on any area that starts showing it

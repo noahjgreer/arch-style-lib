@@ -342,6 +342,10 @@ function deserialize(layout) {
  *   matching `onUnmount` call for that same area, so it's a convenient
  *   place to return a handle (the built element, a dispose function, ...)
  *   for later cleanup rather than needing to re-derive one from `body`.
+ *   To key state to *which* area this is (a per-viewport camera, say), read
+ *   `body.closest(".arch-area").dataset.areaId` — that's the same id the
+ *   area carries in `getLayout()`, and it survives a `setLayout` that keeps
+ *   the area.
  * @param {(contentId: string, body: HTMLElement, instance: *) => void} [opts.onUnmount]
  *   called just before an area stops showing `contentId` (reassigned, or
  *   the area itself was joined away) — `instance` is whatever the matching
@@ -530,6 +534,12 @@ export function makeAreaLayout(workspace, opts) {
     function createAreaElement(area) {
         const root = document.createElement("div");
         root.className = "arch-area arch-glass";
+        // The area's own id, exposed so a consumer can key per-area state to
+        // the specific area showing it (a saved camera per viewport, say).
+        // `onMount` hands over the *body* element, and walking up to
+        // `.closest(".arch-area")` is otherwise a dead end — nothing on the
+        // element says which of `getLayout().areas` it is.
+        root.dataset.areaId = area.id;
 
         const body = document.createElement("div");
         body.className = "arch-area__body";

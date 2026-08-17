@@ -116,6 +116,7 @@
         --arch-fill-3: rgb(235 235 245 / 30%);
         --arch-fill-4: rgb(235 235 245 / 16%);
         --arch-separator: rgb(255 255 255 / 17%);
+        --arch-separator-light: rgb(255 255 255 / 12%);
         --arch-separator-opaque: #38383a;
 
         --arch-red: #ff4245;

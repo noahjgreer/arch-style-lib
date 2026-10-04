@@ -40,8 +40,10 @@
        than four repeated literals so retheming it (a denser UI scale, say)
        is one declaration and can't leave the pill misaligned with the tab
        it's under. `-block` is split out so a variant can give the two axes
-       different insets without restating the geometry. */
-    --arch-switcher-pad: 0.25rem;
+       different insets without restating the geometry. Defaults to the shared
+       bar inset, so a switcher is exactly `--arch-bar-height` tall — the same
+       as a toolbar group or an area type chip on the same line. */
+    --arch-switcher-pad: var(--arch-bar-pad);
     --arch-switcher-pad-block: var(--arch-switcher-pad);
 
     display: flex;
@@ -61,7 +63,11 @@
     bottom: var(--arch-switcher-pad-block);
     left: var(--arch-switcher-pad);
     width: calc((100% - 2 * var(--arch-switcher-pad)) / var(--arch-switcher-count));
-    border-radius: var(--arch-radius-round);
+    /* Concentric with the bar: its radius less the inset. Indistinguishable
+       from round at the default shape, but when a consumer squares controls
+       off (overriding `--arch-radius-round` to a small value), an inner
+       corner equal to the outer one visibly bulges against it. */
+    border-radius: max(0px, calc(var(--arch-radius-round) - var(--arch-switcher-pad)));
     background-color: color-mix(in srgb, var(--arch-glass-tint) 36%, transparent);
     box-shadow: var(--arch-shadow-sm);
     z-index: -1;
@@ -78,8 +84,11 @@
     gap: 0.2rem;
     background: none;
     border: none;
-    border-radius: var(--arch-radius-round);
-    padding: 0.5rem 0;
+    border-radius: max(0px, calc(var(--arch-radius-round) - var(--arch-switcher-pad)));
+    /* Height from the shared control token rather than block padding, so the
+       bar comes to `--arch-bar-height` exactly (see tokens.css). */
+    min-height: var(--arch-control-height);
+    padding: 0;
     color: var(--arch-fg);
     opacity: 0.5;
     cursor: pointer;
@@ -125,11 +134,23 @@
 .arch-switcher--vertical .arch-switcher__tab {
     flex-direction: column;
     gap: 0.1rem;
+    /* A stacked icon + caption is taller than a control; it sizes to its
+       content instead of the control height. */
+    min-height: 0;
     padding: 0.4rem 0.25rem;
     border-radius: var(--arch-radius-md);
     /* A vertical tab's own width is the container's, so an over-long caption
        has to be clipped rather than allowed to stretch the whole control. */
     min-width: 0;
+}
+
+/* Small variant — for a row of `.arch-btn--sm`/`.arch-input--sm` fields
+   rather than a bar line. Here the *whole* switcher is the small control
+   height (its tabs give up the inset), so it sits level with the field beside
+   it instead of standing a bar's inset taller. */
+.arch-switcher--sm .arch-switcher__tab {
+    min-height: calc(var(--arch-control-height-sm) - 2 * var(--arch-switcher-pad-block));
+    font-size: var(--arch-font-size-md);
 }
 
 /* Caption under a stacked tab's icon. Deliberately single-line: a wrapped

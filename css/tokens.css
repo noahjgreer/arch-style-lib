@@ -73,6 +73,26 @@
     --arch-space-xl: 2rem;
     --arch-gutter: 7.5%;
 
+    /* ── Control sizing ──
+       One height for everything a pointer lands on, so a button, a text
+       field, a toggle pill and a switcher tab placed side by side line up
+       *by construction* rather than by each one's padding happening to add
+       up to something close. Components set these as `min-height` with no
+       block padding of their own (label centered by `align-items`), so
+       retheming the size is one declaration here.
+
+       A *bar* is a container holding a row of controls — a switcher, a
+       toolbar group, and the area-layout type chip that sits on the same line
+       as them. Its height is derived (control + its inset on both sides)
+       rather than declared, so a bar and a lone control can never disagree
+       about where the control inside sits. Note it's resolved where it's
+       declared (`:root`): override `--arch-control-height`/`--arch-bar-pad`
+       on `:root` too, or re-declare `--arch-bar-height` alongside them. */
+    --arch-control-height: 2.5rem;
+    --arch-control-height-sm: 2rem;
+    --arch-bar-pad: 0.25rem;
+    --arch-bar-height: calc(var(--arch-control-height) + 2 * var(--arch-bar-pad));
+
     /* ── Radius ── */
     --arch-radius-sm: 0.5rem;
     --arch-radius-md: 1rem;

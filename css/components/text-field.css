@@ -10,7 +10,14 @@
 .arch-input {
     display: block;
     width: 100%;
-    padding: 0.6rem 1.1rem;
+    /* The shared control height (tokens.css) with no block padding, so a field
+       and the button beside it are the same height by construction — they
+       used to be 43px and 35px. `line-height: normal` keeps a `<select>`'s
+       label from being clipped inside that box. A `<textarea>` keeps block
+       padding below, since its height is its content's. */
+    min-height: var(--arch-control-height);
+    padding: 0 1.1rem;
+    line-height: normal;
     border: none;
     border-radius: var(--arch-radius-round);
     background-color: var(--arch-fill-4);
@@ -40,6 +47,16 @@
 }
 
 .arch-input--sm {
-    padding: 0.4rem 0.9rem;
+    min-height: var(--arch-control-height-sm);
+    padding: 0 0.9rem;
     font-size: var(--arch-font-size-md);
+}
+
+textarea.arch-input {
+    padding-block: 0.6rem;
+    line-height: var(--arch-line-height);
+}
+
+textarea.arch-input--sm {
+    padding-block: 0.4rem;
 }

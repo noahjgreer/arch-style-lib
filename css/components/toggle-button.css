@@ -35,8 +35,10 @@
     border-radius: var(--arch-radius-round);
     /* Same padding/type scale as .arch-btn (and .arch-input) rather than a
        size of its own — it's meant to sit in a row with them and read as a
-       peer, which a slightly-smaller pill visibly doesn't. */
-    padding: 0.6rem 1.25rem;
+       peer, which a slightly-smaller pill visibly doesn't. Height is the
+       shared control token for the same reason (tokens.css). */
+    min-height: var(--arch-control-height);
+    padding: 0 1.25rem;
     font-size: var(--arch-font-size-lg);
     font-weight: 500;
     line-height: 1;
@@ -115,7 +117,8 @@
 
 /* Matches .arch-btn--sm / .arch-input--sm exactly, for the same reason. */
 .arch-toggle-btn--sm {
-    padding: 0.4rem 0.9rem;
+    min-height: var(--arch-control-height-sm);
+    padding: 0 0.9rem;
     font-size: var(--arch-font-size-md);
 
     &::before {

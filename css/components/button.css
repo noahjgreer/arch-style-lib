@@ -11,7 +11,11 @@
     gap: var(--arch-space-xs);
     border: none;
     border-radius: var(--arch-radius-round);
-    padding: 0.6rem 1.25rem;
+    /* Height comes from the shared control token, not from block padding —
+       so a button lines up with the field, toggle or switcher beside it
+       (see tokens.css's "Control sizing"). */
+    min-height: var(--arch-control-height);
+    padding: 0 1.25rem;
     font-size: var(--arch-font-size-lg);
     font-weight: 600;
     line-height: 1;
@@ -63,8 +67,12 @@
 
 .arch-btn--icon {
     padding: 0;
-    width: 2.5rem;
-    height: 2.5rem;
+    /* Square on the control height — and on the small one under `--sm`
+       (below), so a small icon button sits level with the small field or
+       button beside it rather than standing 8px taller than both. */
+    width: var(--arch-control-height);
+    height: var(--arch-control-height);
+    min-height: 0;
     /* Inherits the same shape token as every other button rather than a
        hardcoded 50%: on a square the default `100rem` clamps to a circle
        anyway, so the default look is unchanged — but a consumer that
@@ -83,6 +91,16 @@
 }
 
 .arch-btn--sm {
-    padding: 0.4rem 0.9rem;
+    min-height: var(--arch-control-height-sm);
+    padding: 0 0.9rem;
     font-size: var(--arch-font-size-md);
+}
+
+/* `--sm` comes after `--icon` in this file, so its inline padding has to be
+   taken back off the square here — left on, it squeezed the glyph's box to a
+   sliver (centered, so it *looked* fine, but the glyph overflowed it). */
+.arch-btn--icon.arch-btn--sm {
+    padding: 0;
+    width: var(--arch-control-height-sm);
+    height: var(--arch-control-height-sm);
 }

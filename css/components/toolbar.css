@@ -1,0 +1,45 @@
+/*
+ * arch-style-lib :: toolbar
+ * .arch-toolbar — a bar holding a row (or column) of controls: icon buttons,
+ * toggle pills, a small select. The same box a switcher is — inset by
+ * `--arch-bar-pad`, fully rounded, `--arch-bar-height` tall — so a toolbar
+ * and a switcher (or an area-layout type chip) on one line are the same
+ * height, and an icon button inside one lines up with a switcher tab beside
+ * it. Brings no background of its own: compose `.arch-glass` for a floating
+ * surface, or give it a flat fill when it already sits on glass.
+ *
+ * <div class="arch-toolbar arch-glass" role="toolbar">
+ *   <button class="arch-btn arch-btn--icon" aria-label="Refresh">
+ *     <span class="arch-icon" data-icon="refresh-cw"></span>
+ *   </button>
+ * </div>
+ *
+ * Vertical variant: <div class="arch-toolbar arch-toolbar--vertical">.
+ */
+
+.arch-toolbar {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: var(--arch-space-xs);
+    min-height: var(--arch-bar-height);
+    padding: var(--arch-bar-pad);
+    border: none;
+    /* The same shape token every control uses (a radius larger than the box
+       clamps to semicircular ends in either orientation), so a consumer that
+       reshapes controls by overriding `--arch-radius-round` reshapes this too. */
+    border-radius: var(--arch-radius-round);
+}
+
+.arch-toolbar--vertical {
+    flex-direction: column;
+    min-height: 0;
+    min-width: var(--arch-bar-height);
+}
+
+/* Controls inside take the bar's radius less its inset, so their corners are
+   concentric with the bar's — see the same note on `.arch-switcher::after`. */
+.arch-toolbar > .arch-btn,
+.arch-toolbar > .arch-toggle-btn {
+    border-radius: max(0px, calc(var(--arch-radius-round) - var(--arch-bar-pad)));
+}

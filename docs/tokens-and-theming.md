@@ -32,6 +32,23 @@ switcher tab's own caption).
 `--arch-space-xs/sm/md/lg/xl`, `--arch-gutter` (horizontal page padding as a
 percentage), `--arch-radius-sm/md/lg/round`.
 
+## Control sizing
+
+One height for everything a pointer lands on, so controls placed side by side
+line up by construction rather than by their padding happening to add up:
+
+| Token | Default | Used by |
+| --- | --- | --- |
+| `--arch-control-height` | `2.5rem` | `.arch-btn`, `.arch-btn--icon` (square), `.arch-input`, `.arch-toggle-btn`, `.arch-switcher__tab` |
+| `--arch-control-height-sm` | `2rem` | the `--sm` variant of each of those (`--icon --sm` is a square on it) |
+| `--arch-bar-pad` | `0.25rem` | the inset of a bar: `.arch-switcher`, `.arch-toolbar` |
+| `--arch-bar-height` | control + 2 × pad | a bar's height, and `.arch-area__type`'s (`--arch-area-chip-height`) |
+
+Components apply these as `min-height` with **no block padding**, so changing
+the size is one declaration. `--arch-bar-height` is derived on `:root`, so
+override the other two on `:root` as well (or re-declare it beside them) — an
+override on a descendant won't re-derive it.
+
 ## Shadow & motion
 
 `--arch-shadow-sm/md/common`, `--arch-ease` (slight-overshoot spring, for

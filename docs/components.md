@@ -214,6 +214,30 @@ the container.
 </div>
 ```
 
+### Small — `.arch-switcher--sm`
+
+The whole switcher is `--arch-control-height-sm` tall (its tabs give up the
+inset), so it sits level with the `.arch-btn--sm` / `.arch-input--sm` fields
+beside it in a form row.
+
+## Toolbar — `.arch-toolbar`
+
+A bar holding a row of controls — the same box a switcher is (inset by
+`--arch-bar-pad`, `--arch-bar-height` tall), so a toolbar, a switcher and an
+area type chip on one line are one height and the icon buttons inside line up
+with the switcher's tabs. No background of its own: add `.arch-glass` for a
+floating surface, or a flat fill when it already sits on glass.
+
+```html
+<div class="arch-toolbar arch-glass" role="toolbar">
+    <button class="arch-btn arch-btn--icon" aria-label="Refresh">
+        <span class="arch-icon" data-icon="refresh-cw"></span>
+    </button>
+</div>
+```
+
+`.arch-toolbar--vertical` stacks the controls instead.
+
 ## Toggle — `.arch-toggle`
 
 An iOS-style switch. Built on a native `<input type="checkbox">` for

@@ -16,6 +16,7 @@
        (see tokens.css's "Control sizing"). */
     min-height: var(--arch-control-height);
     padding: 0 1.25rem;
+    --arch-icon-size: var(--arch-control-icon-size);
     font-size: var(--arch-font-size-lg);
     font-weight: 600;
     line-height: 1;
@@ -91,6 +92,7 @@
 }
 
 .arch-btn--sm {
+    --arch-icon-size: var(--arch-control-icon-size-sm);
     min-height: var(--arch-control-height-sm);
     padding: 0 0.9rem;
     font-size: var(--arch-font-size-md);

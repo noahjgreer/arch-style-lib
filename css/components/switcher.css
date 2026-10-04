@@ -45,6 +45,8 @@
        as a toolbar group or an area type chip on the same line. */
     --arch-switcher-pad: var(--arch-bar-pad);
     --arch-switcher-pad-block: var(--arch-switcher-pad);
+    /* Tab glyphs at the shared control proportion (tokens.css). */
+    --arch-icon-size: var(--arch-control-icon-size);
 
     display: flex;
     align-items: stretch;
@@ -148,6 +150,10 @@
    rather than a bar line. Here the *whole* switcher is the small control
    height (its tabs give up the inset), so it sits level with the field beside
    it instead of standing a bar's inset taller. */
+.arch-switcher--sm {
+    --arch-icon-size: var(--arch-control-icon-size-sm);
+}
+
 .arch-switcher--sm .arch-switcher__tab {
     min-height: calc(var(--arch-control-height-sm) - 2 * var(--arch-switcher-pad-block));
     font-size: var(--arch-font-size-md);

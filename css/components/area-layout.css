@@ -132,7 +132,9 @@
 
 .arch-area__type .arch-icon {
     flex-shrink: 0;
-    --arch-icon-size: 1.25rem;
+    /* The control proportion, so the chip's glyph matches the switcher and
+       toolbar glyphs on the same line at every size. */
+    --arch-icon-size: var(--arch-control-icon-size);
 }
 
 /* The label/sublabel stack. `min-width: 0` so the ellipsis below can

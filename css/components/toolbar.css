@@ -21,7 +21,10 @@
     display: inline-flex;
     flex: 0 0 auto;
     align-items: center;
-    gap: var(--arch-space-xs);
+    /* The same as the inset, so every control in a bar is one even step from
+       its neighbours and from the bar's edge — the rhythm a switcher's tabs
+       already have against its rim. */
+    gap: var(--arch-bar-pad);
     min-height: var(--arch-bar-height);
     padding: var(--arch-bar-pad);
     border: none;

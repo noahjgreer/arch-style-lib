@@ -39,6 +39,7 @@
        shared control token for the same reason (tokens.css). */
     min-height: var(--arch-control-height);
     padding: 0 1.25rem;
+    --arch-icon-size: var(--arch-control-icon-size);
     font-size: var(--arch-font-size-lg);
     font-weight: 500;
     line-height: 1;
@@ -117,6 +118,7 @@
 
 /* Matches .arch-btn--sm / .arch-input--sm exactly, for the same reason. */
 .arch-toggle-btn--sm {
+    --arch-icon-size: var(--arch-control-icon-size-sm);
     min-height: var(--arch-control-height-sm);
     padding: 0 0.9rem;
     font-size: var(--arch-font-size-md);

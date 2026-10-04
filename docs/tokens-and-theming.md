@@ -43,6 +43,7 @@ line up by construction rather than by their padding happening to add up:
 | `--arch-control-height-sm` | `2rem` | the `--sm` variant of each of those (`--icon --sm` is a square on it) |
 | `--arch-bar-pad` | `0.25rem` | the inset of a bar: `.arch-switcher`, `.arch-toolbar` |
 | `--arch-bar-height` | control + 2 × pad | a bar's height, and `.arch-area__type`'s (`--arch-area-chip-height`) |
+| `--arch-control-icon-size` / `-sm` | half the control height | the glyph size inside buttons, toggles, switcher tabs and the area chip — set on the control, so a consumer override on it or on the icon still wins |
 
 Components apply these as `min-height` with **no block padding**, so changing
 the size is one declaration. `--arch-bar-height` is derived on `:root`, so

@@ -92,6 +92,14 @@
     --arch-control-height-sm: 2rem;
     --arch-bar-pad: 0.25rem;
     --arch-bar-height: calc(var(--arch-control-height) + 2 * var(--arch-bar-pad));
+    /* A glyph inside a control is half the control's height, so every icon
+       button, switcher tab, toggle pill and labelled button carries the same
+       proportion of glyph to box — and it scales with the control instead of
+       staying 24px inside a control a consumer has made smaller. Set on the
+       control (and inherited), so a consumer rule on the control or the icon
+       still wins. */
+    --arch-control-icon-size: calc(var(--arch-control-height) * 0.5);
+    --arch-control-icon-size-sm: calc(var(--arch-control-height-sm) * 0.5);
 
     /* ── Radius ── */
     --arch-radius-sm: 0.5rem;

@@ -109,6 +109,43 @@ bar.setChecked("theme.dark", true);
 > `backdrop-filter` containing-block gotcha as any popover, which a menu bar
 > living inside a glass header would otherwise hit every time.
 
+## Select
+
+`js/select.js` — turns a native `<select>` into a [`.arch-select`](./components.md#select--arch-select)
+trigger plus a dropped listbox. The `<select>` is hidden but **stays the
+source of truth**: `select.value`, `selectedIndex`, option `dataset`s and
+`change` listeners keep working, so code that already reads the select needs
+no changes. Choosing a row sets the option and dispatches `input` + `change`.
+
+| Function | Description |
+|---|---|
+| `makeSelect(select, opts?)` | Builds the control after `select` and returns `{ trigger, panel, sync, open, close, destroy }`. |
+
+`opts`:
+
+| Option | Description |
+|---|---|
+| `renderIcons` | Pass `renderIcons` from `icons.js` to fill in the chevron/check glyphs (skip if you already run `watchIcons`). |
+| `positionOptions` | Passed to `positionPopover()` on each open — an object, or a function returning one (e.g. `() => ({ reserveBottom: tabBarHeight })`). |
+
+Options rebuilt later (`innerHTML`, `appendChild`, `disabled`) are picked up by
+a MutationObserver. Setting `select.value` from code changes nothing an
+observer can see, so call `sync()` afterwards (or dispatch `change`).
+
+Keyboard: Arrow keys/Enter/Space open it; while open, Up/Down/Home/End move,
+Enter/Space choose, Escape/Tab close. It also closes on outside pointerdown,
+page scroll and resize, since the fixed panel would otherwise detach from its
+trigger.
+
+```js
+import { makeSelect } from "/js/select.js";
+import { renderIcons } from "/js/icons.js";
+
+const select = document.querySelector("#list-select");
+makeSelect(select, { renderIcons });
+select.addEventListener("change", () => console.log(select.value));
+```
+
 ## Switcher
 
 `js/switcher.js`

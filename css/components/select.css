@@ -1,0 +1,91 @@
+/*
+ * arch-style-lib :: select
+ * A dropdown that looks like the rest of the library instead of the OS's
+ * native <select> list. Pair with js/select.js, which builds this next to a
+ * (then hidden) native <select> and keeps the two in sync:
+ *
+ * <select hidden>…</select>
+ * <button class="arch-select" type="button" aria-haspopup="listbox">
+ *   <span class="arch-select__value">Groceries</span>
+ *   <span class="arch-icon arch-select__chevron" data-icon="chevron-down"></span>
+ * </button>
+ *
+ * <!-- At <body> level — same containing-block gotcha as any popover. -->
+ * <div class="arch-popover arch-popover--menu arch-glass arch-select-panel">
+ *   <div class="arch-menu" role="listbox">
+ *     <div class="arch-menu__group-label">Lists</div>
+ *     <button class="arch-menu__item" role="option" aria-selected="true">
+ *       <span class="arch-menu__lead"><span class="arch-icon" data-icon="check"></span></span>
+ *       <span class="arch-menu__label">Groceries</span>
+ *     </button>
+ *   </div>
+ * </div>
+ *
+ * The list rows are plain .arch-menu rows (menu.css): the selected one carries
+ * a check in the shared leading slot, so every label stays aligned.
+ */
+
+.arch-select {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--arch-space-sm);
+    min-width: 0;
+    border: none;
+    border-radius: var(--arch-radius-round);
+    padding: var(--arch-space-sm) var(--arch-space-rg);
+    background: transparent;
+    color: var(--arch-fg);
+    font: inherit;
+    font-size: var(--arch-font-size-md);
+    line-height: 1.2;
+    text-align: left;
+    cursor: pointer;
+
+    &:focus-visible {
+        outline: 2px solid var(--arch-accent);
+        outline-offset: 1px;
+    }
+
+    &:disabled {
+        opacity: 0.4;
+        cursor: default;
+    }
+}
+
+.arch-select__value {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.arch-select__chevron {
+    flex: 0 0 auto;
+    color: var(--arch-label-2);
+    transition: transform var(--arch-duration-fast) ease;
+}
+
+.arch-select[aria-expanded="true"] .arch-select__chevron {
+    transform: rotate(180deg);
+}
+
+/* A select's list can be long; the inner .arch-menu scrolls rather than the
+   panel, since .arch-glass on the panel itself clips its overflow. */
+.arch-select-panel {
+    max-width: min(28rem, calc(100vw - 1rem));
+
+    & .arch-menu {
+        max-height: min(60vh, 24rem);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+}
+
+.arch-menu__item[aria-selected="true"] {
+    color: var(--arch-accent);
+
+    & .arch-menu__lead {
+        color: inherit;
+    }
+}

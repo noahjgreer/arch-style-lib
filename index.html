@@ -261,6 +261,23 @@
     </section>
 
     <section class="arch-glass arch-glass-panel">
+        <h2>Select</h2>
+        <p>A native <code>&lt;select&gt;</code> restyled by <code>js/select.js</code> — the
+            hidden select still holds the value and fires <code>change</code>.</p>
+        <select id="demo-select" class="arch-glass">
+            <optgroup label="Lists">
+                <option value="groceries">Groceries</option>
+                <option value="chores" selected>Chores</option>
+                <option value="reading">Reading list</option>
+            </optgroup>
+            <optgroup label="Routines">
+                <option value="morning">Morning routine</option>
+                <option value="archived" disabled>Archived routine</option>
+            </optgroup>
+        </select>
+    </section>
+
+    <section class="arch-glass arch-glass-panel">
         <h2>Drag to reorder</h2>
         <p>Drag any row by its handle to reorder the list.</p>
         <ul id="glass-list">
@@ -332,6 +349,7 @@
         import { makeDragReorder } from "/js/drag-reorder.js";
         import { makePanelSwap } from "/js/panel-swap.js";
         import { makeMenuBar } from "/js/menu.js";
+        import { makeSelect } from "/js/select.js";
         import { renderIcons } from "/js/icons.js";
 
         initTheme();
@@ -414,6 +432,10 @@
                 console.log("menu toggle:", id, checked);
             },
         });
+
+        const demoSelect = document.getElementById("demo-select");
+        makeSelect(demoSelect, { renderIcons });
+        demoSelect.addEventListener("change", () => console.log("select change:", demoSelect.value));
 
         const modal = document.getElementById("demo-modal");
         document.getElementById("modal-btn").addEventListener("click", () => {

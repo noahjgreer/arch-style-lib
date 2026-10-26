@@ -134,6 +134,36 @@ identically), `.arch-menu__separator`, `.arch-menu__group-label`,
 `.arch-menu__text`, `.arch-menu__custom`. `.arch-menu-bar__spacer` pushes
 everything after it to the far end of the bar.
 
+## Select — `.arch-select`
+
+A dropdown in the library's own look, replacing the OS's native `<select>`
+list. Normally built by [`js/select.js`](./behaviors.md#select) from an existing
+`<select>`, which stays in the page (hidden) as the source of truth. The list
+is an ordinary [menu](#menu--arch-menu-bar-arch-menu) panel: `<optgroup>`s become
+captioned sections, and the selected row carries a check in the leading slot.
+
+```html
+<button class="arch-select arch-glass" type="button" aria-haspopup="listbox" aria-expanded="false">
+    <span class="arch-select__value">Chores</span>
+    <span class="arch-icon arch-select__chevron" data-icon="chevron-down"></span>
+</button>
+
+<!-- At <body> level — same containing-block gotcha as any popover. -->
+<div class="arch-popover arch-popover--menu arch-glass arch-select-panel">
+    <div class="arch-menu" role="listbox">
+        <div class="arch-menu__group-label">Lists</div>
+        <button class="arch-menu__item" type="button" role="option" aria-selected="true">
+            <span class="arch-menu__lead"><span class="arch-icon" data-icon="check"></span></span>
+            <span class="arch-menu__label">Chores</span>
+        </button>
+    </div>
+</div>
+```
+
+The trigger copies the source `<select>`'s classes, so give the select
+`arch-glass` (or any class) to style the trigger. Long lists scroll inside
+`.arch-menu`, not the panel, because `.arch-glass` clips its own overflow.
+
 ## Modal — `.arch-modal`
 
 Centered glass dialog over a dimmed, blurred backdrop. Chrome only — toggle

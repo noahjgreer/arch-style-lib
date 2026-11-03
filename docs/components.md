@@ -26,6 +26,16 @@ Tunable per-instance via inline custom properties:
 See [behaviors.md#glass](./behaviors.md#glass) for runtime blur control and
 adaptive light/dark reflex based on a background image.
 
+**Flat mode (low-end devices):** set `data-arch-glass="off"` on `<html>` to
+turn every `.arch-glass` (and the modal backdrop) into a solid surface with no
+`backdrop-filter`. The tint and `--arch-glass-mix` still apply, laid over
+`--arch-bg-2` instead of the page, so per-element overrides keep their look;
+nested glass stays translucent so it still contrasts with its parent.
+
+```js
+document.documentElement.dataset.archGlass = "off"; // delete the attribute to restore glass
+```
+
 ## Button — `.arch-btn`
 
 ```html

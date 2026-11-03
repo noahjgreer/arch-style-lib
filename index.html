@@ -97,6 +97,8 @@
         <div class="demo-row">
             <label for="blur-range">Blur</label>
             <input id="blur-range" type="range" min="0" max="40" value="8">
+            <label for="flat-glass">Flat (no blur)</label>
+            <input id="flat-glass" type="checkbox">
         </div>
     </section>
 
@@ -358,6 +360,11 @@
 
         document.getElementById("blur-range").addEventListener("input", (e) => {
             setGlassBlur(Number(e.target.value));
+        });
+
+        document.getElementById("flat-glass").addEventListener("change", (e) => {
+            if (e.target.checked) document.documentElement.dataset.archGlass = "off";
+            else delete document.documentElement.dataset.archGlass;
         });
 
         // The checkbox form of .arch-toggle-btn needs no JS; the aria-pressed

@@ -61,3 +61,24 @@
     --arch-glass-reflex-light: 1;
     --arch-glass-reflex-dark: 1;
 }
+
+/*
+ * Flat mode: data-arch-glass="off" on <html> drops backdrop-filter (the costly
+ * part on weak GPUs) and lays the same tint over an opaque surface, so local
+ * --arch-glass-tint/-mix overrides still read the same. Nested glass keeps the
+ * translucent tint — it sits on an already-opaque parent, so it still contrasts.
+ */
+[data-arch-glass="off"] .arch-glass {
+    background-color: color-mix(in srgb, var(--arch-glass-tint) var(--arch-glass-mix), var(--arch-bg-2));
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+[data-arch-glass="off"] .arch-glass .arch-glass {
+    background-color: color-mix(in srgb, var(--arch-glass-tint) var(--arch-glass-mix), transparent);
+}
+
+[data-arch-glass="off"] .arch-modal-backdrop {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}

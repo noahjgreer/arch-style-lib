@@ -63,22 +63,26 @@
 }
 
 /*
- * Flat mode: data-arch-glass="off" on <html> drops backdrop-filter (the costly
- * part on weak GPUs) and lays the same tint over an opaque surface, so local
- * --arch-glass-tint/-mix overrides still read the same. Nested glass keeps the
- * translucent tint — it sits on an already-opaque parent, so it still contrasts.
+ * Flat mode: data-arch-glass="off" on <html> — the "get out of my way" look,
+ * lighter to paint on older devices. Drops .arch-glass's reflex edges and drop
+ * shadow (ten layered shadows, repainted with every element), squares corners
+ * to one small radius, and runs motion at 3x speed, since soft eases read as
+ * sluggish between flat surfaces. The tint and backdrop blur are kept: the
+ * surfaces stay frosted, just without the glass rim.
+ * Durations are a third of tokens.css's 150/250/400ms, restated as literals
+ * because a custom property can't be defined in terms of itself.
  */
+:root[data-arch-glass="off"] {
+    --arch-radius-sm: 0.5rem;
+    --arch-radius-md: 0.5rem;
+    --arch-radius-lg: 0.5rem;
+    --arch-radius-round: 0.5rem;
+
+    --arch-duration-fast: 50ms;
+    --arch-duration-md: 83ms;
+    --arch-duration-slow: 133ms;
+}
+
 [data-arch-glass="off"] .arch-glass {
-    background-color: color-mix(in srgb, var(--arch-glass-tint) var(--arch-glass-mix), var(--arch-bg-2));
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-}
-
-[data-arch-glass="off"] .arch-glass .arch-glass {
-    background-color: color-mix(in srgb, var(--arch-glass-tint) var(--arch-glass-mix), transparent);
-}
-
-[data-arch-glass="off"] .arch-modal-backdrop {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+    box-shadow: none;
 }

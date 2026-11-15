@@ -12,7 +12,11 @@
 `arch.css` `@import`s the rest of the library in the right order (tokens →
 reset → scrollbar → glass → components). If you only need part of the library, link the
 individual files instead — just make sure `tokens.css` loads first, since
-everything else reads its custom properties:
+everything else reads its custom properties.
+
+The reset makes the `hidden` attribute always hide, even on a component that
+sets its own `display`, so toggle visibility with `el.hidden` rather than a
+per-component `[hidden]` rule. Linking parts of the library:
 
 ```html
 <link rel="stylesheet" href="/css/tokens.css">

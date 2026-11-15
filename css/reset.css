@@ -65,6 +65,13 @@ textarea {
     color: inherit;
 }
 
+/* The UA's own `[hidden] { display: none }` loses to any class that sets
+   `display` (every flex component here does), so `el.hidden = true` silently
+   did nothing on them. Restated here so the attribute always hides. */
+[hidden]:not([hidden="until-found"]) {
+    display: none !important;
+}
+
 .arch-style-italic {
     font-style: italic;
 }

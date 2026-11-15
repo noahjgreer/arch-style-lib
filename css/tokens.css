@@ -50,6 +50,8 @@
     /* ── Typography ── */
     --arch-font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
         Roboto, "Helvetica Neue", Arial, sans-serif;
+    --arch-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+        "Liberation Mono", monospace;
     /* Caption size — a label subordinate to the thing it names (a stacked
        switcher tab's caption, a chip's second line), not body text. */
     --arch-font-size-xs: 0.7rem;

@@ -23,7 +23,8 @@ for the JS helper that manages this and persists the choice.
 
 ## Typography
 
-`--arch-font-family`, `--arch-font-size-xs/sm/md/lg/h2/h1`, `--arch-line-height`
+`--arch-font-family`, `--arch-font-mono` (code, file names, figures that must
+line up), `--arch-font-size-xs/sm/md/lg/h2/h1`, `--arch-line-height`
 (`xs` is caption size — a label subordinate to what it names, e.g. a stacked
 switcher tab's own caption).
 

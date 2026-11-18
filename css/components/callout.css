@@ -1,0 +1,45 @@
+/*
+ * arch-style-lib :: callout
+ * .arch-callout for a note set into the flow of a page: an icon, then text.
+ * Tinted by --arch-callout-color (the accent unless a variant sets it).
+ */
+
+.arch-callout {
+    --arch-callout-color: var(--arch-accent);
+
+    display: flex;
+    align-items: flex-start;
+    gap: var(--arch-space-sm);
+    margin: 0;
+    padding: var(--arch-space-sm) var(--arch-space-rg);
+    border-radius: var(--arch-radius-sm);
+    /* A hairline rather than a left stripe: a stripe bends into a crescent
+       round a rounded corner. */
+    background: color-mix(in srgb, var(--arch-callout-color) 12%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--arch-callout-color) 35%, transparent);
+    /* The body text stays the page's: the tint colours on a tint of
+       themselves are too low-contrast to read. */
+    color: var(--arch-fg);
+    font-size: var(--arch-font-size-sm);
+    line-height: 1.4;
+}
+
+/* Centred on the first line of text, however the text wraps. */
+.arch-callout > .arch-icon {
+    --arch-icon-size: 1rem;
+
+    margin-block: calc((1lh - var(--arch-icon-size)) / 2);
+    color: var(--arch-callout-color);
+}
+
+.arch-callout--warning {
+    --arch-callout-color: var(--arch-orange);
+}
+
+.arch-callout--danger {
+    --arch-callout-color: var(--arch-red);
+}
+
+.arch-callout--success {
+    --arch-callout-color: var(--arch-green);
+}

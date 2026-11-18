@@ -69,6 +69,23 @@ for compact contexts (inline with a small button, list rows).
 <span class="arch-dot"></span>
 ```
 
+## Callout — `.arch-callout`
+
+A note set into the flow of a page: an icon, then its text. The fill and the
+hairline round it are tints of `--arch-callout-color` (the accent by default),
+and the text keeps the page's colour, so it stays readable on any tint. The
+icon is centred on the first line however the text wraps.
+
+```html
+<p class="arch-callout arch-callout--warning">
+    <span class="arch-icon" data-icon="triangle-alert" aria-hidden="true"></span>
+    <span>This panel is 13% stretched, so it will sew up out of shape.</span>
+</p>
+```
+
+Variants: `--warning` (orange), `--danger` (red), `--success` (green). Any other
+tint: set `--arch-callout-color`.
+
 ## Popover — `.arch-popover`
 
 Chrome only — pair with [`js/popover.js`](./behaviors.md#popover) for

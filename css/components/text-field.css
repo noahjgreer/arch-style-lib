@@ -20,14 +20,20 @@
     line-height: normal;
     border: none;
     border-radius: var(--arch-radius-round);
-    background-color: var(--arch-fill-4);
+    background-color: var(--arch-control-fill);
     color: var(--arch-fg);
     font: inherit;
     font-size: var(--arch-font-size-lg);
-    transition: box-shadow var(--arch-duration-fast) var(--arch-ease);
+    transition:
+        box-shadow var(--arch-duration-fast) var(--arch-ease),
+        background-color var(--arch-duration-fast) ease;
 
     &::placeholder {
         color: var(--arch-label-3);
+    }
+
+    &:hover:not(:disabled) {
+        background-color: var(--arch-control-fill-hover);
     }
 
     &:focus-visible {

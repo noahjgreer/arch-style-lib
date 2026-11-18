@@ -13,6 +13,7 @@ project without touching library files.
 | `--arch-label-2/3/4` | Secondary/tertiary/quaternary text opacity steps |
 | `--arch-fill-2/3/4` | Fill opacity steps for non-text UI (icons, dividers) |
 | `--arch-separator`, `--arch-separator-opaque` | Hairline borders |
+| `--arch-control-fill`, `--arch-control-fill-hover` | A text field's fill, and the hover every neutral control shares (field, select, ghost button) |
 | `--arch-accent` | Default interactive tint (buttons, focus rings, badges) — defaults to `--arch-blue` |
 | `--arch-red` … `--arch-gray-6` | Full Apple-style accent/gray ramp, available to use directly or to repoint `--arch-accent` |
 

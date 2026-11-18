@@ -116,6 +116,34 @@
     transform: none;
 }
 
+/* Switch style: `data-arch-toggle-style="switch"` on any ancestor (usually
+   <html>, as a user preference) turns the state dot into a sliding switch,
+   for people who read a dot as a bullet rather than a state. Only the
+   pseudo-element changes, so markup, sizing and every theme's pill look stay
+   as they are. One pseudo-element is the whole switch: the track is its
+   fill, the thumb a radial gradient whose position slides. Sized in em so
+   --sm shrinks it with the text. */
+[data-arch-toggle-style="switch"] .arch-toggle-btn::before {
+    width: 1.8em;
+    height: 1em;
+    border-radius: var(--arch-radius-round);
+    opacity: 1;
+    box-shadow: none;
+    background:
+        /* The soft dark rim stands in for a shadow, so the thumb shows on a pale track. */
+        radial-gradient(circle closest-side, #fff 74%, rgb(0 0 0 / 22%) 80%, transparent 90%) 0 50% / 1em 1em no-repeat,
+        var(--arch-fill-3);
+    transition:
+        background-position var(--arch-duration-fast) var(--arch-ease),
+        background-color var(--arch-duration-fast) var(--arch-ease);
+}
+
+[data-arch-toggle-style="switch"] .arch-toggle-btn[aria-pressed="true"]::before,
+[data-arch-toggle-style="switch"] .arch-toggle-btn:has(> .arch-toggle-btn__input:checked)::before {
+    background-position: 100% 50%;
+    background-color: var(--arch-accent);
+}
+
 /* Matches .arch-btn--sm / .arch-input--sm exactly, for the same reason. */
 .arch-toggle-btn--sm {
     --arch-icon-size: var(--arch-control-icon-size-sm);

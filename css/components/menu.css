@@ -158,6 +158,9 @@
     width: 1.15em;
     font-size: 1em;
     color: var(--arch-label-2);
+    /* The glyph fits the slot. At the default 1.5rem it overflowed the slot,
+       and at a small panel inset the panel's edge clipped it. */
+    --arch-icon-size: 1em;
 }
 
 .arch-menu__label {

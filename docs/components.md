@@ -47,6 +47,10 @@ document.documentElement.dataset.archGlass = "off"; // delete the attribute to r
 
 Retint a single button with `style="--arch-accent: var(--arch-green)"`.
 
+On hover a solid button fades a little, an icon button takes `--arch-fill-4`, and
+a ghost button takes `--arch-control-fill-hover`, since a fade barely shows on an
+outline with nothing behind it.
+
 ## Text field — `.arch-input`
 
 A single-line text input, pill-rounded to match the rest of the library.
@@ -54,6 +58,10 @@ Pairs with `.arch-glass` the same way `.arch-btn` does — add
 `.arch-input--glass` alongside `.arch-glass` for the frosted treatment; on
 its own it falls back to a flat fill. `.arch-input--sm` shrinks padding/font
 for compact contexts (inline with a small button, list rows).
+
+The fill is `--arch-control-fill`, and hover takes `--arch-control-fill-hover`,
+the hover every neutral control shares (a field, a select, a ghost button).
+Set both to give a project's fields its own fill.
 
 ```html
 <input class="arch-input" type="text" placeholder="Untitled project" />
@@ -111,7 +119,8 @@ popover: a pill carries its own surface, so a stack of them reads as loose
 buttons sharing a panel. A menu row has no surface until hovered, spans the
 panel's full width, and aligns its label against every other row's — that
 shared leading slot (`.arch-menu__lead`, always reserved whether or not the
-row has an icon) is most of what makes a list read as one menu.
+row has an icon) is most of what makes a list read as one menu. An icon in the
+slot is sized to it (`1em`), so it never overflows the row.
 
 For the same reason, use `.arch-menu__item--check` for an on/off row *inside a
 menu* even in a project that otherwise standardizes on `.arch-toggle-btn` — it
@@ -167,6 +176,7 @@ list. Normally built by [`js/select.js`](./behaviors.md#select) from an existing
 `<select>`, which stays in the page (hidden) as the source of truth. The list
 is an ordinary [menu](#menu--arch-menu-bar-arch-menu) panel: `<optgroup>`s become
 captioned sections, and the selected row carries a check in the leading slot.
+At rest it has no fill; on hover it takes `--arch-control-fill-hover`.
 
 ```html
 <button class="arch-select arch-glass" type="button" aria-haspopup="listbox" aria-expanded="false">
@@ -344,6 +354,13 @@ your own code:
 Sizing deliberately mirrors the button/input scale so the three read as peers
 in one row: the base matches `.arch-btn`, and `.arch-toggle-btn--sm` matches
 `.arch-btn--sm` and `.arch-input--sm`.
+
+**Switch style.** Set `data-arch-toggle-style="switch"` on any ancestor
+(usually `<html>`, as a user preference) and every toggle button inside shows
+a small sliding switch (off: `--arch-fill-3` track; on: `--arch-accent`)
+where the state dot was. Only the `::before` changes, so the markup, sizing
+and pill look stay the same, and a project can offer the switch as an option
+without touching its controls.
 
 ## Scrollbars
 

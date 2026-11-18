@@ -50,6 +50,15 @@
     background-color: transparent;
     color: var(--arch-accent);
     box-shadow: inset 0 0 0 1.5px var(--arch-accent);
+    transition:
+        background-color var(--arch-duration-fast) ease,
+        transform var(--arch-duration-fast) ease;
+
+    /* A fade alone barely shows on an outline with no fill behind it. */
+    &:hover:not(:disabled) {
+        opacity: 1;
+        background-color: var(--arch-control-fill-hover);
+    }
 }
 
 /* Combine with .arch-glass in markup: class="arch-btn arch-glass arch-btn--glass"

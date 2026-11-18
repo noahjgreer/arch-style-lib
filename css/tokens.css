@@ -24,6 +24,13 @@
     --arch-separator-light: rgb(0 0 0 / 12%);
     --arch-separator-opaque: #c6c6c8;
 
+    /* The fill a neutral control sits in (a text field) and the one every
+       neutral control shows on hover (a field, a select, a ghost button), so
+       a hover reads the same everywhere. Built from the fills above, so both
+       follow the scheme; a project with its own control fill sets these two. */
+    --arch-control-fill: var(--arch-fill-4);
+    --arch-control-fill-hover: color-mix(in srgb, var(--arch-fill-3) 50%, var(--arch-fill-4));
+
     /* ── Accent colors ── */
     --arch-red: #ff383c;
     --arch-orange: #ff8d28;

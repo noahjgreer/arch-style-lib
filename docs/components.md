@@ -362,6 +362,11 @@ where the state dot was. Only the `::before` changes, so the markup, sizing
 and pill look stay the same, and a project can offer the switch as an option
 without touching its controls.
 
+Under `forced-colors` (Windows High Contrast) the dot and the switch opt out
+of colour forcing (`forced-color-adjust: none`) and draw in system colours:
+the dot in the label's text colour at full opacity, the switch as a `Canvas`
+thumb ringed in `CanvasText` on a `GrayText` (off) or `Highlight` (on) track.
+
 ## Scrollbars
 
 `css/scrollbar.css` restyles **every** scrolling element — slim, rounded,

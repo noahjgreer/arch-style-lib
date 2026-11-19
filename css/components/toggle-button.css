@@ -156,3 +156,25 @@
         height: 0.45rem;
     }
 }
+
+/* Forced colours (Windows High Contrast) drop box-shadows and force
+   backgrounds, which erased the dot's ring and the switch's track alike. The
+   pseudo-element opts out and draws in system colours instead: the dot in
+   the label's forced text colour at full strength, the switch as a Canvas
+   thumb ringed in CanvasText on a GrayText or Highlight track. */
+@media (forced-colors: active) {
+    .arch-toggle-btn::before {
+        forced-color-adjust: none;
+        opacity: 1;
+    }
+
+    [data-arch-toggle-style="switch"] .arch-toggle-btn::before {
+        background-image: radial-gradient(circle closest-side, Canvas 70%, CanvasText 72% 82%, transparent 86%);
+        background-color: GrayText;
+    }
+
+    [data-arch-toggle-style="switch"] .arch-toggle-btn[aria-pressed="true"]::before,
+    [data-arch-toggle-style="switch"] .arch-toggle-btn:has(> .arch-toggle-btn__input:checked)::before {
+        background-color: Highlight;
+    }
+}

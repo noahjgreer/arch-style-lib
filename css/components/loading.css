@@ -1,0 +1,133 @@
+/*
+ * arch-style-lib :: loading
+ * One vocabulary for waiting:
+ *   .arch-spinner  a ring turning, for a wait with no measure
+ *   .arch-loading  a line of text led by a spinner ("Loading…")
+ *   .arch-progress a bar: how far along (--arch-progress, 0–1, on the bar),
+ *                  or .arch-progress--indeterminate for a band sweeping across
+ *     <div class="arch-progress" role="progressbar"><div class="arch-progress__fill"></div></div>
+ *
+ * Every indicator fades in only after --arch-loading-delay, so a wait too short
+ * to notice shows nothing instead of a flicker. All the motion is transform and
+ * opacity, which the browser keeps animating while the page's main thread is
+ * busy (a large parse, a long synchronous build), so a busy page still looks alive.
+ *
+ * Tunables:
+ *   --arch-loading-delay    how long a wait goes unmarked (default 300ms)
+ *   --arch-spinner-size     ring diameter                 (default 1em)
+ *   --arch-progress-height  bar thickness                 (default 0.25rem)
+ */
+
+.arch-spinner,
+.arch-loading::before {
+    box-sizing: border-box;
+    display: inline-block;
+    flex: none;
+    width: var(--arch-spinner-size, 1em);
+    height: var(--arch-spinner-size, 1em);
+    border: max(2px, calc(var(--arch-spinner-size, 1em) / 7)) solid var(--arch-fill-4);
+    border-top-color: var(--arch-accent);
+    border-radius: 50%;
+}
+
+.arch-spinner {
+    vertical-align: -0.15em;
+    animation:
+        arch-spin 0.8s linear infinite,
+        arch-loading-in var(--arch-duration-md) var(--arch-ease-out) var(--arch-loading-delay, 300ms) both;
+}
+
+/* A pseudo-element, so a status line becomes a loading one by its class alone,
+   with no markup to add and remove around its text. */
+.arch-loading {
+    animation: arch-loading-in var(--arch-duration-md) var(--arch-ease-out) var(--arch-loading-delay, 300ms) both;
+}
+
+.arch-loading::before {
+    content: "";
+    margin-inline-end: 0.5em;
+    vertical-align: -0.15em;
+    animation: arch-spin 0.8s linear infinite;
+}
+
+.arch-progress {
+    --arch-progress: 0;
+    height: var(--arch-progress-height, 0.25rem);
+    border-radius: var(--arch-radius-round);
+    background: var(--arch-fill-4);
+    overflow: hidden;
+    animation: arch-loading-in var(--arch-duration-md) var(--arch-ease-out) var(--arch-loading-delay, 300ms) both;
+}
+
+/* Slid in rather than scaled, so its rounded end keeps its shape at any value. */
+.arch-progress__fill {
+    height: 100%;
+    border-radius: inherit;
+    background: var(--arch-accent);
+    transform: translateX(calc((var(--arch-progress) - 1) * 100%));
+    transition: transform var(--arch-duration-fast) var(--arch-ease-out);
+}
+
+.arch-progress--indeterminate .arch-progress__fill {
+    width: 40%;
+    transition: none;
+    animation: arch-progress-sweep 1.3s ease-in-out infinite;
+}
+
+/* From just off the start to just off the end: the fill is 40% of the track. */
+@keyframes arch-progress-sweep {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(250%); }
+}
+
+@keyframes arch-spin {
+    to { transform: rotate(1turn); }
+}
+
+@keyframes arch-loading-in {
+    from { opacity: 0; }
+}
+
+/* Slower rather than still: a still ring would read as stuck. The band stops
+   travelling and breathes in place instead. */
+@media (prefers-reduced-motion: reduce) {
+    .arch-spinner {
+        animation-duration: 2.4s, var(--arch-duration-md);
+    }
+
+    .arch-loading::before {
+        animation-duration: 2.4s;
+    }
+
+    .arch-progress--indeterminate .arch-progress__fill {
+        width: 100%;
+        transform: none;
+        animation: arch-progress-breathe 1.6s ease-in-out infinite alternate;
+    }
+}
+
+@keyframes arch-progress-breathe {
+    from { opacity: 0.3; }
+}
+
+/* System colours: forced colours would otherwise draw the ring as one solid
+   circle, so nothing visibly turns, and drop the bar's fill entirely. */
+@media (forced-colors: active) {
+    .arch-spinner,
+    .arch-loading::before {
+        forced-color-adjust: none;
+        border-color: GrayText;
+        border-top-color: Highlight;
+    }
+
+    .arch-progress {
+        forced-color-adjust: none;
+        background: Canvas;
+        outline: 1px solid CanvasText;
+    }
+
+    .arch-progress__fill {
+        forced-color-adjust: none;
+        background: Highlight;
+    }
+}

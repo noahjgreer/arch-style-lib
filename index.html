@@ -142,6 +142,20 @@
         </div>
 
         <div class="arch-glass arch-glass-panel">
+            <h2>Loading</h2>
+            <div class="demo-row">
+                <span class="arch-spinner" role="status" aria-label="Loading"></span>
+                <p class="arch-loading" style="margin: 0;">Loading your library…</p>
+            </div>
+            <div class="arch-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40" style="--arch-progress: 0.4; margin-block: var(--arch-space-sm);">
+                <div class="arch-progress__fill"></div>
+            </div>
+            <div class="arch-progress arch-progress--indeterminate" role="progressbar" aria-label="Loading">
+                <div class="arch-progress__fill"></div>
+            </div>
+        </div>
+
+        <div class="arch-glass arch-glass-panel">
             <h2>Switcher</h2>
             <div class="arch-switcher arch-glass" id="demo-switcher">
                 <button class="arch-switcher__tab arch-switcher__tab--active" type="button">Day</button>

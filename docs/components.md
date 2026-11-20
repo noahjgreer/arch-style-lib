@@ -94,6 +94,44 @@ icon is centred on the first line however the text wraps.
 Variants: `--warning` (orange), `--danger` (red), `--success` (green). Any other
 tint: set `--arch-callout-color`.
 
+## Loading — `.arch-spinner`, `.arch-loading`, `.arch-progress`
+
+One vocabulary for waiting. A spinner is a wait with no measure; a progress bar
+is one with a measure (or, indeterminate, a wait that needs more presence than
+a spinner, such as a whole-screen load).
+
+```html
+<!-- A ring on its own: say what it's waiting for next to it, or label it. -->
+<span class="arch-spinner" role="status" aria-label="Loading"></span>
+
+<!-- A status line led by a ring: toggle the class, the text stays yours. -->
+<p class="arch-loading">Loading your library…</p>
+
+<!-- How far along: --arch-progress from 0 to 1, on the bar. -->
+<div class="arch-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40" style="--arch-progress: 0.4">
+    <div class="arch-progress__fill"></div>
+</div>
+
+<!-- No measure: a band sweeps across. -->
+<div class="arch-progress arch-progress--indeterminate" role="progressbar"><div class="arch-progress__fill"></div></div>
+```
+
+Notes:
+
+- **Each fades in after `--arch-loading-delay` (300ms by default)**, so a wait
+  too short to notice shows nothing rather than a flicker. Set it to `0s` where
+  the indicator is the only feedback a click gets.
+- **The motion is transform and opacity only**, which browsers keep animating
+  off the main thread, so the page still looks alive while a long synchronous
+  task holds it.
+- `.arch-loading` draws its ring as a `::before`, so a status element that also
+  shows results or errors becomes a loading one by its class alone.
+- Under `prefers-reduced-motion` the ring turns slowly (a still ring reads as
+  stuck) and the band breathes in place; under forced colours both are drawn
+  in system colours.
+- Tunables: `--arch-spinner-size` (default `1em`), `--arch-progress-height`
+  (default `0.25rem`).
+
 ## Popover — `.arch-popover`
 
 Chrome only — pair with [`js/popover.js`](./behaviors.md#popover) for

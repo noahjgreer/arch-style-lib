@@ -117,31 +117,78 @@
 }
 
 /* Switch style: `data-arch-toggle-style="switch"` on any ancestor (usually
-   <html>, as a user preference) turns the state dot into a sliding switch,
-   for people who read a dot as a bullet rather than a state. Only the
-   pseudo-element changes, so markup, sizing and every theme's pill look stay
-   as they are. One pseudo-element is the whole switch: the track is its
-   fill, the thumb a radial gradient whose position slides. Sized in em so
-   --sm shrinks it with the text. */
-[data-arch-toggle-style="switch"] .arch-toggle-btn::before {
-    width: 1.8em;
-    height: 1em;
-    border-radius: var(--arch-radius-round);
-    opacity: 1;
+   <html>, as a user preference) turns every toggle into its label and a
+   standalone sliding switch after it, for people who read a dot as a bullet
+   rather than a state. The pill goes (no fill, no padding, no shadow, the
+   label in the text colour either way): the switch shows the state, and a
+   switch inside a pill read as a button holding a toggle. The markup stays
+   the same, so a project can offer it as an option without touching its
+   controls.
+
+   The switch has iOS's proportions, its height a share of the control
+   height so it stands as a peer of the buttons and fields beside it. Its
+   auto start margin sends it to the far end of a toggle stretched to a
+   row's width, the way a settings list sets its switches, and is nothing in
+   one as wide as its label. One pseudo-element is the whole switch: the
+   track is its fill, the thumb a radial gradient whose position slides. */
+[data-arch-toggle-style="switch"] .arch-toggle-btn {
+    --arch-switch-height: calc(var(--arch-control-height) * 0.7);
+    gap: var(--arch-space-sm);
+    padding-inline: 0;
+    background: none;
     box-shadow: none;
-    background:
-        /* The soft dark rim stands in for a shadow, so the thumb shows on a pale track. */
-        radial-gradient(circle closest-side, #fff 74%, rgb(0 0 0 / 22%) 80%, transparent 90%) 0 50% / 1em 1em no-repeat,
-        var(--arch-fill-3);
-    transition:
-        background-position var(--arch-duration-fast) var(--arch-ease),
-        background-color var(--arch-duration-fast) var(--arch-ease);
+    color: var(--arch-fg);
+
+    &::before {
+        order: 1;
+        margin-inline-start: auto;
+        width: calc(var(--arch-switch-height) * 1.65);
+        height: var(--arch-switch-height);
+        border-radius: var(--arch-radius-round);
+        opacity: 1;
+        box-shadow: none;
+        background:
+            /* The soft dark rim stands in for a shadow, so the thumb shows on a pale track. */
+            radial-gradient(circle closest-side, #fff 80%, rgb(0 0 0 / 20%) 86%, transparent 94%) 0 50% / var(--arch-switch-height) var(--arch-switch-height) no-repeat,
+            var(--arch-fill-3);
+        transition:
+            background-position var(--arch-duration-fast) var(--arch-ease),
+            background-color var(--arch-duration-fast) var(--arch-ease);
+    }
+
+    &:hover {
+        background: none;
+
+        &::before {
+            background-color: var(--arch-fill-2);
+        }
+    }
+
+    &:active {
+        transform: none;
+    }
 }
 
-[data-arch-toggle-style="switch"] .arch-toggle-btn[aria-pressed="true"]::before,
-[data-arch-toggle-style="switch"] .arch-toggle-btn:has(> .arch-toggle-btn__input:checked)::before {
-    background-position: 100% 50%;
-    background-color: var(--arch-accent);
+[data-arch-toggle-style="switch"] .arch-toggle-btn--sm {
+    --arch-switch-height: calc(var(--arch-control-height-sm) * 0.75);
+}
+
+[data-arch-toggle-style="switch"] .arch-toggle-btn[aria-pressed="true"],
+[data-arch-toggle-style="switch"] .arch-toggle-btn:has(> .arch-toggle-btn__input:checked) {
+    color: var(--arch-fg);
+
+    &, &:hover {
+        background: none;
+    }
+
+    &::before {
+        background-position: 100% 50%;
+        background-color: var(--arch-accent);
+    }
+
+    &:hover::before {
+        background-color: color-mix(in srgb, var(--arch-accent) 88%, var(--arch-fg));
+    }
 }
 
 /* Matches .arch-btn--sm / .arch-input--sm exactly, for the same reason. */

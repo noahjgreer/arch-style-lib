@@ -394,11 +394,16 @@ in one row: the base matches `.arch-btn`, and `.arch-toggle-btn--sm` matches
 `.arch-btn--sm` and `.arch-input--sm`.
 
 **Switch style.** Set `data-arch-toggle-style="switch"` on any ancestor
-(usually `<html>`, as a user preference) and every toggle button inside shows
-a small sliding switch (off: `--arch-fill-3` track; on: `--arch-accent`)
-where the state dot was. Only the `::before` changes, so the markup, sizing
-and pill look stay the same, and a project can offer the switch as an option
-without touching its controls.
+(usually `<html>`, as a user preference) and every toggle button inside
+becomes its label followed by a standalone sliding switch (off:
+`--arch-fill-3` track, `--arch-fill-2` hovered; on: `--arch-accent`), with
+no pill: no fill, padding or shadow, and the label in `--arch-fg` whether on
+or off. The switch has iOS's proportions (1.65 : 1), its height 70% of
+`--arch-control-height` (75% of `--arch-control-height-sm` for `--sm`), set
+as `--arch-switch-height`. An auto start margin sends it to the far end when
+the toggle is stretched to a row's width, as a settings list sets its
+switches. The markup stays the same, so a project can offer the switch as an
+option without touching its controls.
 
 Under `forced-colors` (Windows High Contrast) the dot and the switch opt out
 of colour forcing (`forced-color-adjust: none`) and draw in system colours:

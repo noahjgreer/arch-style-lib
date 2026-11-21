@@ -214,10 +214,14 @@
             <button class="arch-toggle-btn arch-toggle-btn--sm arch-glass" type="button" aria-pressed="false">
                 <span class="arch-toggle-btn__label">Small, aria-pressed</span>
             </button>
-            <div data-arch-toggle-style="switch">
+            <div data-arch-toggle-style="switch" style="display: flex; flex-direction: column; max-width: 16rem">
                 <label class="arch-toggle-btn arch-glass">
                     <input class="arch-toggle-btn__input" type="checkbox" checked />
                     <span class="arch-toggle-btn__label">Switch style</span>
+                </label>
+                <label class="arch-toggle-btn arch-toggle-btn--sm arch-glass">
+                    <input class="arch-toggle-btn__input" type="checkbox" />
+                    <span class="arch-toggle-btn__label">Small, in a row</span>
                 </label>
             </div>
         </div>

@@ -119,6 +119,15 @@
         </div>
 
         <div class="arch-glass arch-glass-panel">
+            <h2>Search field</h2>
+            <div class="arch-search" id="demo-search">
+                <span class="arch-icon arch-search__icon" data-icon="search" aria-hidden="true"></span>
+                <input class="arch-input arch-search__input" type="search" placeholder="Search fabrics" aria-label="Search fabrics" />
+                <button class="arch-search__clear" type="button" aria-label="Clear search"><span class="arch-icon" data-icon="x" aria-hidden="true"></span></button>
+            </div>
+        </div>
+
+        <div class="arch-glass arch-glass-panel">
             <h2>Badges</h2>
             <div class="demo-row">
                 <span class="arch-badge">12</span>
@@ -389,9 +398,11 @@
         import { makeMenuBar } from "/js/menu.js";
         import { makeSelect } from "/js/select.js";
         import { renderIcons } from "/js/icons.js";
+        import { bindSearchField } from "/js/search-field.js";
 
         initTheme();
         renderIcons();
+        bindSearchField(document.getElementById("demo-search"));
         document.getElementById("theme-toggle").addEventListener("click", toggleTheme);
 
         document.getElementById("blur-range").addEventListener("input", (e) => {

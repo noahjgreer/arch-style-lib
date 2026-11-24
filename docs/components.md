@@ -69,6 +69,27 @@ Set both to give a project's fields its own fill.
 <input class="arch-input arch-input--sm" type="text" />
 ```
 
+## Search field — `.arch-search`
+
+An `.arch-input` of type `search` with a leading magnifier and a trailing
+clear button, so every search box looks the same. Each icon sits in a square
+the field's height (`--arch-search-slot`), and the input is padded by one on
+both sides. The clear button shows once the field holds text: it reads
+`:placeholder-shown`, so the input **needs a placeholder**. The browser's own
+cancel button is hidden. `.arch-search--sm` goes with `.arch-input--sm`.
+Wire it with `bindSearchField()` ([behaviors](behaviors.md#search-field)).
+The root is a `<div>`, not a `<label>`, so the clear button's name doesn't
+become the field's: name the input with `aria-label`, or leave it to the
+placeholder.
+
+```html
+<div class="arch-search arch-search--sm">
+    <span class="arch-icon arch-search__icon" data-icon="search" aria-hidden="true"></span>
+    <input class="arch-input arch-input--sm arch-search__input" type="search" placeholder="Search fabrics" aria-label="Search fabrics" />
+    <button class="arch-search__clear" type="button" aria-label="Clear search"><span class="arch-icon" data-icon="x" aria-hidden="true"></span></button>
+</div>
+```
+
 ## Badge — `.arch-badge`, `.arch-dot`
 
 ```html

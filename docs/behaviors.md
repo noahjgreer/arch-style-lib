@@ -146,6 +146,19 @@ makeSelect(select, { renderIcons });
 select.addEventListener("change", () => console.log(select.value));
 ```
 
+## Search field
+
+`js/search-field.js`
+
+| Function | Description |
+|---|---|
+| `bindSearchField(field)` | Wires an `.arch-search`: the clear button empties the field and refocuses it; Escape in a field holding text (and not mid-IME composition) empties it, and goes no further (stopped, default prevented), so a dialog around the field closes only on an Escape in an empty field. Either way the input fires a bubbling `input` event, so filters update as if the text had been deleted. |
+
+```js
+import { bindSearchField } from "/js/search-field.js";
+bindSearchField(document.querySelector(".arch-search"));
+```
+
 ## Switcher
 
 `js/switcher.js`

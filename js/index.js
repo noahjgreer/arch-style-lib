@@ -11,6 +11,7 @@ export * from "./icons.js";
 export * from "./popover.js";
 export * from "./menu.js";
 export * from "./select.js";
+export * from "./search-field.js";
 export * from "./switcher.js";
 export * from "./drag-reorder.js";
 export * from "./panel-swap.js";

@@ -1,0 +1,74 @@
+/*
+ * arch-style-lib :: search field
+ * .arch-search — an .arch-input of type "search" with a leading magnifier
+ * and a trailing clear button, the one look every search box shares. The
+ * clear button shows once the field holds text, which is read off
+ * :placeholder-shown, so the input needs a placeholder. Pair with
+ * bindSearchField() (js/search-field.js) for the clear button and Escape.
+ * .arch-search--sm goes with .arch-input--sm on the input.
+ */
+
+.arch-search {
+    /* The square each end's icon sits in: the field's own height. */
+    --arch-search-slot: var(--arch-control-height);
+    --arch-icon-size: var(--arch-control-icon-size);
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.arch-search--sm {
+    --arch-search-slot: var(--arch-control-height-sm);
+    --arch-icon-size: var(--arch-control-icon-size-sm);
+}
+
+.arch-search__icon {
+    position: absolute;
+    inset-inline-start: 0;
+    display: flex;
+    justify-content: center;
+    width: var(--arch-search-slot);
+    color: var(--arch-label-3);
+    pointer-events: none;
+}
+
+.arch-search__input.arch-input {
+    padding-inline: var(--arch-search-slot);
+
+    /* The clear button below replaces the browser's own, which only some
+       browsers draw. */
+    &::-webkit-search-cancel-button {
+        appearance: none;
+    }
+}
+
+.arch-search__clear {
+    position: absolute;
+    inset-inline-end: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--arch-search-slot);
+    height: var(--arch-search-slot);
+    padding: 0;
+    border: none;
+    border-radius: var(--arch-radius-round);
+    background: none;
+    color: var(--arch-label-3);
+    cursor: pointer;
+    transition: color var(--arch-duration-fast) ease;
+
+    &:hover {
+        color: var(--arch-fg);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 1.5px var(--arch-accent);
+    }
+}
+
+.arch-search__input:placeholder-shown + .arch-search__clear {
+    display: none;
+}

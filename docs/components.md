@@ -40,6 +40,7 @@ document.documentElement.dataset.archGlass = "off"; // delete the attribute to r
 ```html
 <button class="arch-btn">Solid</button>
 <button class="arch-btn arch-btn--ghost">Ghost</button>
+<button class="arch-btn arch-btn--ghost arch-btn--plain">Plain</button>
 <button class="arch-btn arch-glass arch-btn--glass">Glass</button>
 <button class="arch-btn arch-btn--icon" aria-label="Add">+</button>
 <button class="arch-btn arch-btn--sm">Small</button>
@@ -50,6 +51,10 @@ Retint a single button with `style="--arch-accent: var(--arch-green)"`.
 On hover a solid button fades a little, an icon button takes `--arch-fill-4`, and
 a ghost button takes `--arch-control-fill-hover`, since a fade barely shows on an
 outline with nothing behind it.
+
+`.arch-btn--plain` with `--ghost` drops the ring: a quiet text or icon action
+beside a heading or in a row of text (All · None, an info toggletip). It keeps
+the ghost's hover fill and every button's focus ring.
 
 ## Text field — `.arch-input`
 

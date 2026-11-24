@@ -61,6 +61,12 @@
     }
 }
 
+/* A ghost button without its ring: a quiet text or icon action beside a
+   heading or in a row of text, that still fills on hover. */
+.arch-btn--ghost.arch-btn--plain {
+    box-shadow: none;
+}
+
 /* Combine with .arch-glass in markup: class="arch-btn arch-glass arch-btn--glass"
  *
  * The background has to be restated here, not left to `.arch-glass`: glass.css
